@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="{{currentLocale}}">
+
+<head>
+  <meta charset="utf-8">
+  <title>LNPOS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <!-- Custom CSS -->
+  <style>
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+      * {
+          font-family: Montserrat;
+      }
+      body {
+          margin: 10px;
+          padding: 10px;
+      }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2 class="text-center">{{#i18n}}lnpos{{/i18n}}</h2>
+    <hr>
+    <br>
+    <center>
+      <form class="form" action="/pay" method="POST">
+        <fieldset>
+          <label class="text-center" for="amountFiat">{{#i18n}}pay_currency{{/i18n}} {{currencyFrom}}:</label>
+          <br>
+          <input class="text-right" type ="text" id = 'amountFiat' name="amountFiat" required autofocus>
+          <br><br>
+          <input type="hidden" id="currency" name="currency" value="{{currencyFrom}}">
+          <input type="hidden" id="lang" name="lang" value="{{currentLocale}}">
+          <input type="hidden" id="id" name="id" value="{{id}}">
+          <button class="btn btn-primary" type ="submit">{{#i18n}}generate_invoice{{/i18n}}</button>
+        </fieldset>
+      </form>
+    </center>
+  </div>
+</body>
+</html>

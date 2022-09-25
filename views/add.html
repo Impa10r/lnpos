@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="{{currentLocale}}">
+
+<head>
+  <meta charset="utf-8">
+  <title>Payment Link</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <!-- Custom CSS -->
+  <style>
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+      * {
+          font-family: Montserrat;
+      }
+      body {
+          margin: 10px;
+          padding: 10px;
+      }
+  </style>
+</head>
+
+<body>
+
+<body>
+  <div class="container">
+    <h4 class="text-center">{{#i18n}}api_key_saved{{/i18n}}</h4>
+    <center>
+      <hr>
+      <br>
+      <p>{{#i18n}}new_payment_link{{/i18n}}</p>
+      <br>
+      <b><a href="{{url}}">{{url}}</a></b>
+      <br>
+      <br>
+      <br>
+      <p>{{#i18n}}new_payment_link2{{/i18n}} <a href="a4?id={{id}}">{{#i18n}}link{{/i18n}}.</a></p>
+    </center>
+</div>
+
+</body>
+</html>

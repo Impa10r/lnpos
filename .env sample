@@ -1,0 +1,9 @@
+# Mongo config
+DB_USER='mongoadmin'
+DB_PASS='strongpassword'
+DB_HOST='localhost'
+DB_PORT='27017'
+DB_NAME='lnpos'
+
+# Express config
+SERVER_PORT=8000
