@@ -1,5 +1,5 @@
-# LNPOS
-A web app which allows small businesses to easily accept LN Bitcoin payments as deposits to Bitfinex account with immediate conversion to fiat (this is optional). The value proposition is zero cost, zero market risk and 1% to 3% savings compared to credit card processors.
+# Lightning Network Point of Sale
+A web app which allows small businesses to easily accept LN Bitcoin payments as deposits to Bitfinex account with immediate conversion to fiat (this is optional). The value proposition is: zero cost, zero market risk and 1% to 3% savings compared to credit card processors.
 
 ## Try it out!
 Wherever you are you can start using the [LNPOS](https://lnpos.me) for your business right away without installation. Or join the project as an affiliate to earn trading fee rebates from the businesses that you subscribe.
