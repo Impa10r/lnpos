@@ -145,13 +145,16 @@ export default class Server {
       }
     });
 
-    this.express.post('/ref', (req,res) => {
+    this.express.post('/ref', (req, res) => {
       const lang = req.body.lang;
+      const code = req.body.refCode;
       req.setLocale(lang);
-      res.redirect(`/ref?id=${req.body.refCode}&lang=${lang}`);
+      if (code.length !== 10)
+        return showError(res, req, 'error_invalid_ref');
+      res.redirect(`/ref?id=${code}&lang=${lang}`);
     });
 
-    this.express.post('/add', (req,res) => {
+    this.express.post('/add', (req, res) => {
       const lang = req.body.lang;
       req.setLocale(lang);
       this.gw = new Gateway(req.body.apiKey, req.body.apiSecret);
@@ -159,7 +162,7 @@ export default class Server {
         .then((r) => r.json())
         .then((json) => {
           if (json[0] === 'error') {
-            showError(res, req, 'err_invalid_keys');
+            showError(res, req, 'error_invalid_keys');
           } else {
             // Delete previous to avoid duplicates
             this.db.deleteOne('keys', { key: req.body.apiKey })
