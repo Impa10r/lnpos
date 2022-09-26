@@ -10,7 +10,7 @@ Install git and NVM for your system. Use NVM to instal LTS version of Node.js:
 nvm install lts/*
 ```
 ## MongoDB
-You will need to have [mongo](https://www.mongodb.com) installed and fill the mongo variables on the .env file, those that stats with `DB_`. Here is the guide on [how to install Mongo in WSL2](https://dev.to/seanwelshbrown/installing-mongodb-on-windows-subsystem-for-linux-wsl-2-19m9) linux system in Windows 10/11.
+You will need to have [mongo](https://www.mongodb.com) installed and fill the mongo variables on the .env file, those that start with `DB_`.
 
 To install just run:
 ```
@@ -18,7 +18,7 @@ $ git clone https://github.com/impa10r/lnpos.git
 $ cd lnpos
 $ npm install
 ```
-You will need to create an `.env` file on the root dir, you can use a sample env file called `.env.sample` on the root dir, an easy way of doing this is just to copy the sample file to `.env`.
+You will need to create an `.env` file in the root dir. You can use a sample env file called `.env.sample`. An easy way of doing this is just to copy the sample file to `.env`:
 
 ```
 cp .env-sample .env
