@@ -21,7 +21,7 @@
 	"generate_ref": "Generar enlace de referencia",
 	"new_referral_link": "A continuación se muestra su enlace de referencia único. Guárdelo en el escritorio de su PC, en la pantalla de inicio del teléfono o en los marcadores.<br><br>Puede usarlo en las redes sociales y enviarlo a sus contactos directos.",
 	"new_payment_link": "A continuación se muestra su enlace de pago único. Guárdelo en el escritorio de su PC, en la pantalla de inicio del teléfono o en los marcadores.<br><br>Puede reenviarlo a sus empleados o clientes para generar solicitudes de pago.",
-	"new_payment_link2": "Puede imprimir sus calcomanías personales de 'Bitcoin aceptado' siguiendo este",
+	"new_payment_link2": "Pasos adicionales:<br><br>6. Instale la aplicación Bitfinex en su teléfono para recibir notificaciones de transaction.<br><br>7. Imprima sus pegatinas personales de 'Bitcoin aceptado' siguiendo este",
 	"ref_link": "Tu enlace de referencia",
 	"ln_click": "O haga clic aquí",
 	"api_key: permission invalid": "Sus claves API carecen de los permisos necesarios",
