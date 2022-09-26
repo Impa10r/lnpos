@@ -21,7 +21,7 @@
 	"generate_ref": "Generar enlace de referencia",
 	"new_referral_link": "A continuación se muestra su enlace de referencia único. Guárdelo en el escritorio de su PC, en la pantalla de inicio del teléfono o en los marcadores.<br><br>Puede usarlo en las redes sociales y enviarlo a sus contactos directos.",
 	"new_payment_link": "A continuación se muestra su enlace de pago único. Guárdelo en el escritorio de su PC, en la pantalla de inicio del teléfono o en los marcadores.<br><br>Puede reenviarlo a sus empleados o clientes para generar solicitudes de pago.",
-  "new_payment_link2": "Puede imprimir sus calcomanías personales de 'Bitcoin aceptado' siguiendo este",
+	"new_payment_link2": "Puede imprimir sus calcomanías personales de 'Bitcoin aceptado' siguiendo este",
 	"ref_link": "Tu enlace de referencia",
 	"ln_click": "O haga clic aquí",
 	"api_key: permission invalid": "Sus claves API carecen de los permisos necesarios",
@@ -46,5 +46,6 @@
 	"ln_qr": "Escanea el código QR para pagar la factura",
 	"lightning_invoice": "Factura de Lightning",
 	"error_qr": "el código QR ha caducado, genere uno nuevo",
-  "err_invalid_keys": "err_invalid_keys"
+	"err_invalid_keys": "err_invalid_keys",
+	"about": "PS. ¿Encontró un error tipográfico o un error? ¿Sabe cómo mejorar el diseño de la página o puede ayudar con la traducción? LNPOS es un proyecto de código abierto en su fase inicial. Todos son bienvenidos a participar: solo siga este"
 }
