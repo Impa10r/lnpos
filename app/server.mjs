@@ -12,6 +12,7 @@ import qr from 'qrcode';
 import Model from './model.mjs';
 import Gateway from './bitfinex.mjs';
 import DataBase from './mongo.mjs';
+
 export default class Server {
   constructor({ i18nProvider }) {
     this.gw = null;
@@ -57,7 +58,7 @@ export default class Server {
       const id = req.params.id;
       const browserLang = req.headers['accept-language'].substring(0, 2);
 
-      if (!res.locale && ['es'].includes(browserLang)) // default is 'en'
+      if (!res.locale && ['es', 'ru'].includes(browserLang)) // default is 'en'
         req.setLocale(browserLang);
 
       if (id) {
@@ -120,15 +121,11 @@ export default class Server {
           default:
             this.db.findOne('keys', { id })
               .then((record) => {
-//                if (res.locale !== record.lang) {
-//                 res.redirect(`/${id}?lang=${record.lang}`);
-//                } else {
                 res.render('request', {
                   currentLocale: record.lang,
                   id,
                   currencyFrom: record.currencyFrom,
                 });
-//                }
               })
               .catch((err) => {
                 if (id.length === 10) {
@@ -211,7 +208,7 @@ export default class Server {
       const amountFiat = parseFloat(req.body.amountFiat);
 
       req.setLocale(lang);
-      
+
       this.db.findOne('keys', { id })
         .then((record) => {
           this.gw = new Gateway(record.key, record.secret);
