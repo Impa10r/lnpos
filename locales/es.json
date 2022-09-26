@@ -26,7 +26,7 @@
 	"ln_click": "O haga clic aquí",
 	"api_key: permission invalid": "Sus claves API carecen de los permisos necesarios",
 	"signup": "Formulario de registro",
-	"api_key_saved": "Su clave API se guardó con éxito",
+	"api_key_saved": "¡Felicidades! Su clave API está registrada.",
 	"show id": "demonstrar id",
 	"api_key": "Clave API",
 	"api_secret": "API secreto",
