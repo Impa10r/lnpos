@@ -253,14 +253,9 @@ export default class Server {
     });
   }
 
-  start(serverPort) {
+  start(serverPort, httpsOptions = {}) {
     return new Promise((resolve) => {
-      if (serverPort === 8433) { // HTTPS flag
-        const httpsOptions = {
-          ca: fs.readFileSync('../options-ssl-apache.conf'),
-          key: fs.readFileSync('../privkey.pem'),
-          cert: fs.readFileSync('../fullchain.pem'),
-        };
+      if (serverPort.toString() === '8433') { // HTTPS flag
         const httpsServer = https.createServer(httpsOptions, this.express);
         httpsServer.listen(serverPort, () => {
           console.info(`HTTPS listening at port ${serverPort}`);

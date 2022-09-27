@@ -3,7 +3,7 @@ export default class Application {
     this.server = server;
   }
 
-  async start() {
-    await this.server.start(process.env.SERVER_PORT);
+  async start(port, httpsOptions) {
+    await this.server.start(port, httpsOptions);
   }
 }
