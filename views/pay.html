@@ -29,10 +29,10 @@
     <h2 class="text-center">{{#i18n}}lightning_invoice{{/i18n}}</h1>
     <hr>
     <center>
-      <p>{{#i18n}}Fiat amount:{{/i18n}} {{currency}} {{amountFiat}}</p> 
-      <p>1 BTC = {{rate}} {{currency}}</p>
-      <p>{{#i18n}}Satoshi amount:{{/i18n}} {{amountSat}}</p> 
-      <p>{{#i18n}}ln_qr{{/i18n}}</p>
+      <p>{{#i18n}}Fiat amount:{{/i18n}} {{currency}} {{amountFiat}} 
+      <br>1 BTC = {{rate}} {{currency}}
+      <br>{{#i18n}}Satoshi amount:{{/i18n}} {{amountSat}} 
+      <br>{{#i18n}}ln_qr{{/i18n}}</p>
       <img src={{src}} alt="QR Code Image">
       <br>
       <a href="lightning:{{invoice}}">{{#i18n}}ln_click{{/i18n}}</a>
