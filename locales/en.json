@@ -13,7 +13,7 @@
 	"step_2a": "and following their instructions. When told to use Google Authenticator, use Authy instead.",
 	"step_3": "In the top right corner, click on the Manage Account -> API Keys -> Create New Key.",
 	"step_4": "Choose only these five permissions as per example above, give any name and click 'Generate API key'.",
-	"step_5": "Copy API key and API key secret from Bitfinex into the form below, chose the 'From' and 'To' currencies, press 'Generate Payment Link'. The site will securely store your API key. As you can see at the previous step, your key permissions do not allow any withdrawals. Your funds are safe even if our database gets compromised one day.",
+	"step_5": "Copy API key and API key secret from Bitfinex into the form below, chose the 'From' and 'To' currencies, press 'Generate Payment Link'.",
 	"help": "Need help? Ask",
 	"here": "here",
 	"influencer": "Are you an influencer and a crypto enthusiast? You may help this exciting project succeed while earning money in the process! As you may already know, Bitfinex runs an affiliate program where you can earn 18% of the trading fees paid by those who you introduced. We are talking 18% of the 0.2% of the trading volume. It may not sound much, but there is no time limit, nor limit to the number of your referrals. One day Bitcoin payments will become popular, and you will wish to have been involved early!<br><br>This is a good project to recommend to your friends and aquintances who run a small business. It saves costs and expands client base with no downside. All the trading fees that finance this affiliate campaign are paid by crypto enthusiasts like ourselves. This project also helps popularize Bitcoin, resulting in higher valuations. A win-win!<br><br>Your end goal is to see the 'Bitcoin accepted here' stickers in every shop and restaurant in your neighbourhood. This is an old school door-to-door and face to face marketing campaign. Start with the businesses you frequent as a client, ask if they accept Bitcoin. Then explain how easy it is to start and send your referral link with the information. To generate your personal referral link please follow the steps below:",
@@ -47,5 +47,8 @@
 	"ln_qr": "Scan the QR Code to pay the invoice",
 	"lightning_invoice": "Lightning Invoice",
 	"error_qr": "QR code has expired, please generate a new one",
-	"about": "PS. Found a typo or a bug? Know how to improve design or can help with translations? LNPOS is an open source project. Everybody is welcome to participate: just follow this"
+	"about": "PS. Found a typo or a bug? Know how to improve design or can help with translations? LNPOS is an open source project. Everybody is welcome to participate: just follow this",
+  "faq": "Frequently Asked Questions",
+  "q1": "Are my funds secure?<br><br>Bitfinex is one of the oldest and largest crypto exchanges. it doesn't insure user funds, it had taken responsibility to compensate users when assets were lost due to security breaches. You can limit your risk by regular withdrawals. As for the keys you store on LNPOS, they do not allow any withdrawals. So funds are safe even if our database gets compromised one day.",
+  "q2": "What is Authy and why do you recommend it over Google Authenticator?<br><br>"
 }
