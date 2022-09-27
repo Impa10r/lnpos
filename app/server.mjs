@@ -252,11 +252,11 @@ export default class Server {
     });
   }
 
-  start(serverPort, httpsOptions = {}) {
+  start(serverPort, httpsOptions) {
     return new Promise((resolve) => {
-      if (serverPort.toString() === '8433') { // HTTPS flag
-        this.express = https.createServer(httpsOptions, this.express);
-        this.express.listen(serverPort, () => {
+      if (httpsOptions) {
+        const httpsServer = https.createServer(httpsOptions, this.express);
+        httpsServer.listen(serverPort, () => {
           console.info(`HTTPS listening at port ${serverPort}`);
           resolve();
         });
