@@ -1,6 +1,5 @@
-/* eslint-disable */
+import fs from 'fs';
 import container from './app/container.mjs';
-/* eslint-enable console */
 
 const app = container.resolve('app');
 
@@ -15,6 +14,6 @@ const httpsOptions = (port.toString() === '8433') ? { // HTTPS flag{
 app
   .start(port, httpsOptions)
   .catch((error) => {
-    console.warn(error);
+    console.error(error);
     process.exit();
   });

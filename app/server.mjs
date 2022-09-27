@@ -10,7 +10,6 @@ import consolidate from 'consolidate';
 import ShortUniqueId from 'short-unique-id';
 import qr from 'qrcode';
 import https from 'https';
-import fs from 'fs';
 import Model from './model.mjs';
 import Gateway from './bitfinex.mjs';
 import DataBase from './mongo.mjs';
