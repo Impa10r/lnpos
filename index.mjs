@@ -9,7 +9,7 @@ const httpsOptions = (port.toString() === '8443') ? {
   ca: fs.readFileSync('options-ssl-apache.conf'),
   key: fs.readFileSync('privkey.pem'),
   cert: fs.readFileSync('fullchain.pem'),
-} : {};
+} : null;
 
 app
   .start(port, httpsOptions)
