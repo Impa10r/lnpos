@@ -9,6 +9,8 @@ import bodyParser from 'body-parser';
 import consolidate from 'consolidate';
 import ShortUniqueId from 'short-unique-id';
 import qr from 'qrcode';
+import https from 'https';
+import fs from 'fs';
 import Model from './model.mjs';
 import Gateway from './bitfinex.mjs';
 import DataBase from './mongo.mjs';
@@ -253,11 +255,23 @@ export default class Server {
 
   start(serverPort) {
     return new Promise((resolve) => {
-      const http = this.express.listen(serverPort, () => {
-        const { port } = http.address();
-        console.info(`[p ${process.pid}] Listening at port ${port}`);
-        resolve();
-      });
+      if (serverPort === 8433) { // HTTPS flag
+        const httpsOptions = {
+          ca: fs.readFileSync('../options-ssl-apache.conf'),
+          key: fs.readFileSync('../privkey.pem'),
+          cert: fs.readFileSync('../fullchain.pem'),
+        };
+        const httpsServer = https.createServer(httpsOptions, this.express);
+        httpsServer.listen(serverPort, () => {
+          console.info(`HTTPS listening at port ${serverPort}`);
+          resolve();
+        });
+      } else {
+        this.express.listen(serverPort, () => {
+          console.info(`HTTP listening at port ${serverPort}`);
+          resolve();
+        });
+      }
     });
   }
 }
