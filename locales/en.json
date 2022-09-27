@@ -48,7 +48,8 @@
 	"lightning_invoice": "Lightning Invoice",
 	"error_qr": "QR code has expired, please generate a new one",
 	"about": "PS. Found a typo or a bug? Know how to improve design or can help with translations? LNPOS is an open source project. Everybody is welcome to participate: just follow this",
+  "powered": "Powered by",
   "faq": "Frequently Asked Questions",
-  "q1": "Are my funds secure?<br><br>Bitfinex is one of the oldest and largest crypto exchanges. it doesn't insure user funds, it had taken responsibility to compensate users when assets were lost due to security breaches. You can limit your risk by regular withdrawals. As for the keys you store on LNPOS, they do not allow any withdrawals. So funds are safe even if our database gets compromised one day.",
-  "q2": "What is Authy and why do you recommend it over Google Authenticator?<br><br>"
+  "q1": "Are my funds secure?<br>Bitfinex is one of the oldest and largest crypto exchanges. It doesn't insure user funds, but it had taken responsibility to compensate users when assets were lost due to security breaches. You can limit your risk by regular withdrawals. As for the keys you store on LNPOS, they do not allow any withdrawals. So funds are safe even if our database gets compromised one day.",
+  "q2": "Why do you recommend Authy over Google Authenticator?<br>Functionally these two apps are the same but Authy allows to recover your keys if you lost the phone."
 }
