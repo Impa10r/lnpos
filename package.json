@@ -32,7 +32,6 @@
     "mustache": "4.2.0",
     "node-fetch": "3.2.10",
     "qrcode": "1.5.1",
-    "short-unique-id": "4.4.4",
     "ws": "8.8.1"
   },
   "devDependencies": {

@@ -7,7 +7,6 @@ import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import bodyParser from 'body-parser';
 import consolidate from 'consolidate';
-import ShortUniqueId from 'short-unique-id';
 import qr from 'qrcode';
 import https from 'https';
 import Model from './model.mjs';
@@ -169,9 +168,8 @@ export default class Server {
             // Delete previous to avoid duplicates
             this.db.deleteOne('keys', { key: req.body.apiKey })
               .then(r => {
-                const uid = new ShortUniqueId({ length: 10 });
                 const data = new Model({
-                  id: uid(),
+                  id: req.body.userName,
                   key: req.body.apiKey,
                   secret: req.body.apiSecret,
                   exchange: req.body.exchange,
