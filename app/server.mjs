@@ -159,17 +159,18 @@ export default class Server {
       const lang = req.body.lang;
       req.setLocale(lang);
       this.gw = new Gateway(req.body.apiKey, req.body.apiSecret);
-      this.gw.getDepositAddr('LNX', 'exchange')
+      this.gw.getUserInfo()
         .then((r) => r.json())
         .then((json) => {
           if (json[0] === 'error') {
             showError(res, req, 'error_invalid_keys');
           } else {
+            const id = json[2];
             // Delete previous to avoid duplicates
             this.db.deleteOne('keys', { key: req.body.apiKey })
               .then(r => {
                 const data = new Model({
-                  id: req.body.userName,
+                  id,
                   key: req.body.apiKey,
                   secret: req.body.apiSecret,
                   exchange: req.body.exchange,
