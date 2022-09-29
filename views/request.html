@@ -33,7 +33,7 @@
         <fieldset>
           <label class="text-center" for="amountFiat">{{#i18n}}pay_currency{{/i18n}} {{currencyFrom}}:</label>
           <br>
-          <input class="text-right" type ="text" id = 'amountFiat' name="amountFiat" required autofocus>
+          <input class="text-right" type ="text" type='number id = 'amountFiat' name="amountFiat" required autofocus>
           <br><br>
           <input type="hidden" id="currency" name="currency" value="{{currencyFrom}}">
           <input type="hidden" id="lang" name="lang" value="{{currentLocale}}">
