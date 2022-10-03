@@ -21,11 +21,16 @@ export default class DataBase {
     this.db.on('error', console.error.bind(console, 'MongoDB connection error:'));
   }
 
- async findOne(collection, query) {
+  // case insensitive
+  async findOne(collection, query) {
     return this.db.collection(collection).findOne(query);
   }
 
   async deleteOne(collection, query) {
     return this.db.collection(collection).deleteOne(query);
+  }
+
+  async deleteMany(collection, query) {
+    return this.db.collection(collection).deleteMany(query);
   }
 }

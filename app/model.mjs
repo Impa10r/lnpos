@@ -9,9 +9,8 @@ const keySchema = new mongoose.Schema(
     currencyFrom: { type: String, required: true },
     currencyTo: { type: String, required: true },
     lang: { type: String, required: true },
-    parentId: { type: String, required: false }
+    parentId: { type: String, required: false },
   },
-  { collection: 'keys' },
 );
 
 const model = mongoose.model('keys', keySchema);

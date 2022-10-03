@@ -3,7 +3,6 @@ import i18n from './i18n.config.mjs';
 import LocaleService from './localeService.mjs';
 import Application from './application.mjs';
 import Server from './server.mjs';
-//import DataBase from './mongo.mjs';
 
 const container = awilix.createContainer();
 

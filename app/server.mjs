@@ -88,7 +88,7 @@ export default class Server {
             });
             break;
           case 'pay':
-            this.db.findOne('keys',{ id: req.query.id })
+            this.db.findOne('keys', { id: req.query.id.toLowerCase() })
               .then((record) => {
                 qr.toDataURL(req.query.i, (err, src) => {
                   if (err) showError(res, req, 'error_qr', err);
@@ -103,7 +103,7 @@ export default class Server {
                     amountFiat: req.query.af,
                     amountSat: req.query.as,
                     rate: req.query.x,
-                    src
+                    src,
                   });
                   this.gw.convertProceeds(record.currencyTo, req.query.as / 100000000);
                 });
@@ -119,7 +119,7 @@ export default class Server {
             });
             break;
           default:
-            this.db.findOne('keys', { id })
+            this.db.findOne('keys', { id: id.toLowerCase() })
               .then((record) => {
                 res.render('request', {
                   currentLocale: record.lang,
@@ -165,9 +165,9 @@ export default class Server {
           if (json[0] === 'error') {
             showError(res, req, 'error_invalid_keys');
           } else {
-            const id = json[2];
+            const id = json[2].toLowerCase();
             // Delete previous to avoid duplicates
-            this.db.deleteOne('keys', { key: req.body.apiKey })
+            this.db.deleteMany('keys', { id: new RegExp(`^${id}$`, 'i') }) // case insensitive
               .then(r => {
                 const data = new Model({
                   id,
@@ -181,12 +181,12 @@ export default class Server {
                 data.save()
                   .then(() => {
                     // check that it was saved ok
-                    this.db.findOne('keys', { key: req.body.apiKey })
+                    this.db.findOne('keys', { id })
                       .then((record) => {
                         if (!record) {
                           showError(res, req, 'error_database_down');
                         } else {
-                          res.redirect(`/add?id=${record.id.toString()}&lang=${lang}`);
+                          res.redirect(`/add?id=${record.id}&lang=${lang}`);
                         }
                       });
                   });
@@ -203,7 +203,7 @@ export default class Server {
 
     this.express.post('/pay', (req, res) => {
       const lang = req.body.lang;
-      const id = req.body.id;
+      const id = req.body.id.toLowerCase();
       const currency = req.body.currency;
       const amountFiat = parseFloat(req.body.amountFiat);
 
