@@ -221,10 +221,8 @@ export default class Server {
             .then((result) => {
               const amountBTC = this.gw.simulateSell(parseFloat(amountFiat), result.data);
               const wap = amountFiat / amountBTC;
-              if (amountBTC > this.gw.maxInvoiceAmount)
-                return showError(res, req, 'amount_too_large');
-              if (amountBTC < this.gw.minInvoiceAmount)
-                return showError(res, req, 'amount_too_small');
+              if (amountBTC > this.gw.maxInvoiceAmount) { return showError(res, req, 'amount_too_large'); }
+              if (amountBTC < this.gw.minInvoiceAmount) { return showError(res, req, 'amount_too_small'); }
               this.gw.getDepositAddr('LNX', 'exchange')
                 .then((r) => r.json())
                 .then((json) => {
