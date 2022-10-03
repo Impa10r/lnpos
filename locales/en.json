@@ -1,6 +1,6 @@
 {
 	"lnpos": "Lightning Network Point of Sale",
-	"slogan": "Accept Bitcoin: Fast. Simple. Free. And no market risk.",
+	"slogan": "Accept Bitcoin: Fast. Simple. Free. And without market risk.",
 	"link": "link",
 	"this": "this",
 	"affiliate": "Affiliate Program",
@@ -41,6 +41,7 @@
 	"error_exchange_down": "Cannot connect to the exchange. Please try again later.",
 	"error_id_not_found": "This payment link is not valid.",
 	"pay_currency": "Amount in currency",
+  "memo": "Details (optional)",
 	"generate_invoice": "Generate Lighting invoice",
 	"amount_too_small": "Amount is too small",
 	"amount_too_large": "Amount is too large",

@@ -9,6 +9,7 @@ const keySchema = new mongoose.Schema(
     exchangeRate: { type: Number, required: true },
     exchange: { type: String, required: true },
     amountSat: { type: Number, required: true },
+    memo: { type: String, required: false },
   },
 );
 

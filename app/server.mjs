@@ -245,6 +245,7 @@ export default class Server {
                         exchangeRate: rate,
                         exchange: record.exchange,
                         amountSat,
+                        memo: req.body.memo,
                       });
                       invoice.save();
                       res.redirect(`/pay?id=${id}&i=${json[1]}&c=${currency}&af=${af}&as=${amountSat}&x=${rate}&lang=${lang}`);
