@@ -9,7 +9,8 @@ import bodyParser from 'body-parser';
 import consolidate from 'consolidate';
 import qr from 'qrcode';
 import https from 'https';
-import Model from './model.mjs';
+import Keys from './models/keys.mjs';
+import Invoices from './models/invoices.mjs';
 import Gateway from './bitfinex.mjs';
 import DataBase from './mongo.mjs';
 
@@ -169,7 +170,7 @@ export default class Server {
             // Delete previous to avoid duplicates
             this.db.deleteMany('keys', { id: new RegExp(`^${id}$`, 'i') }) // case insensitive
               .then(r => {
-                const data = new Model({
+                const data = new Keys({
                   id,
                   key: req.body.apiKey,
                   secret: req.body.apiSecret,
@@ -235,11 +236,20 @@ export default class Server {
                       const rate = wap.toFixed(2);
                       const amountSat = (amountBTC * 100000000).toFixed(0);
                       const af = amountFiat.toFixed(2);
-                      this.awaitDeposit = (amountSat / 100000000).toFixed(8);
-                      this.awaitCurrency = record.currencyTo;
+
+                      const invoice = new Invoices({
+                        id,
+                        dateTime: Date.now(),
+                        currency,
+                        amountFiat,
+                        exchangeRate: rate,
+                        exchange: record.exchange,
+                        amountSat,
+                      });
+                      invoice.save();
                       res.redirect(`/pay?id=${id}&i=${json[1]}&c=${currency}&af=${af}&as=${amountSat}&x=${rate}&lang=${lang}`);
-                    })
-                })
+                    });
+                });
             })
             .catch((err) => {
               showError(res, req, 'error_exchange_down', err);
