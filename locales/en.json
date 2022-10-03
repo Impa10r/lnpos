@@ -1,6 +1,6 @@
 {
 	"lnpos": "Lightning Network Point of Sale",
-	"slogan": "Accept Bitcoin: Fast. Simple. Free. And without market risk.",
+	"slogan": "Accept Bitcoin free and without market risk.",
 	"link": "link",
 	"this": "this",
 	"affiliate": "Affiliate Program",
@@ -48,7 +48,7 @@
 	"ln_qr": "Scan the QR Code to pay the invoice",
 	"lightning_invoice": "Lightning Invoice",
 	"error_qr": "QR code has expired, please generate a new one",
-	"about": "PS. Found a typo or a bug? Know how to improve design or can help with translations? LNPOS is an open source project. Everybody is welcome to participate: just follow this",
+	"about": "PS. Found a typo or a bug? Know how to improve design or can help with translations? LNPOS is an open source project. Everybody is welcome to participate!",
   "powered": "Powered by",
   "faq": "Frequently Asked Questions",
   "q1": "Are my funds secure?<br>Bitfinex is one of the oldest and largest crypto exchanges. It doesn't insure user funds, but it had taken responsibility to compensate users when assets were lost due to security breaches. You can limit your risk by regular withdrawals. As for the keys you store on LNPOS, they do not allow any withdrawals. So funds are safe even if our database gets compromised one day.",
