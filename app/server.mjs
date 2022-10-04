@@ -93,7 +93,8 @@ export default class Server {
             });
             break;
           case 'pay':
-            this.db.findOne('keys', { id: req.query.id.toLowerCase() })
+            const userId = req.query.id.toLowerCase();
+            this.db.findOne('keys', { id: userId })
               .then((record) => {
                 qr.toDataURL(req.query.i, (err, src) => {
                   if (err) showError(res, req, 'error_qr', err);
@@ -111,7 +112,23 @@ export default class Server {
                     rate: req.query.x,
                     src,
                   });
-                  this.gw.convertProceeds(record.currencyTo);
+
+                  const invoice = new Invoices({
+                    id: userId,
+                    dateTime: Date.now(),
+                    currencyFrom: req.query.c,
+                    currencyTo: record.currencyTo,
+                    amountFiat: req.query.af,
+                    exchangeRate: req.query.x,
+                    exchange: record.exchange,
+                    amountSat: req.query.as,
+                    memo: req.query.m,
+                  });
+
+                  this.gw.convertProceeds(record.currencyTo)
+                    .then((success) => {
+                      if (success) invoice.save();
+                    });
                 });
               })
               .catch((err) => {
@@ -214,6 +231,7 @@ export default class Server {
       const lang = req.body.lang;
       const id = req.body.id.toLowerCase();
       const currency = req.body.currency;
+      const memo = req.body.memo;
       const amountFiat = parseFloat(req.body.amountFiat);
 
       req.setLocale(lang);
@@ -243,18 +261,7 @@ export default class Server {
                       const amountSat = (amountBTC * 100000000).toFixed(0);
                       const af = amountFiat.toFixed(2);
 
-                      const invoice = new Invoices({
-                        id,
-                        dateTime: Date.now(),
-                        currency,
-                        amountFiat,
-                        exchangeRate: rate,
-                        exchange: record.exchange,
-                        amountSat,
-                        memo: req.body.memo,
-                      });
-                      invoice.save();
-                      res.redirect(`/pay?id=${id}&i=${json[1]}&c=${currency}&af=${af}&as=${amountSat}&x=${rate}&lang=${lang}`);
+                      res.redirect(`/pay?id=${id}&i=${json[1]}&c=${currency}&af=${af}&as=${amountSat}&x=${rate}&m=${memo}&lang=${lang}`);
                     });
                 });
             })

@@ -148,15 +148,18 @@ export default class Gateway {
           const amount = data[2][2]; // balance total amount
           switch (data[2][1]) { // balance currency
             case 'LNX':
-              if (currencyTo !== 'LNX' && amount > 0) {
-                // console.log('transfer', amount);
-                this.transferBetweenWallets('exchange', 'exchange', 'LNX', 'BTC', amount)
-                  .then((r) => r.json())
-                  .then((json) => {
-                    if (json[0] === 'error') {
-                      console.error(json);
-                    }
-                  });
+              if (amount > 0) {
+                resolve(true); // assume the deposit was just received
+                if (currencyTo !== 'LNX') {
+                  // console.log('transfer', amount);
+                  this.transferBetweenWallets('exchange', 'exchange', 'LNX', 'BTC', amount)
+                    .then((r) => r.json())
+                    .then((json) => {
+                      if (json[0] === 'error') {
+                        console.error(json);
+                      }
+                    });
+                }
               }
               break;
             case 'BTC':
