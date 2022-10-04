@@ -55,8 +55,8 @@ export default class Server {
     this.express.use(helmet());
     this.express.use(limiter);
 
-    this.express.get('/:id/:amount', (req, res) => {
-      console.log(req.params.id, req.params.amount);
+    this.express.get('/:id/:amount', (req, res, next) => {
+      next();
     });
 
     this.express.get('/:id?', (req, res) => {
