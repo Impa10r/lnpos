@@ -111,7 +111,7 @@ export default class Server {
                     rate: req.query.x,
                     src,
                   });
-                  this.gw.convertProceeds(record.currencyTo, req.query.as / 100000000);
+                  this.gw.convertProceeds(record.currencyTo);
                 });
               })
               .catch((err) => {

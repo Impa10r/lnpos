@@ -12,7 +12,7 @@
 	"step_2": "Regístrese en el intercambio de cifrado Bitfinex usando este",
 	"step_2a": "y siguiendo sus instrucciones. Cuando se le indique que use Google Authenticator, use Authy en su lugar.",
 	"step_3": "En la esquina superior derecha, haga clic en Administrar cuenta -> Claves API -> Crear nueva clave.",
-	"step_4": "Elija solo estos cinco permisos como en el ejemplo anterior, asigne cualquier nombre y haga clic en 'Generar clave API'.",
+	"step_4": "Elija solo estos seis permisos como en el ejemplo anterior, asigne cualquier nombre y haga clic en 'Generar clave API'.",
 	"step_5": "Copie la clave de API y el secreto de la clave de API de Bitfinex en el siguiente formulario, elija las monedas 'Desde' y 'Hasta', presione 'Generar enlace de pago'.",
 	"help": "¿Necesitas ayuda? Pregunta",
 	"here": "aqui",

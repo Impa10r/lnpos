@@ -174,7 +174,7 @@ export default class Gateway {
             default:
               if (Date.now() > timeLimit) {
                 wss.close();
-                resolve(true);
+                resolve(false);
               }
           }
         }
