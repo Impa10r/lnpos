@@ -101,6 +101,7 @@ export default class Server {
                     showError(res, req, 'error_qr', err);
                     return;
                   }
+                  req.setLocale(res.locale);
                   res.render('pay', {
                     currentLocale: res.locale,
                     invoice: req.query.i,
@@ -126,8 +127,11 @@ export default class Server {
           default:
             this.db.findOne('keys', { id: id.toLowerCase() })
               .then((record) => {
+                let lang = req.query.lang;
+                if (!lang) lang = record.lang;
+                req.setLocale(lang);
                 res.render('request', {
-                  currentLocale: record.lang,
+                  currentLocale: lang,
                   id,
                   currencyFrom: record.currencyFrom,
                 });
