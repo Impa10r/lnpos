@@ -14,20 +14,43 @@
 
   <!-- Custom CSS -->
   <style>
-      @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
-      * {
-          font-family: Montserrat;
-      }
-      body {
-          margin: 10px;
-          padding: 10px;
-      }
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+    * {
+        font-family: Montserrat;
+    }
+    body {
+        margin: 10px;
+        padding: 10px;
+    }
+    .topnav {
+      overflow: hidden;
+      background-color: #333;
+    }
+
+    .topnav a {
+      float: left;
+      color: #f2f2f2;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-size: 17px;
+    }
+
+    .topnav a:hover {
+      background-color: #ddd;
+      color: black;
+    }
+
+    .topnav a.active {
+      background-color: #f7931a;
+      color: white;
+    }
   </style>
 </head>
 
 <body>
+  <a id="home"></a>
   <div class="container">
-
     <center>
     <a href="?lang=en"><img src="en.png" alt="EN"></a>  
     <a href="?lang=es"><img src="es.png" alt="ES"></a>
@@ -36,7 +59,15 @@
     <br>
     <h1 class="text-center">{{#i18n}}lnpos{{/i18n}}</h1>
     <h4 class="text-center" style="color:#f7931a">{{#i18n}}slogan{{/i18n}}</h4>
-    <hr>
+    <br>
+
+    <div class="topnav">
+      <a class="active" href="#home">{{#i18n}}_Home{{/i18n}}</a>
+      <a href="#affiliate">{{#i18n}}_Affiliates{{/i18n}}</a>
+      <a href="#faq">{{#i18n}}_FAQ{{/i18n}}</a>
+      <a href="#about">{{#i18n}}_About{{/i18n}}</a>
+    </div>
+    
     <br>
     <p>{{#i18n}}intro{{/i18n}}</p>
     <center><img src="LNPOS.png" style="width: 100%; height: auto" alt=""></center>
@@ -98,14 +129,15 @@
         <br>
         <br>
           <button class="btn btn-primary" type ="submit">{{#i18n}}generate_link{{/i18n}}</button>
-        </center>
-      
+        </center>      
       </fieldset>
     </form>
     <br>
     <p>{{#i18n}}caveat{{/i18n}}</p>
     <p class="text-center">{{#i18n}}help{{/i18n}} <a href="https://t.me/lnpos" target="_blank">{{#i18n}}here{{/i18n}}</a>.</p>
-    <center><img src="bitcoin.png" style="width: 50px; height: auto" alt=""></center>
+    <center><a href="#home"><img src="bitcoin.png" style="width: 50px; height: auto" alt=""></a></center>
+    
+    <a id="affiliate"></a>
     <hr>
     <h4 class="text-center">{{#i18n}}affiliate{{/i18n}}</h4>
     <br>
@@ -130,7 +162,9 @@
       </fieldset>
     </form>
     <br>
-    <center><img src="bitcoin.png" style="width: 50px; height: auto" alt=""></center>
+    <center><a href="#home"><img src="bitcoin.png" style="width: 50px; height: auto" alt=""></a></center>
+    
+    <a id="faq"></a>
     <hr>
     <h4 class="text-center">{{#i18n}}faq{{/i18n}}</h4>
     <br>
@@ -140,7 +174,12 @@
       <li>{{#i18n}}q2{{/i18n}}</li>
     </ol>
     <br>
+    <center><a href="#home"><img src="bitcoin.png" style="width: 50px; height: auto" alt=""></a></center>
+    
+    <a id="about"></a>
+    <hr>
     <p>{{#i18n}}about{{/i18n}}</p>
+    <br>
     <center><a href="https://github.com/Impa10r/lnpos" target="_blank"><img src="github.png" /></a></center>
   </div>
 </body>
