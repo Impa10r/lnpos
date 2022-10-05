@@ -31,14 +31,15 @@
     <center>
       <p>{{#i18n}}Fiat amount:{{/i18n}} {{currency}} {{amountFiat}} 
       <br>1 BTC = {{rate}} {{currency}}
-      <br>{{#i18n}}Satoshi amount:{{/i18n}} {{amountSat}} 
-      <br>{{#i18n}}ln_qr{{/i18n}}</p>
+      <br>{{#i18n}}Satoshi amount:{{/i18n}} {{amountSat}}</p> 
+      {{#i18n}}ln_qr{{/i18n}}
+      <br>
       <img src={{src}} alt="QR Code Image">
       <br>
       <a href="lightning:{{invoice}}">{{#i18n}}ln_click{{/i18n}}</a>
     <br>
     <br>
-    <p>{{#i18n}}powered{{/i18n}} <a href="https://lnpos.me">LNPOS.me</a></p>
+    {{#i18n}}powered{{/i18n}} <a href="https://lnpos.me">LNPOS.me</a>
   </center>
   </div>
 </body>
