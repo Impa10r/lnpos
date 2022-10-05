@@ -57,5 +57,6 @@
   "powered": "Powered by",
   "faq": "Frequently Asked Questions",
   "q1": "Are my funds secure?<br>Bitfinex is one of the oldest and largest crypto exchanges. It doesn't insure user funds, but it had taken responsibility to compensate users when assets were lost due to security breaches. You can limit your risk by regular withdrawals. As for the keys you store on LNPOS, they do not allow any withdrawals. So funds are safe even if our database gets compromised one day.",
-  "q2": "Why do you recommend Authy over Google Authenticator?<br>Functionally these two apps are the same but Authy allows to recover your keys if you lost the phone."
+  "q2": "Why do you recommend Authy over Google Authenticator?<br>Functionally these two apps are the same but Authy allows to recover your keys if you lost the phone.",
+  "q3": "How long does a payment take?<br>Once the Lightning Invoice is shown to the client it should take him only a few seconds to scan it and authorize the payment. Payment confirmation in the client's wallet is a sufficient proof of successful transaction. A few seconds later you should receive a deposit confirmation email from Bitfinex and a sell notification from the app."
 }
