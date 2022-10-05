@@ -42,7 +42,7 @@ export default class Server {
             refCode: id,
           });
         } else {
-          showError(res, req, 'error_id_not_found', err);
+          showError(req, res, 'error_id_not_found', err);
         }
       });
   }
@@ -56,7 +56,7 @@ export default class Server {
       max: 20, // limit each IP to 100 requests per windowMs
     });
 
-    function showError(res, req, errCode, err) {
+    function showError(req, res, errCode, err) {
       if (err) console.error(err);
       res.render('error', {
         currentLocale: req.locale,
@@ -107,7 +107,7 @@ export default class Server {
         switch (id) {
           case 'a4':
             qr.toDataURL(url, (err, src) => {
-              if (err) showError(res, req, 'error_qr', err);
+              if (err) showError(req, res, 'error_qr', err);
               res.render('a4', {
                 currentLocale: res.locale,
                 src,
@@ -133,9 +133,9 @@ export default class Server {
             this.db.findOne('keys', { id: userId })
               .then((record) => {
                 qr.toDataURL(req.query.i, (err, src) => {
-                  if (err) showError(res, req, 'error_qr', err);
+                  if (err) showError(req, res, 'error_qr', err);
                   if (!this.gw) {
-                    showError(res, req, 'error_qr', err);
+                    showError(req, res, 'error_qr', err);
                     return;
                   }
                   req.setLocale(res.locale);
@@ -168,7 +168,7 @@ export default class Server {
                 });
               })
               .catch((err) => {
-                showError(res, req, 'error_id_not_found', err);
+                showError(req, res, 'error_id_not_found', err);
               });
             break;
           case 'error':
@@ -178,7 +178,7 @@ export default class Server {
             });
             break;
           default:
-            this.renderRequest(res, req);
+            this.renderRequest(req, res);
         }
       } else {
         res.render('index', {
@@ -193,7 +193,7 @@ export default class Server {
       const code = req.body.refCode;
       req.setLocale(lang);
       if (code.length !== 10)
-        return showError(res, req, 'error_invalid_ref');
+        return showError(req, res, 'error_invalid_ref');
       res.redirect(`/ref?id=${code}&lang=${lang}`);
     });
 
@@ -205,7 +205,7 @@ export default class Server {
         .then((r) => r.json())
         .then((json) => {
           if (json[0] === 'error') {
-            showError(res, req, 'error_invalid_keys');
+            showError(req, res, 'error_invalid_keys');
           } else {
             const id = json[2].toLowerCase();
             // Delete previous to avoid duplicates
@@ -226,7 +226,7 @@ export default class Server {
                     this.db.findOne('keys', { id })
                       .then((record) => {
                         if (!record) {
-                          showError(res, req, 'error_database_down');
+                          showError(req, res, 'error_database_down');
                         } else {
                           res.redirect(`/add?id=${record.id}&lang=${lang}`);
                         }
@@ -234,12 +234,12 @@ export default class Server {
                   });
               })
               .catch((err) => {
-                showError(res, req, 'error_database_down', err);
+                showError(req, res, 'error_database_down', err);
               });
           }
         })
         .catch((err) => {
-          showError(res, req, 'error_exchange_down', err);
+          showError(req, res, 'error_exchange_down', err);
         });
     });
 
@@ -259,19 +259,19 @@ export default class Server {
             .then((result) => {
               const amountBTC = this.gw.simulateSell(parseFloat(amountFiat), result.data);
               const wap = amountFiat / amountBTC;
-              if (amountBTC > this.gw.maxInvoiceAmount) { return showError(res, req, 'amount_too_large'); }
-              if (amountBTC < this.gw.minInvoiceAmount) { return showError(res, req, 'amount_too_small'); }
+              if (amountBTC > this.gw.maxInvoiceAmount) { return showError(req, res, 'amount_too_large'); }
+              if (amountBTC < this.gw.minInvoiceAmount) { return showError(req, res, 'amount_too_small'); }
               this.gw.getDepositAddr('LNX', 'exchange')
                 .then((r) => r.json())
                 .then((json) => {
                   if (json[0] === 'error') {
-                    return showError(res, req, json[2], json);
+                    return showError(req, res, json[2], json);
                   }
                   this.gw.getLightningInvoice(amountBTC)
                     .then((r) => r.json())
                     .then((json) => {
                       if (json[0] === 'error') {
-                        return showError(res, req, json[2], json);
+                        return showError(req, res, json[2], json);
                       }
                       const rate = wap.toFixed(2);
                       const amountSat = (amountBTC * 100000000).toFixed(0);
@@ -282,11 +282,11 @@ export default class Server {
                 });
             })
             .catch((err) => {
-              showError(res, req, 'error_exchange_down', err);
+              showError(req, res, 'error_exchange_down', err);
             });
         })
         .catch((err) => {
-          showError(res, req, 'error_database_down', err);
+          showError(req, res, 'error_database_down', err);
         });
     });
   }
