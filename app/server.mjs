@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 /* eslint-disable no-console */
 /* eslint-disable import/extensions */
 /* eslint-disable prefer-template */
@@ -15,6 +16,37 @@ import Gateway from './bitfinex.mjs';
 import DataBase from './mongo.mjs';
 
 export default class Server {
+  renderRequest(req, res) {
+    const id = req.params.id;
+    this.db.findOne('keys', { id: id.toLowerCase() })
+      .then((record) => {
+        const lang = req.query.lang || record.lang;
+        const currencyFrom = req.query.currency || record.currencyFrom;
+        const amountOptions = req.query.amount ? 'value="' + req.query.amount + '" readonly' : '';
+        const memoOptions = req.query.memo ? 'value="' + req.query.memo + '" readonly' : '';
+
+        req.setLocale(lang);
+
+        res.render('request', {
+          currentLocale: lang,
+          id,
+          currencyFrom,
+          amountOptions,
+          memoOptions,
+        });
+      })
+      .catch((err) => {
+        if (id.length === 10) {
+          res.render('index', {
+            currentLocale: res.locale,
+            refCode: id,
+          });
+        } else {
+          showError(res, req, 'error_id_not_found', err);
+        }
+      });
+  }
+
   constructor({ i18nProvider }) {
     this.gw = null;
     this.db = new DataBase();
@@ -55,16 +87,20 @@ export default class Server {
     this.express.use(helmet());
     this.express.use(limiter);
 
-    this.express.get('/:id/:amount', (req, res, next) => {
-      next();
+    this.express.get('/:id/:amount/:memo?', (req, res) => {
+      const amount = req.params.amount;
+      req.query.amount = parseFloat(amount);
+      const currency = amount.substring(amount.length - 3).toUpperCase();
+      if (['USD', 'EUR', 'GBP', 'JPY', 'CNH', 'MXN'].includes(currency)) req.query.currency = currency;
+      if (req.params.memo) req.query.memo = req.params.memo;
+      this.renderRequest(req, res);
     });
 
     this.express.get('/:id?', (req, res) => {
       const id = req.params.id;
       const browserLang = req.headers['accept-language'].substring(0, 2);
 
-      if (!res.locale && ['es', 'ru'].includes(browserLang)) // default is 'en'
-        req.setLocale(browserLang);
+      if (!res.locale && ['es', 'ru'].includes(browserLang)) req.setLocale(browserLang);
 
       if (id) {
         const url = req.protocol + '://' + req.get('host') + '/' + req.query.id;
@@ -142,27 +178,7 @@ export default class Server {
             });
             break;
           default:
-            this.db.findOne('keys', { id: id.toLowerCase() })
-              .then((record) => {
-                let lang = req.query.lang;
-                if (!lang) lang = record.lang;
-                req.setLocale(lang);
-                res.render('request', {
-                  currentLocale: lang,
-                  id,
-                  currencyFrom: record.currencyFrom,
-                });
-              })
-              .catch((err) => {
-                if (id.length === 10) {
-                  res.render('index', {
-                    currentLocale: res.locale,
-                    refCode: id,
-                  });
-                } else {
-                  showError(res, req, 'error_id_not_found', err);
-                }
-              });
+            this.renderRequest(res, req);
         }
       } else {
         res.render('index', {
