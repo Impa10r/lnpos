@@ -103,7 +103,7 @@ export default class Server {
 
     this.express.get('/:id?', (req, res) => {
       const id = req.params.id;
-      const browserLang = req.headers['accept-language'].substring(0, 2);
+      const browserLang = req.headers['accept-language'] ? req.headers['accept-language'].substring(0, 2) : 'en';
 
       if (!res.locale && ['es', 'ru'].includes(browserLang)) req.setLocale(browserLang);
 
