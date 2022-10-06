@@ -90,7 +90,9 @@ export default class Server {
     this.express.enable('trust proxy');
     this.express.use((request, response, next) => {
       if (process.env.NODE_ENV !== 'dev' && !request.secure) {
-        return response.redirect('https://' + request.headers.host + request.url);
+        response.writeHead(301, { Location: 'https://' + request.headers.host + request.url });
+        return response.end();
+        //return response.redirect('https://' + request.headers.host + request.url);
       }
       next();
     });
