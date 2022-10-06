@@ -87,6 +87,11 @@ export default class Server {
     this.express.use(helmet());
     this.express.use(limiter);
 
+    this.express.get('/robots.txt', (req, res) => {
+      res.type('text/plain');
+      res.send('User-agent: *\nAllow: /$\nDisallow: /');
+    });
+
     this.express.get('/:id/:amount/:memo?', (req, res) => {
       const amount = req.params.amount;
       req.query.amount = parseFloat(amount);
