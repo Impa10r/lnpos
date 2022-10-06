@@ -49,7 +49,6 @@
 </head>
 
 <body>
-  <a id="home"></a>
   <div class="container">
     <center>
     <a href="?lang=en"><img src="en.png" alt="EN"></a>  
@@ -133,7 +132,7 @@
     <br>
     <p>{{#i18n}}caveat{{/i18n}}</p>
     <br>
-    <center><a href="#home"><img src="bitcoin.png" style="width: 50px; height: auto" alt=""></a></center>
+    <center><a href="?lang={{currentLocale}}"><img src="bitcoin.png" style="width: 50px; height: auto" alt=""></a></center>
     <hr>
     <a id="affiliate"></a>
     <br>
@@ -160,7 +159,7 @@
       </fieldset>
     </form>
     <br>
-    <center><a href="#home"><img src="bitcoin.png" style="width: 50px; height: auto" alt=""></a></center>
+    <center><a href="?lang={{currentLocale}}"><img src="bitcoin.png" style="width: 50px; height: auto" alt=""></a></center>
     <hr>
     <a id="faq"></a>
     <br>
@@ -180,15 +179,18 @@
       <li>{{#i18n}}q6{{/i18n}}</li>
     </ol>
     <br>
-    <center><a href="#home"><img src="bitcoin.png" style="width: 50px; height: auto" alt=""></a></center>
+    <center><a href="?lang={{currentLocale}}"><img src="bitcoin.png" style="width: 50px; height: auto" alt=""></a></center>
     <hr>
     <a id="help"></a>
-    <p>{{#i18n}}help{{/i18n}}</p>
     <br>
-    <center><a href="#home"><img src="bitcoin.png" style="width: 50px; height: auto" alt=""></a></center>
+    {{#i18n}}help{{/i18n}}
+    <br>
+    <center><a href="?lang={{currentLocale}}"><img src="bitcoin.png" style="width: 50px; height: auto" alt=""></a></center>
     <hr>
     <a id="about"></a>
-    <p>{{#i18n}}about{{/i18n}}</p>
+    <br>
+    {{#i18n}}about{{/i18n}}
+    <br>
     <br>
     <center><a href="https://github.com/Impa10r/lnpos" target="_blank"><img src="github.png" /></a></center>
   </div>
