@@ -2,7 +2,7 @@ import { mongoose } from 'mongoose';
 import {} from 'dotenv/config';
 
 export default class DataBase {
-  constructor() {
+  constructor(quiet = false) {
     // Set up default mongoose connection
     const credentials = process.env.DB_USER ? `${process.env.DB_USER}:${process.env.DB_PASS}@` : '';
     const MONGO_URI = `mongodb://${credentials}${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?authSource=admin`;
@@ -12,7 +12,7 @@ export default class DataBase {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     })
-      .then(() => console.info('DB Connection Successfull'))
+      .then(() => { if (!quiet) console.info('DB Connection Successfull');})
       .catch((error) => { throw new Error(error); })
 
     // Get the default connection
