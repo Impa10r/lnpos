@@ -53,7 +53,7 @@
 	"ln_qr": "Escanea el código QR",
 	"lightning_invoice": "Factura de Lightning",
 	"error_qr": "el código QR ha caducado, genere uno nuevo",
-	"about": "<center><h4>Sobre el proyecto</h4></center><br>LNPOS es un proyecto de código abierto con el objetivo final de ver pegatinas de 'Bitcoin aceptado aquí' en todos los locales de pequeñas empresas de su barrio. ¡Todos son bienvenidos a participar en el desarrollo del proyecto y su promoción como afiliado!",
+	"about": "<center><h4>Sobre el proyecto</h4></center><br>LNPOS es un proyecto de código abierto con el objetivo final de ver pegatinas de 'Bitcoin aceptado aquí' en todos los locales de pequeñas empresas de su barrio. ¡Todos son bienvenidos a participar en el desarrollo del proyecto y su promoción como un <a href='#affiliate'>afiliado</a>!",
   "powered": "Desarrollado por",
   "help": "<center><h4>Soporte</h4></center><br>Si después de leer la sección <a href='#faq'>FAQ</a> aún tiene preguntas, visite nuestro Telegram <a href= 'https://t.me/lnpos' target='_blank'>grupo de apoyo</a>. ¡No comparta ninguna información de identificación personal en ese grupo, incluidas las claves API, y no responda a los mensajes directos!",
   "faq": "Preguntas frecuentes",
