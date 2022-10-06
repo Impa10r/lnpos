@@ -87,6 +87,14 @@ export default class Server {
     this.express.use(helmet());
     this.express.use(limiter);
 
+    this.express.enable('trust proxy');
+    this.express.use((request, response, next) => {
+      if (process.env.NODE_ENV !== 'dev' && !request.secure) {
+        return response.redirect('https://' + request.headers.host + request.url);
+      }
+      next();
+    });
+
     this.express.get('/robots.txt', (req, res) => {
       res.type('text/plain');
       res.send('User-agent: *\nAllow: /$\nDisallow: /');
