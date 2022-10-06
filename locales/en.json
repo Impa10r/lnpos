@@ -53,7 +53,7 @@
 	"ln_qr": "Scan the QR Code",
 	"lightning_invoice": "Lightning Invoice",
 	"error_qr": "QR code has expired, please generate a new one",
-	"about": "<center><h4>About the project</h4></center><br>LNPOS is an open source project. Everyone is welcome to participate in the development!",
+	"about": "<center><h4>About the project</h4></center><br>LNPOS is an open source project with end goal to see 'Bitcoin accepted here' stickers in every small business venue in your neighbourhood. Everyone is welcome to participate in the project development and its promotion as an affiliate!",
   "powered": "Powered by",
   "faq": "Frequently Asked Questions",
   "q1": "<b>Are my funds secure?</b><br>Bitfinex is one of the oldest and largest crypto exchanges. It doesn't insure user funds, but it had taken responsibility to compensate users when assets were lost due to security breaches. You can limit your risk by regular withdrawals. As for the keys you store on LNPOS, they do not allow any withdrawals. So funds are safe even if our database gets compromised one day.",

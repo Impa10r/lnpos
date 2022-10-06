@@ -53,7 +53,7 @@
 	"ln_qr": "Escanea el código QR",
 	"lightning_invoice": "Factura de Lightning",
 	"error_qr": "el código QR ha caducado, genere uno nuevo",
-	"about": "<center><h4>Sobre el proyecto</h4></center><br>LNPOS es un proyecto de código abierto. Todos son bienvenidos a participar!",
+	"about": "<center><h4>Sobre el proyecto</h4></center><br>LNPOS es un proyecto de código abierto con el objetivo final de ver pegatinas de 'Bitcoin aceptado aquí' en todos los locales de pequeñas empresas de su barrio. ¡Todos son bienvenidos a participar en el desarrollo del proyecto y su promoción como afiliado!",
   "powered": "Desarrollado por",
   "faq": "Preguntas frecuentes",
   "q1": "<b>¿Están seguros mis fondos?</b><br>Bitfinex es uno de los intercambios de cifrado más grandes y antiguos. No asegura los fondos de los usuarios, pero asumió la responsabilidad de compensar a los usuarios cuando los activos se perdieron debido a violaciones de seguridad. Puede limitar su riesgo mediante retiros regulares. En cuanto a las claves que almacena en LNPOS, no permiten retiros. Por lo tanto, los fondos están seguros incluso si nuestra base de datos se ve comprometida algún día.",
