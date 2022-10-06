@@ -115,10 +115,14 @@ export default class Server {
             });
             break;
           case 'ref':
-            res.render('ref', {
-              currentLocale: res.locale,
-              url,
-              id: req.query.id,
+            qr.toDataURL(url, (err, src) => {
+              if (err) showError(req, res, 'error_qr', err);
+              res.render('ref', {
+                currentLocale: res.locale,
+                url,
+                id: req.query.id,
+                src,
+              });
             });
             break;
           case 'add':
