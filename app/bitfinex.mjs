@@ -96,6 +96,25 @@ export default class Gateway {
     return this.restAuth('v2/auth/w/transfer', body);
   }
 
+  async getMovements(currency, start, end, limit) {
+    const body = {
+      start,
+      end,
+      limit,
+    };
+    return this.restAuth(`v2/auth/r/movements/${currency}/hist`, body);
+  }
+
+  async getTrades(symbol, start, end, limit = 25, sort = -1) {
+    const body = {
+      start,
+      end,
+      limit,
+      sort,
+    };
+    return this.restAuth(`v2/auth/r/trades/${symbol}/hist`, body);
+  }
+
   async getBook(symbol) {
     return this.restPublic(`book/${symbol}/R0`);
   }
