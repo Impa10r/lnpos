@@ -4,7 +4,6 @@
 /* eslint-disable prefer-template */
 /* eslint-disable no-underscore-dangle */
 import express from 'express';
-import secure from 'express-force-https';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import bodyParser from 'body-parser';
@@ -88,7 +87,15 @@ export default class Server {
     this.express.use(helmet());
     this.express.use(limiter);
 
-    this.express.use(secure);
+    this.express.enable('trust proxy');
+    this.express.use((request, response, next) => {
+      if (process.env.NODE_ENV !== 'dev' && !request.secure) {
+        response.writeHead(301, { Location: 'https://' + request.headers.host + request.url });
+        return response.end();
+        //return response.redirect('https://' + request.headers.host + request.url);
+      }
+      next();
+    });
 
     this.express.get('/robots.txt', (req, res) => {
       res.type('text/plain');
