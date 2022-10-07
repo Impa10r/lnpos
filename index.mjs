@@ -19,18 +19,10 @@ app
 
 if (process.env.NODE_ENV === 'prod') {
   // Secondary http app
-  var express = require('express');
-  var httpApp = express();
-  var httpRouter = express.Router();
-  httpApp.use('*', httpRouter);
-  httpRouter.get('*', function(req, res){
-    var host = req.get('Host');
-    // replace the port in the host
-    host = host.replace(/:\d+$/, ":"+app.get('port'));
-    // determine the redirect destination
-    var destination = ['https://', host, req.url].join('');
-    return res.redirect(destination);
-  });
-  var httpServer = http.createServer(httpApp);
-  httpServer.listen(process.env.HTTP_PORT);
+  var http = require('http');
+  http.createServer((req, res) => {
+    res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
+    res.end();
+  }).listen(process.env.HTTP_PORT);
+  console.info(`HTTP listening at port ${process.env.HTTP_PORT}`);
 }
