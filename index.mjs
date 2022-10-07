@@ -19,7 +19,7 @@ app
 
 if (process.env.NODE_ENV === 'prod') {
   // Secondary http app
-  var http = require('http');
+  import http from 'http';
   http.createServer((req, res) => {
     res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
     res.end();
