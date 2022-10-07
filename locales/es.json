@@ -28,7 +28,7 @@
 	"new_payment_link": "A continuación se muestra su enlace de pago único. Guárdelo en el escritorio de su PC, en la pantalla de inicio del teléfono o en los marcadores. Puede reenviarlo a sus empleados o clientes para generar solicitudes de pago.",
   "new_payment_link2": "<b>Pasos adicionales:</b><br><br>6. Instale la aplicación Bitfinex en su teléfono para recibir notificaciones de transaction.<br><br>7. No te olvides de imprimir sus <b><em>pegatinas personales de 'Bitcoin aceptado'</em></b> siguiendo este",
   "remote_payment_link": "<h4>Enlace de pago remoto</h4><br>A continuación se muestra un enlace que puede enviar por correo electrónico o chat para solicitar el pago remoto:",
-  "remote_request": "Esta cantidad se ha solicitado de forma remota y no se puede cambiar.",
+  "remote_request": "Esta cantidad se ha solicitado de forma remota.",
   "ref_link": "Su enlace de referencia",
 	"ln_click": "O haga clic aquí",
 	"api_key: permission invalid": "Sus claves API carecen de los permisos necesarios",
