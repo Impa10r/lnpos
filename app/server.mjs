@@ -261,14 +261,6 @@ export default class Server {
 
       req.setLocale(lang);
 
-      if (req.body.button === 'link') {
-        const url = req.protocol + '://' + req.get('host') + '/' + id + '/' + amountFiat + currency + '/' + memo;
-        return res.render('payremote', {
-          currentLocale: lang,
-          url,
-        });
-      }
-
       this.db.findOne('keys', { id })
         .then((record) => {
           this.gw = new Gateway(record.key, record.secret);
@@ -276,8 +268,18 @@ export default class Server {
             .then((result) => {
               const amountBTC = this.gw.simulateSell(parseFloat(amountFiat), result.data);
               const wap = amountFiat / amountBTC;
+
               if (amountBTC > this.gw.maxInvoiceAmount) { return this.showError(req, res, 'amount_too_large'); }
               if (amountBTC < this.gw.minInvoiceAmount) { return this.showError(req, res, 'amount_too_small'); }
+
+              if (req.body.button === 'link') {
+                const url = req.protocol + '://' + req.get('host') + '/' + id + '/' + amountFiat + currency + '/' + memo;
+                return res.render('payremote', {
+                  currentLocale: lang,
+                  url,
+                });
+              }
+
               this.gw.getDepositAddr('LNX', 'exchange')
                 .then((r) => r.json())
                 .then((json) => {
