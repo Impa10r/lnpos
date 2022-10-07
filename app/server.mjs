@@ -16,6 +16,14 @@ import Gateway from './bitfinex.mjs';
 import DataBase from './mongo.mjs';
 
 export default class Server {
+  showError(req, res, errCode, err) {
+    if (err) console.error(err);
+    res.render('error', {
+      currentLocale: req.locale,
+      error: 'Error: ' + req.__(errCode),
+    });
+  }
+
   renderRequest(req, res) {
     const id = req.params.id;
     this.db.findOne('keys', { id: id.toLowerCase() })
@@ -42,7 +50,7 @@ export default class Server {
             refCode: id,
           });
         } else {
-          showError(req, res, 'error_id_not_found', err);
+          this.showError(req, res, 'error_id_not_found', err);
         }
       });
   }
@@ -55,14 +63,6 @@ export default class Server {
       windowMs: 1 * 60 * 1000, // 1 minute
       max: 20, // limit each IP to 100 requests per windowMs
     });
-
-    function showError(req, res, errCode, err) {
-      if (err) console.error(err);
-      res.render('error', {
-        currentLocale: req.locale,
-        error: 'Error: ' + req.__(errCode),
-      });
-    }
 
     this.express = express();
     this.express.disable('x-powered-by');
@@ -111,7 +111,7 @@ export default class Server {
         switch (id) {
           case 'a4':
             qr.toDataURL(url, (err, src) => {
-              if (err) showError(req, res, 'error_qr', err);
+              if (err) this.showError(req, res, 'error_qr', err);
               res.render('a4', {
                 currentLocale: res.locale,
                 src,
@@ -120,7 +120,7 @@ export default class Server {
             break;
           case 'ref':
             qr.toDataURL(url, (err, src) => {
-              if (err) showError(req, res, 'error_qr', err);
+              if (err) this.showError(req, res, 'error_qr', err);
               res.render('ref', {
                 currentLocale: res.locale,
                 url,
@@ -141,9 +141,9 @@ export default class Server {
             this.db.findOne('keys', { id: userId })
               .then((record) => {
                 qr.toDataURL(req.query.i, (err, src) => {
-                  if (err) showError(req, res, 'error_qr', err);
+                  if (err) this.showError(req, res, 'error_qr', err);
                   if (!this.gw) {
-                    showError(req, res, 'error_qr', err);
+                    this.showError(req, res, 'error_qr', err);
                     return;
                   }
                   req.setLocale(res.locale);
@@ -176,7 +176,7 @@ export default class Server {
                 });
               })
               .catch((err) => {
-                showError(req, res, 'error_id_not_found', err);
+                this.showError(req, res, 'error_id_not_found', err);
               });
             break;
           case 'error':
@@ -201,7 +201,7 @@ export default class Server {
       const code = req.body.refCode;
       req.setLocale(lang);
       if (code.length !== 10)
-        return showError(req, res, 'error_invalid_ref');
+        return this.showError(req, res, 'error_invalid_ref');
       res.redirect(`/ref?id=${code}&lang=${lang}`);
     });
 
@@ -213,7 +213,7 @@ export default class Server {
         .then((r) => r.json())
         .then((json) => {
           if (json[0] === 'error') {
-            showError(req, res, 'error_invalid_keys');
+            this.showError(req, res, 'error_invalid_keys');
           } else {
             const id = json[2].toLowerCase();
             // Delete previous to avoid duplicates
@@ -234,7 +234,7 @@ export default class Server {
                     this.db.findOne('keys', { id })
                       .then((record) => {
                         if (!record) {
-                          showError(req, res, 'error_database_down');
+                          this.showError(req, res, 'error_database_down');
                         } else {
                           res.redirect(`/add?id=${record.id}&lang=${lang}`);
                         }
@@ -242,12 +242,12 @@ export default class Server {
                   });
               })
               .catch((err) => {
-                showError(req, res, 'error_database_down', err);
+                this.showError(req, res, 'error_database_down', err);
               });
           }
         })
         .catch((err) => {
-          showError(req, res, 'error_exchange_down', err);
+          this.showError(req, res, 'error_exchange_down', err);
         });
     });
 
@@ -267,19 +267,19 @@ export default class Server {
             .then((result) => {
               const amountBTC = this.gw.simulateSell(parseFloat(amountFiat), result.data);
               const wap = amountFiat / amountBTC;
-              if (amountBTC > this.gw.maxInvoiceAmount) { return showError(req, res, 'amount_too_large'); }
-              if (amountBTC < this.gw.minInvoiceAmount) { return showError(req, res, 'amount_too_small'); }
+              if (amountBTC > this.gw.maxInvoiceAmount) { return this.showError(req, res, 'amount_too_large'); }
+              if (amountBTC < this.gw.minInvoiceAmount) { return this.showError(req, res, 'amount_too_small'); }
               this.gw.getDepositAddr('LNX', 'exchange')
                 .then((r) => r.json())
                 .then((json) => {
                   if (json[0] === 'error') {
-                    return showError(req, res, json[2], json);
+                    return this.showError(req, res, json[2], json);
                   }
                   this.gw.getLightningInvoice(amountBTC)
                     .then((r) => r.json())
                     .then((json) => {
                       if (json[0] === 'error') {
-                        return showError(req, res, json[2], json);
+                        return this.showError(req, res, json[2], json);
                       }
                       const rate = wap.toFixed(2);
                       const amountSat = (amountBTC * 100000000).toFixed(0);
@@ -290,11 +290,11 @@ export default class Server {
                 });
             })
             .catch((err) => {
-              showError(req, res, 'error_exchange_down', err);
+              this.showError(req, res, 'error_exchange_down', err);
             });
         })
         .catch((err) => {
-          showError(req, res, 'error_database_down', err);
+          this.showError(req, res, 'error_database_down', err);
         });
     });
   }
