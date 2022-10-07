@@ -32,6 +32,7 @@ export default class Server {
         const currencyFrom = req.query.currency || record.currencyFrom;
         const amountOptions = req.query.amount ? 'value="' + req.query.amount + '" readonly' : '';
         const memoOptions = req.query.memo ? 'value="' + req.query.memo + '" readonly' : '';
+        const buttonOptions = typeof req.query.amount !== 'undefined' ? 'hidden' : '';
 
         req.setLocale(lang);
 
@@ -41,6 +42,7 @@ export default class Server {
           currencyFrom,
           amountOptions,
           memoOptions,
+          buttonOptions,
         });
       })
       .catch((err) => {
@@ -97,7 +99,7 @@ export default class Server {
       const currency = amount.substring(amount.length - 3).toUpperCase();
       if (['USD', 'EUR', 'GBP', 'JPY', 'CNH', 'MXN'].includes(currency)) req.query.currency = currency;
       if (req.params.memo) req.query.memo = req.params.memo;
-      this.renderRequest(req, res);
+      return this.renderRequest(req, res);
     });
 
     this.express.get('/:id?', (req, res) => {
@@ -127,13 +129,6 @@ export default class Server {
                 id: req.query.id,
                 src,
               });
-            });
-            break;
-          case 'add':
-            res.render('add', {
-              currentLocale: res.locale,
-              url,
-              id: req.query.id,
             });
             break;
           case 'pay':
@@ -236,7 +231,11 @@ export default class Server {
                         if (!record) {
                           this.showError(req, res, 'error_database_down');
                         } else {
-                          res.redirect(`/add?id=${record.id}&lang=${lang}`);
+                          res.render('add', {
+                            currentLocale: lang,
+                            url: req.protocol + '://' + req.get('host') + '/' + record.id,
+                            id: record.id,
+                          });
                         }
                       });
                   });
@@ -259,6 +258,14 @@ export default class Server {
       const amountFiat = parseFloat(req.body.amountFiat);
 
       req.setLocale(lang);
+
+      if (req.body.button === 'link') {
+        const url = req.protocol + '://' + req.get('host') + '/' + id + '/' + amountFiat + currency + '/' + memo;
+        return res.render('payremote', {
+          currentLocale: lang,
+          url,
+        });
+      }
 
       this.db.findOne('keys', { id })
         .then((record) => {

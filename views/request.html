@@ -54,7 +54,9 @@
           <input type="hidden" id="currency" name="currency" value="{{currencyFrom}}">
           <input type="hidden" id="lang" name="lang" value="{{currentLocale}}">
           <input type="hidden" id="id" name="id" value="{{id}}">
-          <button class="btn btn-primary" type ="submit">{{#i18n}}generate_invoice{{/i18n}}</button>
+          <button class="btn btn-primary" name="button" value="invoice" type ="submit">{{#i18n}}generate_invoice{{/i18n}}</button>
+          <br><br>
+          <button class="btn btn-secondary" name="button" value="link" type="submit" {{{buttonOptions}}}>{{#i18n}}generate_link{{/i18n}}</button>
         </fieldset>
       </form>
     <br>
