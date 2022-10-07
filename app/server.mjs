@@ -33,6 +33,7 @@ export default class Server {
         const amountOptions = req.query.amount ? 'value="' + req.query.amount + '" readonly' : '';
         const memoOptions = req.query.memo ? 'value="' + req.query.memo + '" readonly' : '';
         const buttonOptions = typeof req.query.amount !== 'undefined' ? 'hidden' : '';
+        const labelOptions = typeof req.query.amount !== 'undefined' ? '' : 'hidden';
 
         req.setLocale(lang);
 
@@ -43,6 +44,7 @@ export default class Server {
           amountOptions,
           memoOptions,
           buttonOptions,
+          labelOptions,
         });
       })
       .catch((err) => {
