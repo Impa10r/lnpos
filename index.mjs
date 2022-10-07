@@ -1,4 +1,5 @@
 import fs from 'fs';
+import http from 'http';
 import container from './app/container.mjs';
 
 const app = container.resolve('app');
@@ -19,7 +20,6 @@ app
 
 if (process.env.NODE_ENV === 'prod') {
   // Secondary http app
-  import http from 'http';
   http.createServer((req, res) => {
     res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
     res.end();
