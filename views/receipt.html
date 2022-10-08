@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="{{currentLocale}}">
+
+<head>
+  <meta charset="utf-8">
+  <title>Payment Receipt</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <!-- Custom CSS -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+    * {
+        font-family: Montserrat;
+    }
+    body {
+        margin: 10px;
+        padding: 10px;
+    }
+
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <center>
+    <br>
+    <h2 class="text-center">{{#i18n}}payment_receipt{{/i18n}}</h2>
+    <hr><p>
+      {{#i18n}}Fiat amount:{{/i18n}} {{record.currencyFrom}} {{record.amountFiat}}
+      <br><br>{{#i18n}}date_time_created{{/i18n}}:<br>{{dateTimeCreated}}
+      <br><br>{{#i18n}}date_time_paid{{/i18n}}:<br>{{dateTimePaid}}
+      <br><br></p>
+      <img src="check-mark.svg" style="width: 200px; max-width: 50%; height: auto">
+
+    </center>
+  </div>
+</body>
+</html>
