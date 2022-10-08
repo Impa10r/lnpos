@@ -3,7 +3,8 @@ import { mongoose } from 'mongoose';
 const keySchema = new mongoose.Schema(
   {
     id: { type: String, index: { unique: false } },
-    dateTime: { type: Number, index: { unique: false } },
+    timeCreated: { type: Number, index: { unique: false } },
+    timePaid: { type: Number, index: { unique: false } },
     currencyFrom: { type: String, required: true },
     currencyTo: { type: String, required: true },
     amountFiat: { type: Number, required: true },

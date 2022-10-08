@@ -12,14 +12,19 @@
 
   <!-- Custom CSS -->
   <style>
-      @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
-      * {
-          font-family: Montserrat;
-      }
-      body {
-          margin: 10px;
-          padding: 10px;
-      }
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+    * {
+        font-family: Montserrat;
+    }
+    body {
+        margin: 10px;
+        padding: 10px;
+    }
+    div.b {
+      width: 400px; 
+      max-width: 90%;
+      word-wrap: break-word;
+    }
   </style>
 </head>
 
@@ -32,7 +37,7 @@
       {{#i18n}}remote_payment_link{{/i18n}}
       <br>
       <br>
-      <p><a href="{{url}}">{{url}}</a></p>
+      <div class="b"><a href="{{url}}">{{desc}}</a></div>
     </center>
 </div>
 

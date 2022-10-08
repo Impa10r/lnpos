@@ -20,6 +20,11 @@
           margin: 10px;
           padding: 10px;
       }
+      div.b {
+        width: 400px; 
+        max-width: 90%;
+        word-wrap: break-word;
+      }
   </style>
 </head>
 
@@ -33,7 +38,7 @@
       <hr>
       <br>
       <p>{{#i18n}}new_payment_link{{/i18n}}</p>
-      <b><a href="{{url}}">{{url}}</a></b>
+      <div class="b"><a href="{{url}}">{{desc}}</a></div>
       <br>
       <br>
       <p>{{#i18n}}new_payment_link2{{/i18n}} <a href="a4?id={{id}}">{{#i18n}}link{{/i18n}}.</a></p>

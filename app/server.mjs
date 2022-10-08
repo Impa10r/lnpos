@@ -36,7 +36,6 @@ export default class Server {
         const labelOptions = typeof req.query.amount !== 'undefined' ? '' : 'hidden';
 
         req.setLocale(lang);
-
         res.render('request', {
           currentLocale: lang,
           id,
@@ -90,6 +89,7 @@ export default class Server {
     this.express.use(bodyParser.urlencoded({ extended: false }));
     this.express.use(helmet());
     this.express.use(limiter);
+
     this.express.get('/robots.txt', (req, res) => {
       res.type('text/plain');
       res.send('User-agent: *\nAllow: /$\nDisallow: /');
@@ -107,11 +107,11 @@ export default class Server {
     this.express.get('/:id?', (req, res) => {
       const id = req.params.id;
       const browserLang = req.headers['accept-language'] ? req.headers['accept-language'].substring(0, 2) : 'en';
+      const url = req.protocol + '://' + req.get('host') + '/' + req.query.id;
 
       if (!res.locale && ['es', 'ru'].includes(browserLang)) req.setLocale(browserLang);
 
       if (id) {
-        const url = req.protocol + '://' + req.get('host') + '/' + req.query.id;
         switch (id) {
           case 'a4':
             qr.toDataURL(url, (err, src) => {
@@ -120,66 +120,6 @@ export default class Server {
                 currentLocale: res.locale,
                 src,
               });
-            });
-            break;
-          case 'ref':
-            qr.toDataURL(url, (err, src) => {
-              if (err) this.showError(req, res, 'error_qr', err);
-              res.render('ref', {
-                currentLocale: res.locale,
-                url,
-                id: req.query.id,
-                src,
-              });
-            });
-            break;
-          case 'pay':
-            const userId = req.query.id.toLowerCase();
-            this.db.findOne('keys', { id: userId })
-              .then((record) => {
-                qr.toDataURL(req.query.i, (err, src) => {
-                  if (err) this.showError(req, res, 'error_qr', err);
-                  if (!this.gw) {
-                    this.showError(req, res, 'error_qr', err);
-                    return;
-                  }
-                  req.setLocale(res.locale);
-                  res.render('pay', {
-                    currentLocale: res.locale,
-                    invoice: req.query.i,
-                    currency: req.query.c,
-                    amountFiat: req.query.af,
-                    amountSat: req.query.as,
-                    rate: req.query.x,
-                    src,
-                  });
-
-                  const invoice = new Invoices({
-                    id: userId,
-                    dateTime: Date.now(),
-                    currencyFrom: req.query.c,
-                    currencyTo: record.currencyTo,
-                    amountFiat: req.query.af,
-                    exchangeRate: req.query.x,
-                    exchange: record.exchange,
-                    amountSat: req.query.as,
-                    memo: req.query.m,
-                  });
-
-                  this.gw.convertProceeds(record.currencyTo)
-                    .then((success) => {
-                      if (success) invoice.save();
-                    });
-                });
-              })
-              .catch((err) => {
-                this.showError(req, res, 'error_id_not_found', err);
-              });
-            break;
-          case 'error':
-            res.render('error', {
-              currentLocale: res.locale,
-              error: req.query.error,
             });
             break;
           default:
@@ -199,7 +139,17 @@ export default class Server {
       req.setLocale(lang);
       if (code.length !== 10)
         return this.showError(req, res, 'error_invalid_ref');
-      res.redirect(`/ref?id=${code}&lang=${lang}`);
+      const desc = req.get('host') + '/' + code;
+      const url = req.protocol + '://' + desc;
+      qr.toDataURL(url, (err, src) => {
+        if (err) this.showError(req, res, 'error_qr', err);
+        res.render('ref', {
+          currentLocale: lang,
+          url,
+          desc,
+          src,
+        });
+      });
     });
 
     this.express.post('/add', (req, res) => {
@@ -233,10 +183,14 @@ export default class Server {
                         if (!record) {
                           this.showError(req, res, 'error_database_down');
                         } else {
+                          const i = record.id;
+                          const desc = req.get('host') + '/' + i;
+                          const url = req.protocol + '://' + desc;
                           res.render('add', {
                             currentLocale: lang,
-                            url: req.protocol + '://' + req.get('host') + '/' + record.id,
-                            id: record.id,
+                            url,
+                            desc,
+                            id: i,
                           });
                         }
                       });
@@ -268,23 +222,26 @@ export default class Server {
             .then((result) => {
               const amountBTC = this.gw.simulateSell(parseFloat(amountFiat), result.data);
               const wap = amountFiat / amountBTC;
+              const currencyTo = record.currencyTo;
 
               if (amountBTC > this.gw.maxInvoiceAmount) { return this.showError(req, res, 'amount_too_large'); }
               if (amountBTC < this.gw.minInvoiceAmount) { return this.showError(req, res, 'amount_too_small'); }
 
               if (req.body.button === 'link') {
-                const url = req.protocol + '://' + req.get('host') + '/' + id + '/' + amountFiat + currency + '/' + memo;
+                const desc = req.get('host') + '/' + id + '/' + amountFiat + (memo ? '/' + memo.replace(/\s/g, "%20") : '');
+                const url = req.protocol + '://' + desc;
                 return res.render('payremote', {
                   currentLocale: lang,
                   url,
+                  desc,
                 });
               }
 
               this.gw.getDepositAddr('LNX', 'exchange')
                 .then((r) => r.json())
-                .then((json) => {
-                  if (json[0] === 'error') {
-                    return this.showError(req, res, json[2], json);
+                .then((j) => {
+                  if (j[0] === 'error') {
+                    return this.showError(req, res, j[2], j);
                   }
                   this.gw.getLightningInvoice(amountBTC)
                     .then((r) => r.json())
@@ -294,9 +251,46 @@ export default class Server {
                       }
                       const rate = wap.toFixed(2);
                       const amountSat = (amountBTC * 100000000).toFixed(0);
-                      const af = amountFiat.toFixed(2);
+                      const invoice = json[1];
 
-                      res.redirect(`/pay?id=${id}&i=${json[1]}&c=${currency}&af=${af}&as=${amountSat}&x=${rate}&m=${memo}&lang=${lang}`);
+                      qr.toDataURL(invoice, (err, src) => {
+                        if (err) this.showError(req, res, 'error_qr', err);
+                        if (!this.gw) {
+                          this.showError(req, res, 'error_qr', err);
+                          return;
+                        }
+
+                        const timeCreated = Date.now();
+
+                        this.gw.convertProceeds(currencyTo)
+                          .then((success) => {
+                            if (success) {
+                              const inv = new Invoices({
+                                id,
+                                timeCreated,
+                                timePaid: Date.now(),
+                                currencyFrom: currency,
+                                currencyTo,
+                                amountFiat,
+                                exchangeRate: rate,
+                                exchange: record.exchange,
+                                amountSat,
+                                memo,
+                              });
+                              inv.save();
+                            }
+                          });
+
+                        res.render('pay', {
+                          currentLocale: lang,
+                          invoice,
+                          currency,
+                          amountFiat,
+                          amountSat,
+                          rate,
+                          src,
+                        });
+                      });
                     });
                 });
             })
