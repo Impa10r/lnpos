@@ -15,37 +15,6 @@ import Invoices from './models/invoices.mjs';
 import Gateway from './bitfinex.mjs';
 import DataBase from './mongo.mjs';
 
-function wait(milleseconds) {
-  return new Promise((resolve) => setTimeout(resolve, milleseconds))
-}
-
-async function waitPayment(db, req, res) {
-  const lang = req.body.lang;
-  const id = req.body.id;
-  const timeCreated = parseInt(req.body.timeCreated);
-
-  let i = 10; // wait 10 seconds
-  while (i > 0) {
-    db.findOne('invoices', { $and: [{ id }, { timeCreated }] })
-      .then((record) => {
-        if (i > 0 && record) {
-          i = 0;
-          req.setLocale(lang);
-          const dateTimeCreated = new Date(timeCreated).toISOString();
-          const dateTimePaid = new Date(record.timePaid).toISOString();
-          return res.render('receipt', {
-            currentLocale: lang,
-            record,
-            dateTimeCreated,
-            dateTimePaid,
-          });
-        }
-      });
-    i -= 1;
-    await wait(1000);
-  }
-}
-
 export default class Server {
   showError(req, res, errCode, err) {
     if (err) console.error(err);
@@ -184,7 +153,29 @@ export default class Server {
     });
 
     this.express.post('/receipt', (req, res) => {
-      waitPayment(this.db, req, res);
+      const lang = req.body.lang;
+      const id = req.body.id;
+      const timeCreated = parseInt(req.body.timeCreated);
+
+      this.db.findOne('invoices', { $and: [{ id }, { timeCreated }] })
+        .then((record) => {
+          if (record) {
+            req.setLocale(lang);
+            const dateTimeCreated = new Date(timeCreated).toISOString();
+            const dateTimePaid = new Date(record.timePaid).toISOString();
+            res.render('receipt', {
+              currentLocale: lang,
+              record,
+              dateTimeCreated,
+              dateTimePaid,
+            });
+          } else {
+            this.showError(req, res, 'invoice_not_found');
+          }
+        })
+        .catch((err) => {
+          this.showError(req, res, 'error_database_down', err);
+        });
     });
 
     this.express.post('/add', (req, res) => {

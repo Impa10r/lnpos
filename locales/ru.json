@@ -70,5 +70,6 @@
   "show_receipt": "Показать квитанцию",
   "payment_receipt": "Квитанция об оплате",
   "date_time_created": "Дата и время выпуска",
-  "date_time_paid": "Дата и время оплаты" 
+  "date_time_paid": "Дата и время оплаты",
+  "invoice_not_found": "Счет не найден" 
 }

@@ -70,5 +70,6 @@
   "show_receipt": "Show receipt",
   "payment_receipt": "Payment Receipt",
   "date_time_created": "Date & time issued",
-  "date_time_paid": "Date & time paid"  
+  "date_time_paid": "Date & time paid",
+  "invoice_not_found": "Invoice not found"
 }
