@@ -261,7 +261,6 @@ export default class Server {
                         }
 
                         const timeCreated = Date.now();
-
                         this.gw.convertProceeds(currencyTo)
                           .then((success) => {
                             if (success) {
@@ -278,18 +277,34 @@ export default class Server {
                                 memo,
                               });
                               inv.save();
+                              const html2 = '<br><p style="color:green"><b>' + req.__('PAID') + '</b></p></center></div></body></html>';
+                              res.end(html2);
+                            } else {
+                              const html2 = '<br><p style="color:red"><b>' + req.__('FAILED') + '</b></p></center></div></body></html>';
+                              res.end(html2);
                             }
                           });
 
-                        res.render('pay', {
-                          currentLocale: lang,
-                          invoice,
-                          currency,
-                          amountFiat,
-                          amountSat,
-                          rate,
-                          src,
-                        });
+                        let html = '<!DOCTYPE html>';
+                        html += '<html lang="' + lang + '">';
+                        html += '<head><meta charset="utf-8"><title>Payment QR</title>';
+                        html += '<meta name="viewport" content="width=device-width, initial-scale=1">';
+                        html += '<link rel="icon" type="image/svg+xml" href="favicon.svg">';
+                        html += '<link rel="icon" type="image/png" href="favicon.png">';
+                        html += '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
+                        html += '<style>@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap");';
+                        html += '* {font-family: Montserrat;}';
+                        html += 'body { margin: 10px; padding: 10px; }</style></head>';
+                        html += '<body><div class="container">';
+                        html += '<h2 class="text-center">' + req.__('lightning_invoice') + '</h1>';
+                        html += '<hr><center><p>' + req.__('Fiat amount:') + ' ' + currency + ' ' + amountFiat.toFixed(2);
+                        html += '<br>1 BTC = ' + rate + ' ' + currency;
+                        html += '<br>' + req.__('Satoshi amount:') + ' ' + amountSat + '</p>';
+                        html += req.__('ln_qr');
+                        html += '<br><a href="lightning:' + invoice + '"><img src=' + src + '></a>';
+
+                        res.set('Content-type', 'text/html');
+                        res.write(html);
                       });
                     });
                 });

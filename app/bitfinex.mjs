@@ -183,7 +183,7 @@ export default class Gateway {
               break;
             case 'BTC':
               if (currencyTo !== 'BTC' && amount >= this.minTradeAmount) {
-                console.log('sell BTC' + currencyTo, amount);
+                //console.log('sell BTC' + currencyTo, amount);
                 this.placeMarketOrder(`tBTC${currencyTo}`, -amount)
                   .then((r) => r.json())
                   .then((json) => {
