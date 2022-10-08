@@ -161,8 +161,8 @@ export default class Server {
         .then((record) => {
           if (record) {
             req.setLocale(lang);
-            const dateTimeCreated = new Date(timeCreated).toISOString();
-            const dateTimePaid = new Date(record.timePaid).toISOString();
+            const dateTimeCreated = new Date(timeCreated).toISOString().replace(/T/, ' ').replace(/\..+/, 'z');
+            const dateTimePaid = new Date(record.timePaid).toISOString().replace(/T/, ' ').replace(/\..+/, 'z');
             res.render('receipt', {
               currentLocale: lang,
               record,
