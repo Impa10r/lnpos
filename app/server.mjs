@@ -31,10 +31,8 @@ async function waitPayment(db, req, res) {
         if (i > 0 && record) {
           i = 0;
           req.setLocale(lang);
-//          const dateTimeCreated = new Date(timeCreated).toISOString();
-//          const dateTimePaid = new Date(record.timePaid).toISOString();
-          const dateTimeCreated = new Date(timeCreated).toLocaleString();
-          const dateTimePaid = new Date(record.timePaid).toLocaleString();
+          const dateTimeCreated = new Date(timeCreated).toISOString();
+          const dateTimePaid = new Date(record.timePaid).toISOString();
           return res.render('receipt', {
             currentLocale: lang,
             record,
