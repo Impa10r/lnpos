@@ -182,7 +182,7 @@ export default class Gateway {
                   this.transferBetweenWallets('exchange', 'exchange', 'LNX', 'BTC', amount)
                     .then((r) => r.json())
                     .then((json) => {
-                      if (json[0] === 'error') {
+                      if (json[0] !== 'error') {
                         //console.error(json);
                       }
                     });
