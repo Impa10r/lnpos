@@ -293,35 +293,7 @@ export default class Server {
                         }
 
                         const timeCreated = Date.now();
-                        this.gw.convertProceeds(currencyTo)
-                          .then((success) => {
-                            if (success) {
-                              const inv = new Invoices({
-                                id,
-                                timeCreated,
-                                timePaid: Date.now(),
-                                currencyFrom: currency,
-                                currencyTo,
-                                amountFiat,
-                                exchangeRate: rate,
-                                exchange: record.exchange,
-                                amountSat,
-                                memo,
-                                lang,
-                              });
-                              inv.save();
-                              const url = req.protocol + '://' + req.get('host') + '/' + id + '?i=' + timeCreated;
-                              let html2 = '<br><p style="color:green"><b>' + req.__('PAID') + '</b></p>';
-                              html2 += '<a href="' + url + '">' + req.__('show_receipt') + '</a>';
-                              html2 += '</center></div></body></html>';
-
-                              res.end(html2);
-                            } else {
-                              const html2 = '<br><p style="color:red"><b>' + req.__('FAILED') + '</b></p></center></div></body></html>';
-                              res.end(html2);
-                            }
-                          });
-
+                        
                         let html = '<!DOCTYPE html>';
                         html += '<html lang="' + lang + '">';
                         html += '<head><meta charset="utf-8"><title>Payment QR</title>';
@@ -338,10 +310,41 @@ export default class Server {
                         html += '<br>1 BTC = ' + rate + ' ' + currency;
                         html += '<br>' + req.__('Satoshi amount:') + ' ' + amountSat + '</p>';
                         html += req.__('ln_qr');
-                        html += '<br><a href="lightning:' + invoice + '" target="_blank"><img src=' + src + '></a>';
+                        html += '<br><a href="lightning:' + invoice + '" target="_blank"><img src=' + src + '></a><br>';
 
                         res.set('Content-type', 'text/html');
                         res.write(html);
+
+                        this.gw.convertProceeds(currencyTo, res)
+                          .then((success) => {
+                            if (success) {
+                              const inv = new Invoices({
+                                id,
+                                timeCreated,
+                                timePaid: Date.now(),
+                                currencyFrom: currency,
+                                currencyTo,
+                                amountFiat,
+                                exchangeRate: rate,
+                                exchange: record.exchange,
+                                amountSat,
+                                memo,
+                                lang,
+                              });
+
+                              inv.save();
+
+                              const url = req.protocol + '://' + req.get('host') + '/' + id + '?i=' + timeCreated;
+                              let html2 = '<p style="color:green"><b>' + req.__('PAID') + '</b></p>';
+                              html2 += '<a href="' + url + '">' + req.__('show_receipt') + '</a>';
+                              html2 += '</center></div></body></html>';
+
+                              res.end(html2);
+                            } else {
+                              const html2 = '<p style="color:red"><b>' + req.__('FAILED') + '</b></p></center></div></body></html>';
+                              res.end(html2);
+                            }
+                          });
                       });
                     });
                 });

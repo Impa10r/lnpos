@@ -142,7 +142,7 @@ export default class Gateway {
     return btcReceived;
   }
 
-  async convertProceeds(currencyTo) {
+  async convertProceeds(currencyTo, res) {
     const promise = new Promise((resolve, reject) => {
       const timeLimit = Date.now() + 10 * 60 * 1000; // 10 minutes
       const authNonce = this.getNonce().toString();
@@ -162,11 +162,15 @@ export default class Gateway {
       wss.on('error', (err) => { reject(err); });
 
       wss.on('message', (msg) => {
-        if (Date.now() > timeLimit) {
-          wss.close();
-          return resolve(false);
-        }
         const data = JSON.parse(msg);
+        //console.log(data, timeLimit - Date.now());
+        if (data[1] === 'hb') {
+          if (Date.now() > timeLimit) {
+            wss.close();
+            return resolve(false);
+          }
+          res.write('.');
+        }
         if (data[1] === 'wu' && data[2][0] === 'exchange' && data[2][2] >= 0) {
           const amount = data[2][2]; // balance total amount
           switch (data[2][1]) { // balance currency
