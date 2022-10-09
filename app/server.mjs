@@ -334,7 +334,7 @@ export default class Server {
                         html += '<br>1 BTC = ' + rate + ' ' + currency;
                         html += '<br>' + req.__('Satoshi amount:') + ' ' + amountSat + '</p>';
                         html += req.__('ln_qr');
-                        html += '<br><a href="lightning:' + invoice + '"><img src=' + src + '></a>';
+                        html += '<br><a href="lightning:' + invoice + '" target="_blank"><img src=' + src + '></a>';
 
                         res.set('Content-type', 'text/html');
                         res.write(html);

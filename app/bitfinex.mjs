@@ -175,7 +175,7 @@ export default class Gateway {
                     .then((r) => r.json())
                     .then((json) => {
                       if (json[0] === 'error') {
-                        console.error(json);
+                        //console.error(json);
                       }
                     });
                 }
@@ -188,7 +188,7 @@ export default class Gateway {
                   .then((r) => r.json())
                   .then((json) => {
                     if (json[0] === 'error') {
-                      console.error(json);
+                      //console.error(json);
                     }
                   });
               }
