@@ -66,7 +66,7 @@
 	"ERR_REQUEST_GENERIC: ESOCKETTIMEDOUT": "Payment request timed out",
 	"error": "Error generating Lightning Invoice. If the same problem persists in Bitfinex app, please contact their support.",
   "PAID": "PAYMENT RECEIVED",
-  "FAILED": "PAYMENT FAILED",
+  "FAILED": "INVOICE EXPIRED",
   "show_receipt": "Show receipt",
   "payment_receipt": "Payment Receipt",
   "payee": "Payee",

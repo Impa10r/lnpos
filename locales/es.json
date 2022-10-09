@@ -66,7 +66,7 @@
   "ERR_REQUEST_GENERIC: ESOCKETTIMEDOUT": "Se agotó el tiempo de espera de la solicitud de pago",
 	"error": "Error al generar la Factura Lightning. Si el mismo problema persiste en la aplicación Bitfinex, comuníquese con su soporte.",
   "PAID": "PAGO RECIBIDO",
-  "FAILED": "PAGO FALLIDO",
+  "FAILED": "FACTURA VENCIDA",
   "show_receipt": "Mostrar recibo",
   "payment_receipt": "Recibo de pago",
   "payee": "Beneficiario",
