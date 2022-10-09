@@ -41,6 +41,7 @@
     <h2 class="text-center">{{#i18n}}payment_receipt{{/i18n}}</h2>
     <hr><p>
       {{#i18n}}Fiat amount:{{/i18n}} {{record.currencyFrom}} {{record.amountFiat}}
+      <br>{{#i18n}}Satoshi amount:{{/i18n}} {{record.amountSat}}
       <br>{{#i18n}}payee{{/i18n}}: {{record.id}}
       <br>{{#i18n}}details{{/i18n}}: {{record.memo}}
       <br>{{#i18n}}invoice_created{{/i18n}}: {{dateTimeCreated}}

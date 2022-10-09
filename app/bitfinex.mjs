@@ -162,6 +162,10 @@ export default class Gateway {
       wss.on('error', (err) => { reject(err); });
 
       wss.on('message', (msg) => {
+        if (Date.now() > timeLimit) {
+          wss.close();
+          return resolve(false);
+        }
         const data = JSON.parse(msg);
         if (data[1] === 'wu' && data[2][0] === 'exchange' && data[2][2] >= 0) {
           const amount = data[2][2]; // balance total amount
@@ -194,10 +198,6 @@ export default class Gateway {
               }
               break;
             default:
-              if (Date.now() > timeLimit) {
-                wss.close();
-                resolve(false);
-              }
           }
         }
       });
