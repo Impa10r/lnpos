@@ -309,13 +309,13 @@ export default class Server {
                         html += '<hr><center><p>' + req.__('Fiat amount:') + ' ' + currency + ' ' + amountFiat.toFixed(2);
                         html += '<br>1 BTC = ' + rate + ' ' + currency;
                         html += '<br>' + req.__('Satoshi amount:') + ' ' + amountSat + '</p>';
-                        html += req.__('ln_qr');
-                        html += '<br><a href="lightning:' + invoice + '" target="_blank"><img src=' + src + '></a><br>';
+                        //html += '<br>' + req.__('ln_qr') + '</p>';
+                        html += '<a href="lightning:' + invoice + '" target="_blank"><img src=' + src + '></a><br>';
 
                         res.set('Content-type', 'text/html');
                         res.write(html);
 
-                        this.gw.convertProceeds(currencyTo, res)
+                        this.gw.convertProceeds(amountSat, currencyTo, res)
                           .then((success) => {
                             if (success) {
                               const inv = new Invoices({

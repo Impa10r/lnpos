@@ -50,7 +50,7 @@
 	"amount_too_large": "La cantidad es demasiado grande",
 	"Fiat amount:": "Cantidad:",
 	"Satoshi amount:": "Satoshi:",
-	"ln_qr": "Escanee el código QR o haga clic en él",
+	"ln_qr": "Escanee o haga clic",
 	"lightning_invoice": "Factura de Lightning",
 	"error_qr": "el código QR ha caducado, genere uno nuevo",
 	"about": "<center><h2>Sobre el proyecto</h2></center><br>LNPOS es un proyecto de código abierto con el objetivo final de ver pegatinas de 'Bitcoin aceptado aquí' en todos los locales de pequeñas empresas de su barrio. ¡Todos son bienvenidos a participar en el desarrollo del proyecto y su promoción como un <a href='#affiliate'>afiliado</a>.<br><br>¿Le gusta el proyecto y tiene una billetera Lightning? Puede probar la funcionalidad <a href='/impalor'>donando</a> algunos sats para cubrir los gastos corrientes.",

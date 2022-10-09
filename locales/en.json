@@ -50,7 +50,7 @@
 	"generate_invoice": "Generate Lighting invoice",
 	"amount_too_small": "Amount is too small",
 	"amount_too_large": "Amount is too large",
-	"ln_qr": "Scan the QR Code or click on it",
+	"ln_qr": "Scan or click",
 	"lightning_invoice": "Lightning Invoice",
 	"error_qr": "QR code has expired, please generate a new one",
 	"about": "<center><h2>About the project</h2></center><br>LNPOS is an open source project with the end goal to see 'Bitcoin accepted here' stickers in every small business venue in your neighbourhood. Everyone is welcome to participate in the project development and its promotion as an <a href='#affiliate'>affiliate</a>.<br><br>Like the project and have a Lightning wallet? You may test functionality by <a href='/impalor'>donating</a> some sats towards running costs.",

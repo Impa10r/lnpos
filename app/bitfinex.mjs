@@ -142,7 +142,7 @@ export default class Gateway {
     return btcReceived;
   }
 
-  async convertProceeds(currencyTo, res) {
+  async convertProceeds(amountSat, currencyTo, res) {
     const promise = new Promise((resolve, reject) => {
       const timeLimit = Date.now() + 10 * 60 * 1000; // 10 minutes
       const authNonce = this.getNonce().toString();
@@ -176,7 +176,7 @@ export default class Gateway {
           switch (data[2][1]) { // balance currency
             case 'LNX':
               if (amount > 0) {
-                resolve(true); // assume the deposit was just received
+                if (amount >= amountSat / 100000000) resolve(true);
                 if (currencyTo !== 'LNX') {
                   // console.log('transfer', amount);
                   this.transferBetweenWallets('exchange', 'exchange', 'LNX', 'BTC', amount)
