@@ -32,7 +32,7 @@ $ npm start
 $ npm test
 ```
 # Support
-You can join the telegram group or ask questions in Github [LNPOS](http://t.me/lnpos)
+You are welcome to join our [telegram group](http://t.me/lnpos).
 
 # Contribute
 We appreciate help with translations and imrovements to code. See [contributing guide](CONTRIBUTING.md).
