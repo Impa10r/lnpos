@@ -1,3 +1,5 @@
+/* eslint-disable consistent-return */
+/* eslint-disable class-methods-use-this */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable no-console */
 /* eslint-disable import/extensions */
@@ -16,7 +18,7 @@ import Gateway from './bitfinex.mjs';
 import DataBase from './mongo.mjs';
 
 export default class Server {
-  showError(req, res, errCode, err) {
+  renderError(req, res, errCode, err) {
     if (err) console.error(err);
     res.render('error', {
       currentLocale: req.locale,
@@ -53,8 +55,34 @@ export default class Server {
             refCode: id,
           });
         } else {
-          this.showError(req, res, 'error_id_not_found', err);
+          this.renderError(req, res, 'error_id_not_found', err);
         }
+      });
+  }
+
+  renderReceipt(req, res) {
+    const id = req.params.id;
+    const timeCreated = parseInt(req.params.amount, 10);
+
+    this.db.findOne('invoices', { $and: [{ id }, { timeCreated }] })
+      .then((record) => {
+        if (record) {
+          const lang = req.query.lang || record.lang;
+          req.setLocale(lang);
+          const dateTimeCreated = new Date(timeCreated).toISOString().replace(/T/, ' ').replace(/\..+/, 'z');
+          const dateTimePaid = new Date(record.timePaid).toISOString().replace(/T/, ' ').replace(/\..+/, 'z');
+          res.render('receipt', {
+            currentLocale: lang,
+            record,
+            dateTimeCreated,
+            dateTimePaid,
+          });
+        } else {
+          this.renderError(req, res, 'invoice_not_found');
+        }
+      })
+      .catch((err) => {
+        this.renderError(req, res, 'error_database_down', err);
       });
   }
 
@@ -97,6 +125,11 @@ export default class Server {
 
     this.express.get('/:id/:amount/:memo?', (req, res) => {
       const amount = req.params.amount;
+
+      if (amount === parseInt(amount, 10).toString() && amount.length === 13) {
+        return this.renderReceipt(req, res);
+      }
+
       req.query.amount = parseFloat(amount);
       const currency = amount.substring(amount.length - 3).toUpperCase();
       if (['USD', 'EUR', 'GBP', 'JPY', 'CNH', 'MXN'].includes(currency)) req.query.currency = currency;
@@ -115,7 +148,7 @@ export default class Server {
         switch (id) {
           case 'a4':
             qr.toDataURL(url, (err, src) => {
-              if (err) this.showError(req, res, 'error_qr', err);
+              if (err) this.renderError(req, res, 'error_qr', err);
               res.render('a4', {
                 currentLocale: res.locale,
                 src,
@@ -138,11 +171,11 @@ export default class Server {
       const code = req.body.refCode;
       req.setLocale(lang);
       if (code.length !== 10)
-        return this.showError(req, res, 'error_invalid_ref');
+        return this.renderError(req, res, 'error_invalid_ref');
       const desc = req.get('host') + '/' + code;
       const url = req.protocol + '://' + desc;
       qr.toDataURL(url, (err, src) => {
-        if (err) this.showError(req, res, 'error_qr', err);
+        if (err) this.renderError(req, res, 'error_qr', err);
         res.render('ref', {
           currentLocale: lang,
           url,
@@ -150,32 +183,6 @@ export default class Server {
           src,
         });
       });
-    });
-
-    this.express.post('/receipt', (req, res) => {
-      const lang = req.body.lang;
-      const id = req.body.id;
-      const timeCreated = parseInt(req.body.timeCreated);
-
-      this.db.findOne('invoices', { $and: [{ id }, { timeCreated }] })
-        .then((record) => {
-          if (record) {
-            req.setLocale(lang);
-            const dateTimeCreated = new Date(timeCreated).toISOString().replace(/T/, ' ').replace(/\..+/, 'z');
-            const dateTimePaid = new Date(record.timePaid).toISOString().replace(/T/, ' ').replace(/\..+/, 'z');
-            res.render('receipt', {
-              currentLocale: lang,
-              record,
-              dateTimeCreated,
-              dateTimePaid,
-            });
-          } else {
-            this.showError(req, res, 'invoice_not_found');
-          }
-        })
-        .catch((err) => {
-          this.showError(req, res, 'error_database_down', err);
-        });
     });
 
     this.express.post('/add', (req, res) => {
@@ -186,7 +193,7 @@ export default class Server {
         .then((r) => r.json())
         .then((json) => {
           if (json[0] === 'error') {
-            this.showError(req, res, 'error_invalid_keys');
+            this.renderError(req, res, 'error_invalid_keys');
           } else {
             const id = json[2].toLowerCase();
             // Delete previous to avoid duplicates
@@ -207,7 +214,7 @@ export default class Server {
                     this.db.findOne('keys', { id })
                       .then((record) => {
                         if (!record) {
-                          this.showError(req, res, 'error_database_down');
+                          this.renderError(req, res, 'error_database_down');
                         } else {
                           const i = record.id;
                           const desc = req.get('host') + '/' + i;
@@ -223,12 +230,12 @@ export default class Server {
                   });
               })
               .catch((err) => {
-                this.showError(req, res, 'error_database_down', err);
+                this.renderError(req, res, 'error_database_down', err);
               });
           }
         })
         .catch((err) => {
-          this.showError(req, res, 'error_exchange_down', err);
+          this.renderError(req, res, 'error_exchange_down', err);
         });
     });
 
@@ -250,8 +257,8 @@ export default class Server {
               const wap = amountFiat / amountBTC;
               const currencyTo = record.currencyTo;
 
-              if (amountBTC > this.gw.maxInvoiceAmount) { return this.showError(req, res, 'amount_too_large'); }
-              if (amountBTC < this.gw.minInvoiceAmount) { return this.showError(req, res, 'amount_too_small'); }
+              if (amountBTC > this.gw.maxInvoiceAmount) { return this.renderError(req, res, 'amount_too_large'); }
+              if (amountBTC < this.gw.minInvoiceAmount) { return this.renderError(req, res, 'amount_too_small'); }
 
               if (req.body.button === 'link') {
                 const desc = req.get('host') + '/' + id + '/' + amountFiat + (memo ? '/' + memo.replace(/\s/g, "%20") : '');
@@ -267,22 +274,22 @@ export default class Server {
                 .then((r) => r.json())
                 .then((j) => {
                   if (j[0] === 'error') {
-                    return this.showError(req, res, j[2], j);
+                    return this.renderError(req, res, j[2], j);
                   }
                   this.gw.getLightningInvoice(amountBTC)
                     .then((r) => r.json())
                     .then((json) => {
                       if (json[0] === 'error') {
-                        return this.showError(req, res, json[2], json);
+                        return this.renderError(req, res, json[2], json);
                       }
                       const rate = wap.toFixed(2);
                       const amountSat = (amountBTC * 100000000).toFixed(0);
                       const invoice = json[1];
 
                       qr.toDataURL(invoice, (err, src) => {
-                        if (err) this.showError(req, res, 'error_qr', err);
+                        if (err) this.renderError(req, res, 'error_qr', err);
                         if (!this.gw) {
-                          this.showError(req, res, 'error_qr', err);
+                          this.renderError(req, res, 'error_qr', err);
                           return;
                         }
 
@@ -301,16 +308,14 @@ export default class Server {
                                 exchange: record.exchange,
                                 amountSat,
                                 memo,
+                                lang,
                               });
                               inv.save();
+                              const url = req.protocol + '://' + req.get('host') + '/' + id + '/' + timeCreated;
                               let html2 = '<br><p style="color:green"><b>' + req.__('PAID') + '</b></p>';
-                              html2 += '<form class="form" autocomplete="off" action="/receipt" method="POST"><fieldset>';
-                              html2 += '<input type="hidden" id="lang" name="lang" value="' + lang + '">';
-                              html2 += '<input type="hidden" id="id" name="id" value="' + id + '">';
-                              html2 += '<input type="hidden" id="timeCreated" name="timeCreated" value="' + timeCreated + '">';
-                              html2 += '<button class="btn btn-secondary" type ="submit">' + req.__('show_receipt') + '</button><br>';
+                              html2 += '<a href="' + url + '">' + req.__('show_receipt') + '</a>';
                               html2 += '</center></div></body></html>';
-                              
+
                               res.end(html2);
                             } else {
                               const html2 = '<br><p style="color:red"><b>' + req.__('FAILED') + '</b></p></center></div></body></html>';
@@ -343,11 +348,11 @@ export default class Server {
                 });
             })
             .catch((err) => {
-              this.showError(req, res, 'error_exchange_down', err);
+              this.renderError(req, res, 'error_exchange_down', err);
             });
         })
         .catch((err) => {
-          this.showError(req, res, 'error_database_down', err);
+          this.renderError(req, res, 'error_database_down', err);
         });
     });
   }

@@ -12,6 +12,7 @@ const keySchema = new mongoose.Schema(
     exchange: { type: String, required: true },
     amountSat: { type: Number, required: true },
     memo: { type: String, required: false },
+    lang: { type: String, required: true },
   },
 );
 

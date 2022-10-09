@@ -69,7 +69,9 @@
   "FAILED": "PAYMENT FAILED",
   "show_receipt": "Show receipt",
   "payment_receipt": "Payment Receipt",
-  "date_time_created": "Date & time issued",
-  "date_time_paid": "Date & time paid",
+  "payee": "Payee",
+  "details": "Details",
+  "invoice_created": "Invoice created",
+  "invoice_paid": "Invoice paid",
   "invoice_not_found": "Invoice not found"
 }

@@ -69,7 +69,9 @@
   "FAILED": "PAGO FALLIDO",
   "show_receipt": "Mostrar recibo",
   "payment_receipt": "Recibo de pago",
-  "date_time_created": "Fecha y hora de emisión",
-  "date_time_paid": "Fecha y hora de pago",
+  "payee": "Beneficiario",
+  "details": "Detalles",
+  "invoice_created": "Factura creada",
+  "invoice_paid": "Factura pagada",
   "invoice_not_found": "Factura no encontrada"
 }

@@ -41,8 +41,10 @@
     <h2 class="text-center">{{#i18n}}payment_receipt{{/i18n}}</h2>
     <hr><p>
       {{#i18n}}Fiat amount:{{/i18n}} {{record.currencyFrom}} {{record.amountFiat}}
-      <br><br>{{#i18n}}date_time_created{{/i18n}}:<br>{{dateTimeCreated}}
-      <br><br>{{#i18n}}date_time_paid{{/i18n}}:<br>{{dateTimePaid}}
+      <br>{{#i18n}}payee{{/i18n}}: {{record.id}}
+      <br>{{#i18n}}details{{/i18n}}: {{record.memo}}
+      <br>{{#i18n}}invoice_created{{/i18n}}: {{dateTimeCreated}}
+      <br>{{#i18n}}invoice_paid{{/i18n}}: {{dateTimePaid}}
       <br><br></p>
       <a href="/"><img src="check-mark.svg" style="width: 200px; max-width: 50%; height: auto"></a>
 
