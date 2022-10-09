@@ -30,12 +30,12 @@ export default class Server {
     const id = req.params.id;
     this.db.findOne('keys', { id: id.toLowerCase() })
       .then((record) => {
-        const lang = req.query.lang || record.lang;
-        const currencyFrom = req.query.currency || record.currencyFrom;
-        const amountOptions = req.query.amount ? 'value="' + req.query.amount + '" readonly' : '';
-        const memoOptions = req.query.memo ? 'value="' + req.query.memo + '" readonly' : '';
-        const buttonOptions = typeof req.query.amount !== 'undefined' ? 'hidden' : '';
-        const labelOptions = typeof req.query.amount !== 'undefined' ? '' : 'hidden';
+        const lang = typeof req.query.lang === 'undefined' ? record.lang : req.query.lang;
+        const currencyFrom = req.query.c || record.currencyFrom;
+        const amountOptions = req.query.a ? 'value="' + req.query.a + '" readonly' : '';
+        const memoOptions = req.query.m ? 'value="' + req.query.m + '" readonly' : '';
+        const buttonOptions = typeof req.query.a !== 'undefined' ? 'hidden' : '';
+        const labelOptions = typeof req.query.a !== 'undefined' ? '' : 'hidden';
 
         req.setLocale(lang);
         res.render('request', {
@@ -62,12 +62,12 @@ export default class Server {
 
   renderReceipt(req, res) {
     const id = req.params.id;
-    const timeCreated = parseInt(req.params.amount, 10);
+    const timeCreated = parseInt(req.query.i, 10);
 
     this.db.findOne('invoices', { $and: [{ id }, { timeCreated }] })
       .then((record) => {
         if (record) {
-          const lang = req.query.lang || record.lang;
+          const lang = typeof req.query.lang === 'undefined' ? record.lang : req.query.lang;
           req.setLocale(lang);
           const dateTimeCreated = new Date(timeCreated).toISOString().replace(/T/, ' ').replace(/\..+/, 'z');
           const dateTimePaid = new Date(record.timePaid).toISOString().replace(/T/, ' ').replace(/\..+/, 'z');
@@ -125,28 +125,27 @@ export default class Server {
 
     this.express.get('/:id/:amount/:memo?', (req, res) => {
       const amount = req.params.amount;
-
-      if (amount === parseInt(amount, 10).toString() && amount.length === 13) {
-        return this.renderReceipt(req, res);
-      }
-
-      req.query.amount = parseFloat(amount);
+      let url = req.protocol + '://' + req.get('host') + '/' + req.params.id + '?a=' + parseFloat(amount);
       const currency = amount.substring(amount.length - 3).toUpperCase();
-      if (['USD', 'EUR', 'GBP', 'JPY', 'CNH', 'MXN'].includes(currency)) req.query.currency = currency;
-      if (req.params.memo) req.query.memo = req.params.memo;
-      return this.renderRequest(req, res);
+      if (['USD', 'EUR', 'GBP', 'JPY', 'CNH', 'MXN'].includes(currency)) url += '&c=' + currency;
+      if (req.params.memo) url += '&m=' + req.params.memo;
+      if (req.query.lang) url += '&lang=' + req.query.lang;
+      res.redirect(url);
     });
 
     this.express.get('/:id?', (req, res) => {
       const id = req.params.id;
       const browserLang = req.headers['accept-language'] ? req.headers['accept-language'].substring(0, 2) : 'en';
-      const url = req.protocol + '://' + req.get('host') + '/' + req.query.id;
-
       if (!res.locale && ['es', 'ru'].includes(browserLang)) req.setLocale(browserLang);
+
+      if (req.query.i) {
+        return this.renderReceipt(req, res);
+      }
 
       if (id) {
         switch (id) {
           case 'a4':
+            const url = req.protocol + '://' + req.get('host') + '/' + req.query.id;
             qr.toDataURL(url, (err, src) => {
               if (err) this.renderError(req, res, 'error_qr', err);
               res.render('a4', {
@@ -311,7 +310,7 @@ export default class Server {
                                 lang,
                               });
                               inv.save();
-                              const url = req.protocol + '://' + req.get('host') + '/' + id + '/' + timeCreated;
+                              const url = req.protocol + '://' + req.get('host') + '/' + id + '?i=' + timeCreated;
                               let html2 = '<br><p style="color:green"><b>' + req.__('PAID') + '</b></p>';
                               html2 += '<a href="' + url + '">' + req.__('show_receipt') + '</a>';
                               html2 += '</center></div></body></html>';
