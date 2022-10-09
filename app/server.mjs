@@ -293,7 +293,7 @@ export default class Server {
                         }
 
                         const timeCreated = Date.now();
-                        
+
                         let html = '<!DOCTYPE html>';
                         html += '<html lang="' + lang + '">';
                         html += '<head><meta charset="utf-8"><title>Payment QR</title>';
@@ -306,10 +306,10 @@ export default class Server {
                         html += 'body { margin: 10px; padding: 10px; }</style></head>';
                         html += '<body><div class="container">';
                         html += '<h2 class="text-center">' + req.__('lightning_invoice') + '</h1>';
-                        html += '<hr><center><p>' + req.__('Fiat amount:') + ' ' + currency + ' ' + amountFiat.toFixed(2);
+                        html += '<hr><center><h4 class="text-center">' + req.__('Fiat amount:') + ' ' + currency + ' ' + amountFiat.toFixed(2);
                         html += '<br>1 BTC = ' + rate + ' ' + currency;
-                        html += '<br>' + req.__('Satoshi amount:') + ' ' + amountSat + '</p>';
-                        //html += '<br>' + req.__('ln_qr') + '</p>';
+                        html += '<br>' + req.__('Satoshi amount:') + ' ' + amountSat + '</h4>';
+                        html += '<p>' + req.__('ln_qr') + '<br>';
                         html += '<a href="lightning:' + invoice + '" target="_blank"><img src=' + src + '></a><br>';
 
                         res.set('Content-type', 'text/html');
