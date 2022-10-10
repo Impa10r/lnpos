@@ -294,8 +294,8 @@ export default class Server {
                           return;
                         }
 
-                        function toFix(x) {
-                          return Number(x).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        function toFix(x, y) {
+                          return Number(x).toFixed(y).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                         }
 
                         const timeCreated = Date.now();
@@ -312,9 +312,9 @@ export default class Server {
                         html += 'body { margin: 10px; padding: 10px; }th, td {padding-right: 10px;}</style></head>';
                         html += '<body><div class="container">';
                         html += '<h2 class="text-center">' + req.__('lightning_invoice') + '</h2>';
-                        html += '<hr><center><table><tr><th><h4>' + req.__('Fiat amount:') + ' </td><td><h4>' + currency + ' ' + toFix(amountFiat) + '</h4></td></tr>';
-                        html += '<tr><td><h4>BTC/' + currency + ': </h4></td><td><h4>' + toFix(rate) + '</h4></td>';
-                        html += '<tr><td><h4>' + req.__('Satoshi amount:') + ' </h4></td><td><h4>' + amountSat + '</h4></td></tr></table>';
+                        html += '<hr><center><table><tr><th><h4>' + req.__('Fiat amount:') + ' </td><td><h4>' + currency + ' ' + toFix(amountFiat, 2) + '</h4></td></tr>';
+                        html += '<tr><td><h4>BTC/' + currency + ': </h4></td><td><h4>' + toFix(rate, 2) + '</h4></td>';
+                        html += '<tr><td><h4>' + req.__('Satoshi amount:') + ' </h4></td><td><h4>' + toFix(amountSat, 0) + '</h4></td></tr></table>';
                         html += '<p>' + req.__('ln_qr') + '<br>';
                         html += '<a href="lightning:' + invoice + '" target="_blank"><img src=' + src + '></a><br>';
 
