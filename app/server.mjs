@@ -319,7 +319,7 @@ export default class Server {
                         html += '<hr><center><table><tr><td><h4>' + req.__('Fiat amount:') + ' </td><td><h4>' + currency + ' ' + toFix(amountFiat, 2) + '</h4></td></tr>';
                         html += '<tr><td><h4>BTC/' + currency + ': </h4></td><td><h4>' + toFix(rate, 2) + '</h4></td>';
                         html += '<tr><td><h4>' + req.__('Satoshi amount:') + ' </h4></td><td><h4>' + toFix(amountSat, 0) + '</h4></td></tr></table>';
-                        html += '<p class="text-center">' + req.__('ln_qr') + '<br>';
+                        html += '<p class="text-center"></small>' + req.__('ln_qr') + '<br>';
                         html += '<a href="lightning:' + invoice + '" target="_blank"><img src=' + src + '></a><br>';
 
                         res.set('Content-type', 'text/html');
