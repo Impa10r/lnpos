@@ -17,6 +17,10 @@ import Invoices from './models/invoices.mjs';
 import Gateway from './bitfinex.mjs';
 import DataBase from './mongo.mjs';
 
+function toFix(x, y) {
+  return Number(x).toFixed(y).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
 export default class Server {
   renderError(req, res, errCode, err) {
     if (err) console.error(err);
@@ -73,9 +77,13 @@ export default class Server {
           req.setLocale(lang);
           const dateTimeCreated = new Date(timeCreated).toISOString().replace(/T/, ' ').replace(/\..+/, 'z');
           const dateTimePaid = new Date(record.timePaid).toISOString().replace(/T/, ' ').replace(/\..+/, 'z');
+          const amountFiat = toFix(record.amountFiat, 2);
+          const amountSat = toFix(record.amountSat, 0);
           res.render('receipt', {
             currentLocale: lang,
             record,
+            amountFiat,
+            amountSat,
             dateTimeCreated,
             dateTimePaid,
           });
@@ -294,10 +302,6 @@ export default class Server {
                           return;
                         }
 
-                        function toFix(x, y) {
-                          return Number(x).toFixed(y).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                        }
-
                         const timeCreated = Date.now();
 
                         let html = '<!DOCTYPE html>';
@@ -312,7 +316,7 @@ export default class Server {
                         html += 'body { margin: 10px; padding: 10px; }th, td {padding-right: 10px;}</style></head>';
                         html += '<body><div class="container">';
                         html += '<h2 class="text-center">' + req.__('lightning_invoice') + '</h2>';
-                        html += '<hr><center><table><tr><th><h4>' + req.__('Fiat amount:') + ' </td><td><h4>' + currency + ' ' + toFix(amountFiat, 2) + '</h4></td></tr>';
+                        html += '<hr><center><table><tr><td><h4>' + req.__('Fiat amount:') + ' </td><td><h4>' + currency + ' ' + toFix(amountFiat, 2) + '</h4></td></tr>';
                         html += '<tr><td><h4>BTC/' + currency + ': </h4></td><td><h4>' + toFix(rate, 2) + '</h4></td>';
                         html += '<tr><td><h4>' + req.__('Satoshi amount:') + ' </h4></td><td><h4>' + toFix(amountSat, 0) + '</h4></td></tr></table>';
                         html += '<p class="text-center">' + req.__('ln_qr') + '<br>';

@@ -71,8 +71,8 @@
 	"payment_receipt": "Payment Receipt",
 	"payee": "Payee",
 	"details": "Details",
-	"invoice_created": "Invoice created",
-	"invoice_paid": "Invoice paid",
+	"invoice_created": "Invoiced",
+	"invoice_paid": "Paid",
 	"invoice_not_found": "Invoice not found",
 	"invoice: error": "Error generating Lightning Invoice. If the same problem persists in Bitfinex app, please contact their support."
 }

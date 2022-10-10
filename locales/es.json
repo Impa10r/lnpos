@@ -71,8 +71,8 @@
   "payment_receipt": "Recibo de pago",
   "payee": "Beneficiario",
   "details": "Detalles",
-  "invoice_created": "Factura creada",
-  "invoice_paid": "Factura pagada",
+  "invoice_created": "Facturado",
+  "invoice_paid": "Pagado",
   "invoice_not_found": "Factura no encontrada",
 	"invoice: error": "Error al generar la Factura Lightning. Si el mismo problema persiste en la aplicación Bitfinex, comuníquese con su soporte."
 }
