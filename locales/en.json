@@ -45,7 +45,7 @@
 	"error_database_down": "Internal error. Sorry! It the problem persists, please contact support.",
 	"error_exchange_down": "Cannot connect to the exchange. Please try again later.",
 	"error_id_not_found": "This payment link is not valid.",
-	"pay_currency": "Amount in currency",
+	"pay_currency": "Amount in",
 	"memo": "Details (optional)",
 	"generate_invoice": "Generate Lighting invoice",
 	"amount_too_small": "Amount is too small",

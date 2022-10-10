@@ -43,7 +43,7 @@
 	"error_database_down": "Error interno. ¡Lo siento! Si el problema persiste, póngase en contacto con el soporte.",
 	"error_exchange_down": "No se puede conectar a la bolsa. Por favor, inténtelo de nuevo más tarde.",
 	"error_id_not_found": "Este enlace de pago no es válido.",
-	"pay_currency": "La cantidad en moneda",
+	"pay_currency": "La cantidad en",
   "memo": "Detalles (opcional)",
 	"generate_invoice": "Generar factura de Lightning",
 	"amount_too_small": "La cantidad es demasiado pequeña",
