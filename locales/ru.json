@@ -72,10 +72,10 @@
 	"payment_receipt": "Квитанция об оплате",
 	"payee": "Получатель",
 	"details": "Описание",
-	"invoice_created": "Выставлен",
-	"invoice_paid": "Оплачен",
+	"invoice_created": "Выставлено",
+	"invoice_paid": "Оплачено",
 	"invoice_not_found": "Счет не найден",
 	"invoice: error": "Ошибка создания счета Lightning. Если та же проблема наблюдается в приложении Bitfinex, обратитесь в их службу поддержки.",
-	"pending": "в ожидании",
-	"failed": "неудавшийся"
+	"pending": "В ожидании",
+	"failed": "Неудалось"
 }

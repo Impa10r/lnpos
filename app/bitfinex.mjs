@@ -139,10 +139,10 @@ export default class Gateway {
       }
       i += 1;
     }
-    return btcReceived;
+    return parseFloat(btcReceived.toFixed(8));
   }
 
-  async convertProceeds(amountSat, currencyTo, res) {
+  async convertProceeds(amountBtc, currencyTo, res) {
     const promise = new Promise((resolve, reject) => {
       const timeLimit = Date.now() + 10 * 60 * 1000; // 10 minutes
       const authNonce = this.getNonce().toString();
@@ -161,52 +161,54 @@ export default class Gateway {
       wss.on('open', () => wss.send(JSON.stringify(payload)));
       wss.on('error', (err) => { reject(err); });
 
+      let transferComplete = false;
+
       wss.on('message', (msg) => {
         const data = JSON.parse(msg);
-        //console.log(data, timeLimit - Date.now());
-        if (data[1] === 'hb') {
-          if (Date.now() > timeLimit) {
-            wss.close();
-            return resolve(false);
-          }
-          res.write('.');
-        }
-        if (data[1] === 'wu' && data[2][0] === 'exchange' && data[2][2] >= 0) {
-          const amount = data[2][2]; // balance total amount
-          switch (data[2][1]) { // balance currency
-            case 'LNX':
-              if (amount > 0) {
-                if (amount >= amountSat / 100000000) resolve(true);
-                if (currencyTo !== 'LNX') {
-                  // console.log('transfer', amount);
-                  this.transferBetweenWallets('exchange', 'exchange', 'LNX', 'BTC', amount)
-                    .then((r) => r.json())
-                    .then((json) => {
-                      if (json[0] !== 'error') {
-                        //console.error(json);
-                      }
-                    });
-                }
+        switch (data[1]) {
+          case 'hb': // heartbeat
+            if (Date.now() > timeLimit) {
+              wss.close();
+              return resolve(false);
+            }
+            res.write('.');
+            break;
+          case 'n': // notification
+            switch (data[2][1]) {
+              case 'deposit_complete':
+                if (data[2][4].currency === 'LNX' && parseFloat(data[2][4].amount) === amountBtc) resolve(true);
+                break;
+              case 'wallet_transfer':
+                transferComplete = true;
+                if (currencyTo === 'BTC') wss.close(); // all done
+                break;
+              default:
+            }
+            break;
+          case 'te': // trade executed
+            if (data[2][0] === `tBTC${currencyTo}` && transferComplete) wss.close(); // all done
+            break;
+          case 'wu': // wallet update
+            if (data[2][0] === 'exchange') {
+              const amount = data[2][2]; // balance total amount
+              switch (data[2][1]) { // balance currency
+                case 'LNX':
+                  if (amount > 0) this.transferBetweenWallets('exchange', 'exchange', 'LNX', 'BTC', amount);
+                  break;
+                case 'BTC':
+                  if (currencyTo !== 'BTC' && amount > 0 && transferComplete) {
+                    if (amount < this.minTradeAmount) wss.close(); // cannot trade
+                    else this.placeMarketOrder(`tBTC${currencyTo}`, -amount);
+                  }
+                  break;
+                default:
               }
-              break;
-            case 'BTC':
-              if (currencyTo !== 'BTC' && amount >= this.minTradeAmount) {
-                //console.log('sell BTC' + currencyTo, amount);
-                this.placeMarketOrder(`tBTC${currencyTo}`, -amount)
-                  .then((r) => r.json())
-                  .then((json) => {
-                    if (json[0] === 'error') {
-                      //console.error(json);
-                    }
-                  });
-              }
-              break;
-            default:
-          }
+            }
+            break;
+          default:
         }
       });
     });
-
     return promise;
   }
 }

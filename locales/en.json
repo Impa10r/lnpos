@@ -76,6 +76,6 @@
 	"invoice_paid": "Paid",
 	"invoice_not_found": "Invoice not found",
 	"invoice: error": "Error generating Lightning Invoice. If the same problem persists in Bitfinex app, please contact their support.",
-  "pending": "pending",
-	"failed": "failed"
+  "pending": "Pending",
+	"failed": "Failed"
 }

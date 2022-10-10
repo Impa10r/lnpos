@@ -112,7 +112,7 @@ export default class Server {
 
                 while (i > 0) {
                   i -= 1;
-                  if (json[i][12] === amountSat / 100000000) received = json[i][5];
+                  if (json[i][12] * 100000000 === record.amountSat) received = json[i][5];
                 }
 
                 if (received) {
@@ -324,7 +324,7 @@ export default class Server {
           this.gw = new Gateway(record.key, record.secret);
           this.gw.getBook('tBTC' + currency)
             .then((result) => {
-              const amountBTC = this.gw.simulateSell(parseFloat(amountFiat), result.data);
+              const amountBTC = this.gw.simulateSell(amountFiat, result.data);
               const wap = amountFiat / amountBTC;
               const currencyTo = record.currencyTo;
 
@@ -399,12 +399,12 @@ export default class Server {
                         html += '<tr><td><h4>' + req.__('Satoshi amount:') + ' </h4></td><td><h4>' + toFix(amountSat, 0) + '</h4></td></tr></table>';
                         html += '<p class="text-md-center">' + req.__('ln_qr') + '<br>';
                         html += '<a href="lightning:' + invoice + '" target="_blank"><img src=' + src + '></a><br>';
-                        html += '<a href="' + url + '" target="_blank">' + req.__('show_receipt') + '</a>';
+                        html += '<a href="' + url + '" target="_blank">' + req.__('show_receipt') + '</a><br>';
 
                         res.set('Content-type', 'text/html');
                         res.write(html);
 
-                        this.gw.convertProceeds(amountSat, currencyTo, res)
+                        this.gw.convertProceeds(amountBTC, currencyTo, res)
                           .then((success) => {
                             if (success) {
                               this.db.updateOne('invoices', { $and: [{ id }, { timeCreated }] }, { $set: { timePaid: Date.now() } });
