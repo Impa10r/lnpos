@@ -315,7 +315,7 @@ export default class Server {
                         html += '<hr><center><table><tr><th><h4>' + req.__('Fiat amount:') + ' </td><td><h4>' + currency + ' ' + toFix(amountFiat, 2) + '</h4></td></tr>';
                         html += '<tr><td><h4>BTC/' + currency + ': </h4></td><td><h4>' + toFix(rate, 2) + '</h4></td>';
                         html += '<tr><td><h4>' + req.__('Satoshi amount:') + ' </h4></td><td><h4>' + toFix(amountSat, 0) + '</h4></td></tr></table>';
-                        html += '<p>' + req.__('ln_qr') + '<br>';
+                        html += '<p class="text-center">' + req.__('ln_qr') + '<br>';
                         html += '<a href="lightning:' + invoice + '" target="_blank"><img src=' + src + '></a><br>';
 
                         res.set('Content-type', 'text/html');
@@ -341,13 +341,13 @@ export default class Server {
                               inv.save();
 
                               const url = req.protocol + '://' + req.get('host') + '/' + id + '?i=' + timeCreated;
-                              let html2 = '<p style="color:green"><b>' + req.__('PAID') + '</b></p>';
+                              let html2 = '<h4 style="color:green"><b>' + req.__('PAID') + '</b></h4>';
                               html2 += '<a href="' + url + '">' + req.__('show_receipt') + '</a>';
                               html2 += '</center></div></body></html>';
 
                               res.end(html2);
                             } else {
-                              const html2 = '<p style="color:red"><b>' + req.__('FAILED') + '</b></p></center></div></body></html>';
+                              const html2 = '<h4 style="color:red"><b>' + req.__('FAILED') + '</b></h4></center></div></body></html>';
                               res.end(html2);
                             }
                           });
