@@ -21,7 +21,7 @@
 	"here": "aqui",
 	"influencer": "¿Eres un influencer y un entusiasta de las criptomonedas? ¡Usted puede ayudar a que este emocionante proyecto tenga éxito mientras gana dinero en el proceso! Como ya sabrá, Bitfinex ejecuta un programa de afiliados en el que puede ganar el 18% de las tarifas comerciales pagadas por aquellos que presentó. Estamos hablando del 18% del 0,2% del volumen de negociación. Puede que no parezca mucho, pero no hay límite de tiempo, ni límite para el número de referencias. Un día, los pagos con Bitcoins se volverán populares, y querrás haber estado involucrado temprano.<br><br>Este es un buen proyecto para recomendar a su amigos que tienen una pequeña empresa. Ahorrará costes y ampliará su base de clientes. Todas las tarifas comerciales que financian esta campaña de afiliados las pagan entusiastas de las criptomonedas como nosotros. También ayuda a popularizar Bitcoin, lo que resulta en un mejor valor. ¡Todos ganan!<br><br>Su objetivo final es ver las etiquetas adhesivas 'Bitcoin aceptado aquí' en todas las tiendas y restaurantes de su barrio. Esta es una campaña de marketing puerta a puerta y cara a cara. Comience con los negocios que frecuenta como cliente, pregúnteles si aceptan Bitcoin. Luego explique lo fácil que es comenzar y envíe su enlace de referencia con información. Para generar su enlace de referencia personal, siga los pasos a continuación:",
 	"step_3af": "Segue <a href='https://affiliate.bitfinex.com' target='_blank'>este enlace</a>.",
-	"step_4af": "Haga clic en 'Generar nuevo código', copie el código de 10 símbolos y péguelo en el campo de abajo. Presiona el botón.",
+	"step_4af": "Haga clic en 'Generate New Code', copie el código de 10 símbolos y péguelo en el campo de abajo. Presiona el botón.",
 	"generate_ref": "Generar enlace de referencia",
 	"new_referral_link": "A continuación se muestra su enlace de referencia único. Guárdelo en el escritorio de su PC, en la pantalla de inicio del teléfono o en los marcadores. Puede compartirlo en las redes sociales y enviarlo a sus contactos directos.",
 	"new_payment_link": "A continuación se muestra su enlace de pago único. Guárdelo en el escritorio de su PC, en la pantalla de inicio del teléfono o en los marcadores. Puede reenviarlo a sus empleados o clientes para generar solicitudes de pago.",
@@ -73,5 +73,6 @@
   "details": "Detalles",
   "invoice_created": "Factura creada",
   "invoice_paid": "Factura pagada",
-  "invoice_not_found": "Factura no encontrada"
+  "invoice_not_found": "Factura no encontrada",
+	"invoice: error": "Error al generar la Factura Lightning. Si el mismo problema persiste en la aplicación Bitfinex, comuníquese con su soporte."
 }

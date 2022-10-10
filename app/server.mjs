@@ -30,7 +30,8 @@ export default class Server {
     const id = req.params.id;
     this.db.findOne('keys', { id: id.toLowerCase() })
       .then((record) => {
-        const lang = typeof req.query.lang === 'undefined' ? record.lang : req.query.lang;
+        let lang = record.lang;
+        if (req.query && req.query.lang) lang = req.query.lang;
         const currencyFrom = req.query.c || record.currencyFrom;
         const amountOptions = req.query.a ? 'value="' + req.query.a + '" readonly' : '';
         const memoOptions = req.query.m ? 'value="' + req.query.m + '" readonly' : '';
@@ -67,7 +68,8 @@ export default class Server {
     this.db.findOne('invoices', { $and: [{ id }, { timeCreated }] })
       .then((record) => {
         if (record) {
-          const lang = typeof req.query.lang === 'undefined' ? record.lang : req.query.lang;
+          let lang = record.lang;
+          if (req.query && req.query.lang) lang = req.query.lang;
           req.setLocale(lang);
           const dateTimeCreated = new Date(timeCreated).toISOString().replace(/T/, ' ').replace(/\..+/, 'z');
           const dateTimePaid = new Date(record.timePaid).toISOString().replace(/T/, ' ').replace(/\..+/, 'z');

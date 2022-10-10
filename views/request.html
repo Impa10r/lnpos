@@ -42,21 +42,21 @@
     <hr>
       <form class="form" autocomplete="off" action="/pay" method="POST">
         <fieldset>
-          <label class="text-center" for="amountFiat">{{#i18n}}pay_currency{{/i18n}} {{currencyFrom}}:</label>
-          <br>
-          <input class="text-center" type="number" step="0.01" id = "amountFiat" name="amountFiat" {{{amountOptions}}} required autofocus>
-          <br><br>
-          <label class="text-center" for="memo">{{#i18n}}memo{{/i18n}}:</label>
-          <br>
-          <input class="text-center" type="text" id = 'memo' name="memo" {{{memoOptions}}}>
-          <br><br>
-          <input type="hidden" id="currency" name="currency" value="{{currencyFrom}}">
-          <input type="hidden" id="lang" name="lang" value="{{currentLocale}}">
-          <input type="hidden" id="id" name="id" value="{{id}}">
-          <button class="btn btn-primary" name="button" value="invoice" type ="submit">{{#i18n}}generate_invoice{{/i18n}}</button>
-          <br><br>
-          <label class="text-center" {{{labelOptions}}}>{{#i18n}}remote_request{{/i18n}}</label>
-          <button class="btn btn-secondary" name="button" value="link" type="submit" {{{buttonOptions}}}>{{#i18n}}generate_link{{/i18n}}</button>
+          <div class="form-group">
+            <label class="col-form-label col-form-label-lg" for="amountFiat">{{#i18n}}pay_currency{{/i18n}} {{currencyFrom}}:</label>
+            <input class="form-control form-control-lg" type="number" step="0.01" id = "amountFiat" name="amountFiat" {{{amountOptions}}} required autofocus>
+            <br>
+            <label class="col-form-label col-form-label-lg" for="memo">{{#i18n}}memo{{/i18n}}:</label>
+            <input class="form-control form-control-lg" type="text" id = 'memo' name="memo" {{{memoOptions}}}>
+            <br>
+            <input type="hidden" id="currency" name="currency" value="{{currencyFrom}}">
+            <input type="hidden" id="lang" name="lang" value="{{currentLocale}}">
+            <input type="hidden" id="id" name="id" value="{{id}}">
+            <button class="btn btn-primary" name="button" value="invoice" type ="submit">{{#i18n}}generate_invoice{{/i18n}}</button>
+            <br><br>
+            <label class="text-center" {{{labelOptions}}}>{{#i18n}}remote_request{{/i18n}}</label>
+            <button class="btn btn-secondary" name="button" value="link" type="submit" {{{buttonOptions}}}>{{#i18n}}generate_link{{/i18n}}</button>
+          </div>
         </fieldset>
       </form>
     <br>
