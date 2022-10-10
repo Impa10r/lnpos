@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable consistent-return */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable prefer-destructuring */
@@ -17,8 +18,12 @@ import Invoices from './models/invoices.mjs';
 import Gateway from './bitfinex.mjs';
 import DataBase from './mongo.mjs';
 
-function toFix(x, y) {
-  return Number(x).toFixed(y).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+function toFix(number, decimals) {
+  return Number(number).toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function toZulu(unixTime) {
+  return new Date(unixTime).toISOString().replace(/T/, ' ').replace(/\..+/, 'z')
 }
 
 export default class Server {
@@ -69,16 +74,24 @@ export default class Server {
     const id = req.params.id;
     const timeCreated = parseInt(req.query.i, 10);
 
-    this.db.findOne('invoices', { $and: [{ id }, { timeCreated }] })
-      .then((record) => {
-        if (record) {
-          let lang = record.lang;
-          if (req.query && req.query.lang) lang = req.query.lang;
-          req.setLocale(lang);
-          const dateTimeCreated = new Date(timeCreated).toISOString().replace(/T/, ' ').replace(/\..+/, 'z');
-          const dateTimePaid = new Date(record.timePaid).toISOString().replace(/T/, ' ').replace(/\..+/, 'z');
-          const amountFiat = toFix(record.amountFiat, 2);
-          const amountSat = toFix(record.amountSat, 0);
+    this.db.findOne('invoices', { $and: [{ id }, { timeCreated }] }).then((record) => {
+      if (record) {
+        let lang = record.lang;
+        if (req.query && req.query.lang) lang = req.query.lang;
+        req.setLocale(lang);
+        const dateTimeCreated = toZulu(timeCreated);
+        const amountFiat = toFix(record.amountFiat, 2);
+        const amountSat = toFix(record.amountSat, 0);
+        let paymentPicure = 'check-mark.png';
+        let dateTimePaid = '';
+
+        if (record.timePaid) {
+          if (record.timePaid === 'failed') {
+            dateTimePaid = req.__('failed');
+            paymentPicure = 'red-cross.png';
+          } else {
+            dateTimePaid = toZulu(record.timePaid);
+          }
           res.render('receipt', {
             currentLocale: lang,
             record,
@@ -86,14 +99,63 @@ export default class Server {
             amountSat,
             dateTimeCreated,
             dateTimePaid,
+            paymentPicure,
           });
         } else {
-          this.renderError(req, res, 'invoice_not_found');
+          this.db.findOne('keys', { id }).then((rec) => {
+            this.gw = new Gateway(rec.key, rec.secret);
+            this.gw.getMovements('LNX', timeCreated, timeCreated + 600000)
+              .then((r) => r.json())
+              .then((json) => {
+                let received = null;
+                let i = json.length;
+
+                while (i > 0) {
+                  i -= 1;
+                  if (json[i][12] === amountSat / 100000000) received = json[i][5];
+                }
+
+                if (received) {
+                  this.db.updateOne('invoices', { $and: [{ id }, { timeCreated }] }, { $set: { timePaid: received } });
+                  dateTimePaid = toZulu(received);
+                  return res.render('receipt', {
+                    currentLocale: lang,
+                    record,
+                    amountFiat,
+                    amountSat,
+                    dateTimeCreated,
+                    dateTimePaid,
+                    paymentPicure,
+                  });
+                }
+
+                if (timeCreated < Date.now() - 600000) {
+                  this.db.updateOne('invoices', { $and: [{ id }, { timeCreated }] }, { $set: { timePaid: 'failed' } });
+                  dateTimePaid = req.__('failed');
+                  paymentPicure = 'red-cross.png';
+                } else {
+                  dateTimePaid = req.__('pending');
+                  paymentPicure = 'question-mark.png';
+                }
+                return res.render('receipt', {
+                  currentLocale: lang,
+                  record,
+                  amountFiat,
+                  amountSat,
+                  dateTimeCreated,
+                  dateTimePaid,
+                  paymentPicure,
+                });
+              });
+          });
         }
-      })
-      .catch((err) => {
-        this.renderError(req, res, 'error_database_down', err);
-      });
+      } else {
+        this.renderError(req, res, 'invoice_not_found');
+      }
+    })
+    .catch((err) => {
+      this.renderError(req, res, 'error_database_down', err);
+    });
   }
 
   constructor({ i18nProvider }) {
@@ -303,17 +365,33 @@ export default class Server {
                         }
 
                         const timeCreated = Date.now();
+                        const url = req.protocol + '://' + req.get('host') + '/' + id + '?i=' + timeCreated;
+
+                        const inv = new Invoices({
+                          id,
+                          timeCreated,
+                          currencyFrom: currency,
+                          currencyTo,
+                          amountFiat,
+                          exchangeRate: rate,
+                          exchange: record.exchange,
+                          amountSat,
+                          memo,
+                          lang,
+                        });
+
+                        inv.save();
 
                         let html = '<!DOCTYPE html>';
                         html += '<html lang="' + lang + '">';
-                        html += '<head><meta charset="utf-8"><title>Payment QR</title>';
+                        html += '<head><meta charset="utf-8"><title>' + req.__('lightning_invoice') + '</title>';
                         html += '<meta name="viewport" content="width=device-width, initial-scale=1">';
                         html += '<link rel="icon" type="image/svg+xml" href="favicon.svg">';
                         html += '<link rel="icon" type="image/png" href="favicon.png">';
                         html += '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
                         html += '<style>@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap");';
                         html += '* {font-family: Montserrat;}';
-                        html += 'body { margin: 10px; padding: 10px; }th, td {padding-right: 10px;}</style></head>';
+                        html += 'body { margin: 5px; padding: 5px; }th, td {padding-right: 10px;}</style></head>';
                         html += '<body><div class="container">';
                         html += '<h2 class="text-center">' + req.__('lightning_invoice') + '</h2>';
                         html += '<hr><center><table><tr><td><h4>' + req.__('Fiat amount:') + ' </td><td><h4>' + currency + ' ' + toFix(amountFiat, 2) + '</h4></td></tr>';
@@ -321,6 +399,7 @@ export default class Server {
                         html += '<tr><td><h4>' + req.__('Satoshi amount:') + ' </h4></td><td><h4>' + toFix(amountSat, 0) + '</h4></td></tr></table>';
                         html += '<p class="text-md-center">' + req.__('ln_qr') + '<br>';
                         html += '<a href="lightning:' + invoice + '" target="_blank"><img src=' + src + '></a><br>';
+                        html += '<a href="' + url + '" target="_blank">' + req.__('show_receipt') + '</a>';
 
                         res.set('Content-type', 'text/html');
                         res.write(html);
@@ -328,27 +407,8 @@ export default class Server {
                         this.gw.convertProceeds(amountSat, currencyTo, res)
                           .then((success) => {
                             if (success) {
-                              const inv = new Invoices({
-                                id,
-                                timeCreated,
-                                timePaid: Date.now(),
-                                currencyFrom: currency,
-                                currencyTo,
-                                amountFiat,
-                                exchangeRate: rate,
-                                exchange: record.exchange,
-                                amountSat,
-                                memo,
-                                lang,
-                              });
-
-                              inv.save();
-
-                              const url = req.protocol + '://' + req.get('host') + '/' + id + '?i=' + timeCreated;
-                              let html2 = '<h4 style="color:green"><b>' + req.__('PAID') + '</b></h4>';
-                              html2 += '<a href="' + url + '">' + req.__('show_receipt') + '</a>';
-                              html2 += '</center></div></body></html>';
-
+                              this.db.updateOne('invoices', { $and: [{ id }, { timeCreated }] }, { $set: { timePaid: Date.now() } });
+                              const html2 = '<h4 style="color:green"><b>' + req.__('PAID') + '</b></h4></center></div></body></html>';
                               res.end(html2);
                             } else {
                               const html2 = '<h4 style="color:red"><b>' + req.__('FAILED') + '</b></h4></center></div></body></html>';

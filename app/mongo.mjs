@@ -26,6 +26,10 @@ export default class DataBase {
     return this.db.collection(collection).findOne(query);
   }
 
+  async updateOne(collection, query, update) {
+    return this.db.collection(collection).updateOne(query, update, { upsert: true });
+  }
+
   async deleteOne(collection, query) {
     return this.db.collection(collection).deleteOne(query);
   }

@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Payment Receipt</title>
+  <title>{{#i18n}}payment_receipt{{/i18n}}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="icon" type="image/png" href="favicon.png">
@@ -34,22 +34,23 @@
     th, td {
       padding-right: 10px;
     }
+
   </style>
 </head>
 
 <body>
     <center>
       <h2>{{#i18n}}payment_receipt{{/i18n}}</h2>
-      <hr><p>
+      <hr>
       <table><tr><td>{{#i18n}}Fiat amount:{{/i18n}}</td><td>{{record.currencyFrom}} {{amountFiat}}</td></tr>
         <tr><td>{{#i18n}}Satoshi amount:{{/i18n}}</td><td>{{amountSat}}</td></tr>
         <tr><td>{{#i18n}}payee{{/i18n}}:</td><td>{{record.id}}</td></tr>
         <tr><td>{{#i18n}}details{{/i18n}}:</td><td>{{record.memo}}</td></tr>
         <tr><td>{{#i18n}}invoice_created{{/i18n}}:</td><td>{{dateTimeCreated}}</td></tr>
         <tr><td>{{#i18n}}invoice_paid{{/i18n}}:</td><td>{{dateTimePaid}}</td></tr>
-      </table></p>
+      </table>
       <br>
-      <a href="/"><img src="check-mark.png" style="max-width: 50%; height: auto"></a>
+      <a href="/"><img src="{{paymentPicure}}" style="max-width: 50%; height: auto"></a>
     </center>
 </body>
 </html>

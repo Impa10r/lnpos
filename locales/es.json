@@ -1,6 +1,7 @@
 {
 	"lnpos": "Punto de Venta Lightning Network",
 	"slogan": "Aceptar Bitcoin gratis y sin riesgo de mercado.",
+  "description": "Una solución para que las pequeñas empresas acepten bitcoin lightning en sus instalaciones.",
   "_Affiliates": "Socios",
   "_FAQ": "FAQ",
   "_Help": "Ayuda",
@@ -74,5 +75,7 @@
   "invoice_created": "Facturado",
   "invoice_paid": "Pagado",
   "invoice_not_found": "Factura no encontrada",
-	"invoice: error": "Error al generar la Factura Lightning. Si el mismo problema persiste en la aplicación Bitfinex, comuníquese con su soporte."
+	"invoice: error": "Error al generar la Factura Lightning. Si el mismo problema persiste en la aplicación Bitfinex, comuníquese con su soporte.",
+  "pending": "pendiente",
+	"failed": "ha fallado"
 }

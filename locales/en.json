@@ -1,6 +1,7 @@
 {
 	"lnpos": "Lightning Network Point of Sale",
 	"slogan": "Accept Bitcoin for free and without market risk.",
+  "description": "A solution for small businesses to accept bitcoin lightning at the premises.",
 	"_Affiliates": "Partners",
 	"_FAQ": "FAQ",
 	"_Help": "Help",
@@ -74,5 +75,7 @@
 	"invoice_created": "Invoiced",
 	"invoice_paid": "Paid",
 	"invoice_not_found": "Invoice not found",
-	"invoice: error": "Error generating Lightning Invoice. If the same problem persists in Bitfinex app, please contact their support."
+	"invoice: error": "Error generating Lightning Invoice. If the same problem persists in Bitfinex app, please contact their support.",
+  "pending": "pending",
+	"failed": "failed"
 }
