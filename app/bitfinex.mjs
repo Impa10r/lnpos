@@ -162,6 +162,7 @@ export default class Gateway {
       wss.on('error', (err) => { reject(err); });
 
       let transferComplete = false;
+      let depositComplete = false;
 
       wss.on('message', (msg) => {
         const data = JSON.parse(msg);
@@ -176,17 +177,20 @@ export default class Gateway {
           case 'n': // notification
             switch (data[2][1]) {
               case 'deposit_complete':
-                if (data[2][4].currency === 'LNX' && parseFloat(data[2][4].amount) === amountBtc) resolve(true);
+                if (data[2][4].currency === 'LNX' && parseFloat(data[2][4].amount) === amountBtc) {
+                  depositComplete = true;
+                  resolve(true);
+                }
                 break;
               case 'wallet_transfer':
                 transferComplete = true;
-                if (currencyTo === 'BTC') wss.close(); // all done
+                if (currencyTo === 'BTC' && depositComplete) wss.close(); // all done
                 break;
               default:
             }
             break;
           case 'te': // trade executed
-            if (data[2][0] === `tBTC${currencyTo}` && transferComplete) wss.close(); // all done
+            if (data[2][0] === `tBTC${currencyTo}` && transferComplete && depositComplete) wss.close(); // all done
             break;
           case 'wu': // wallet update
             if (data[2][0] === 'exchange') {
@@ -196,7 +200,7 @@ export default class Gateway {
                   if (amount > 0) this.transferBetweenWallets('exchange', 'exchange', 'LNX', 'BTC', amount);
                   break;
                 case 'BTC':
-                  if (currencyTo !== 'BTC' && amount > 0 && transferComplete) {
+                  if (currencyTo !== 'BTC' && amount > 0 && transferComplete && depositComplete) {
                     if (amount < this.minTradeAmount) wss.close(); // cannot trade
                     else this.placeMarketOrder(`tBTC${currencyTo}`, -amount);
                   }
