@@ -294,6 +294,10 @@ export default class Server {
                           return;
                         }
 
+                        function toFix(x) {
+                          return Number(x).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        }
+
                         const timeCreated = Date.now();
 
                         let html = '<!DOCTYPE html>';
@@ -305,12 +309,12 @@ export default class Server {
                         html += '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
                         html += '<style>@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap");';
                         html += '* {font-family: Montserrat;}';
-                        html += 'body { margin: 10px; padding: 10px; }</style></head>';
+                        html += 'body { margin: 10px; padding: 10px; }th, td {padding-right: 10px;}</style></head>';
                         html += '<body><div class="container">';
-                        html += '<h2 class="text-center">' + req.__('lightning_invoice') + '</h1>';
-                        html += '<hr><center><h4 class="text-center">' + req.__('Fiat amount:') + ' ' + currency + ' ' + amountFiat.toFixed(2);
-                        html += '<br>BTC/' + currency + ': ' + rate;
-                        html += '<br>' + req.__('Satoshi amount:') + ' ' + amountSat + '</h4>';
+                        html += '<h2 class="text-center">' + req.__('lightning_invoice') + '</h2>';
+                        html += '<hr><center><table><tr><th><h4>' + req.__('Fiat amount:') + ' </td><td><h4>' + currency + ' ' + toFix(amountFiat) + '</h4></td></tr>';
+                        html += '<tr><td><h4>BTC/' + currency + ': </h4></td><td><h4>' + toFix(rate) + '</h4></td>';
+                        html += '<tr><td><h4>' + req.__('Satoshi amount:') + ' </h4></td><td><h4>' + amountSat + '</h4></td></tr></table>';
                         html += '<p>' + req.__('ln_qr') + '<br>';
                         html += '<a href="lightning:' + invoice + '" target="_blank"><img src=' + src + '></a><br>';
 
