@@ -192,7 +192,7 @@ export default class Server {
 
     this.express.get('/robots.txt', (req, res) => {
       res.type('text/plain');
-      res.send('User-agent: *\nAllow: /$\nAllow: /?lang=*\nDisallow: /');
+      res.send('User-agent: *\nAllow: /$\nAllow: /?lang=es\nAllow: /?lang=ru\nDisallow: /');
     });
 
     this.express.get('/:id/:amount/:memo?', (req, res) => {
