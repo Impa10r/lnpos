@@ -334,6 +334,7 @@ export default class Server {
 
       this.db.findOne('keys', { id })
         .then((record) => {
+          if (!record || record.paymentPending) return this.renderError(req, res, 'error_payment_pending');
           this.gw = new Gateway(record.key, record.secret);
           this.gw.getBook('tBTC' + currency)
             .then((result) => {
@@ -394,6 +395,7 @@ export default class Server {
                         });
 
                         inv.save();
+                        this.db.updateOne('keys', { id }, { $set: { paymentPending: true } });
 
                         let html = '<!DOCTYPE html>';
                         html += '<html lang="' + lang + '">';
@@ -419,6 +421,7 @@ export default class Server {
 
                         this.gw.convertProceeds(amountBTC, currencyTo, res)
                           .then((success) => {
+                            this.db.updateOne('keys', { id }, { $set: { paymentPending: false } });
                             if (success) {
                               this.db.updateOne('invoices', { $and: [{ id }, { timeCreated }] }, { $set: { timePaid: Date.now() } });
                               const html2 = '<h4 style="color:green"><b>' + req.__('PAID') + '</b></h4></center></div></body></html>';
