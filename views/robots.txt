@@ -3,5 +3,4 @@ Allow: /$
 Allow: /en$
 Allow: /es$
 Allow: /ru$
-Disallow: /
 Sitemap: https://lnpos.me/sitemap.xml
