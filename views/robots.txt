@@ -1,6 +1,3 @@
 'User-agent: *
-Allow: /$
-Allow: /en$
-Allow: /es$
-Allow: /ru$
+Allow: /
 Sitemap: https://lnpos.me/sitemap.xml
