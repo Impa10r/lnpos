@@ -192,7 +192,7 @@ export default class Server {
 
     this.express.get('/robots.txt', (req, res) => {
       res.type('text/plain');
-      res.send('User-agent: *\nAllow: /$\nAllow: /?lang=\nDisallow: /');
+      res.send('User-agent: *\nAllow: /$\nAllow: /es$\nAllow: /ru$\nDisallow: /');
     });
 
     this.express.get('/:id/:amount/:memo?', (req, res) => {
@@ -216,6 +216,15 @@ export default class Server {
 
       if (id) {
         switch (id) {
+          case 'ru':
+          case 'es':
+          case 'en':
+            req.setLocale(id);
+            res.render('index', {
+              currentLocale: id,
+              refCode: 'TuVr9K55M',
+            });
+            break;
           case 'a4':
             const url = req.protocol + '://' + req.get('host') + '/' + req.query.id;
             qr.toDataURL(url, (err, src) => {
