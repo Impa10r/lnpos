@@ -55,7 +55,7 @@
 	"ln_qr": "Scan or click",
 	"lightning_invoice": "Lightning Invoice",
 	"error_qr": "QR code has expired, please generate a new one",
-	"about": "<center><h2>About the project</h2></center><br>LNPOS is an open source project with the end goal to see 'Bitcoin accepted here' stickers in every small business venue in your neighbourhood. Everyone is welcome to participate in the project development and its promotion as an <a href='#affiliate'>affiliate</a>.<br><br>Like the project and have a Lightning wallet? You may test functionality by <a href='/impalor'>donating</a> some sats towards running costs.",
+	"about": "<center><h2>About the project</h2></center><br>LNPOS is an open source project with the end goal to see 'Bitcoin accepted here' stickers in every small business venue in your neighbourhood. Everyone is welcome to participate in the project development and its promotion as an <a href='#affiliate'>affiliate</a>.<br><br>Like the project and have a Lightning wallet? You may test functionality by <a href='/_fFetSofPtZ'>donating</a> some sats towards running costs.",
 	"powered": "Powered by",
 	"help": "If you still have questions or concerns, please join our Telegram <a href='https://t.me/lnpos'>support group</a> or send a direct message to <a href='https://t.me/lnpos_me'>@lnpos_me</a>.",
 	"faq": "Frequently Asked Questions",

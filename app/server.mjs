@@ -420,6 +420,7 @@ export default class Server {
                           invoiceId = nanoid(12);
                           const inv = new Invoices({
                             invoiceId,
+                            payee,
                             timeCreated: Date.now(),
                             timePresented: Date.now(),
                             timePaid: 0,
