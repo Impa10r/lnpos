@@ -222,7 +222,7 @@ export default class Server {
                       let lang = record.lang;
                       if (req.query && req.query.lang) lang = req.query.lang;
                       const amountOptions = 'value="' + record.amountFiat + '" readonly';
-                      const memoOptions = record.memo ? 'value="' + req.query.m + '" readonly' : '';
+                      const memoOptions = record.memo ? 'value="' + record.memo + '" readonly' : '';
                       const primaryLabelOptions = record.timePaid > 0 ? '' : 'hidden';
                       const primaryButtonOptions = record.timePaid > 0 ? 'hidden' : '';
                       const secondaryButtonOptions = 'hidden';
