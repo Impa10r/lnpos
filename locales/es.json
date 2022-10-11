@@ -41,7 +41,7 @@
 	"generate_link": "Generar enlace de pago",
   "error_invalid_ref": "Identificación de referencia no válida. ¡Inténtalo de nuevo!",
 	"error_invalid_keys": "Credenciales de API no válidas. ¡Inténtalo de nuevo!",
-	"error_database_down": "Error interno. ¡Lo siento! Si el problema persiste, póngase en contacto con el soporte.",
+	"error_database_down": "Error interno de base de datos. ¡Lo siento! Si el problema persiste, póngase en contacto con el soporte.",
 	"error_exchange_down": "No se puede conectar a la bolsa. Por favor, inténtelo de nuevo más tarde.",
 	"error_id_not_found": "Este enlace de pago no es válido.",
 	"pay_currency": "La cantidad en",

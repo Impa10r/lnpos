@@ -42,35 +42,35 @@ export default class Server {
     const id = req.params.id;
     this.db.findOne('keys', { id: id.toLowerCase() })
       .then((record) => {
-        let lang = record.lang;
-        if (req.query && req.query.lang) lang = req.query.lang;
-        const currencyFrom = req.query.c || record.currencyFrom;
-        const amountOptions = req.query.a ? 'value="' + req.query.a + '" readonly' : '';
-        const memoOptions = req.query.m ? 'value="' + req.query.m + '" readonly' : '';
-        const buttonOptions = typeof req.query.a !== 'undefined' ? 'hidden' : '';
-        const labelOptions = typeof req.query.a !== 'undefined' ? '' : 'hidden';
+        if (record) {
+          let lang = record.lang;
+          if (req.query && req.query.lang) lang = req.query.lang;
+          const currencyFrom = req.query.c || record.currencyFrom;
+          const amountOptions = req.query.a ? 'value="' + req.query.a + '" readonly' : '';
+          const memoOptions = req.query.m ? 'value="' + req.query.m + '" readonly' : '';
+          const buttonOptions = typeof req.query.a !== 'undefined' ? 'hidden' : '';
+          const labelOptions = typeof req.query.a !== 'undefined' ? '' : 'hidden';
 
-        req.setLocale(lang);
-        res.render('request', {
-          currentLocale: lang,
-          id,
-          currencyFrom,
-          amountOptions,
-          memoOptions,
-          buttonOptions,
-          labelOptions,
-        });
-      })
-      .catch((err) => {
-        if (id.length === 10) {
-          res.render('index', {
-            currentLocale: res.locale,
-            refCode: id,
+          req.setLocale(lang);
+          res.render('request', {
+            currentLocale: lang,
+            id,
+            currencyFrom,
+            amountOptions,
+            memoOptions,
+            buttonOptions,
+            labelOptions,
           });
         } else {
-          this.renderError(req, res, 'error_id_not_found', err);
+          if (id.length === 10) { // ref code
+            res.render('index', {
+              currentLocale: res.locale,
+              refCode: id,
+            });
+          } else this.renderError(req, res, 'error_id_not_found');   
         }
-      });
+      })
+      .catch((err) => this.renderError(req, res, 'error_database_down', err));
   }
 
   renderReceipt(req, res) {

@@ -43,7 +43,7 @@
 	"generate_link": "Generate payment link",
 	"error_invalid_ref": "Invalid referral ID. Please try again!",
 	"error_invalid_keys": "Invalid API credentials. Please try again!",
-	"error_database_down": "Internal error. Sorry! It the problem persists, please contact support.",
+	"error_database_down": "Internal database error. Sorry! It the problem persists, please contact support.",
 	"error_exchange_down": "Cannot connect to the exchange. Please try again later.",
 	"error_id_not_found": "This payment link is not valid.",
 	"pay_currency": "Amount in",
