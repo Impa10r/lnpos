@@ -2,9 +2,11 @@ import { mongoose } from 'mongoose';
 
 const keySchema = new mongoose.Schema(
   {
-    id: { type: String, index: { unique: false } },
-    timeCreated: { type: Number, index: { unique: false } },
-    timePaid: { type: Number, required: false },
+    invoiceId: { type: String, index: { unique: false } },
+    payee: { type: String, index: { unique: false } },
+    timeCreated: { type: Number, required: true },
+    timePresented: { type: Number, required: true }, // 0 = in transit
+    timePaid: { type: Number, required: true }, // 0 = in transit, -1 = failed
     currencyFrom: { type: String, required: true },
     currencyTo: { type: String, required: true },
     amountFiat: { type: Number, required: true },

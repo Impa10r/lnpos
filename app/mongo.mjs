@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { mongoose } from 'mongoose';
 import {} from 'dotenv/config';
 
@@ -13,7 +14,7 @@ export default class DataBase {
       useUnifiedTopology: true,
     })
       .then(() => { if (!quiet) console.info('DB Connection Successfull'); })
-      .catch((error) => { throw new Error(error); })
+      .catch((error) => { throw new Error(error); });
 
     // Get the default connection
     this.db = mongoose.connection;

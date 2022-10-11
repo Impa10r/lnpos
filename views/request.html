@@ -47,13 +47,15 @@
             <br>
             <input class="form-control form-control-lg" type="text" id = 'memo' placeholder = "{{#i18n}}memo{{/i18n}}" name="memo" {{{memoOptions}}}>
             <br>
-            <input type="hidden" id="currency" name="currency" value="{{currencyFrom}}">
+            <input type="hidden" id="currencyFrom" name="currencyFrom" value="{{currencyFrom}}">
             <input type="hidden" id="lang" name="lang" value="{{currentLocale}}">
-            <input type="hidden" id="id" name="id" value="{{id}}">
-            <button class="btn btn-primary" name="button" value="invoice" type ="submit">{{#i18n}}generate_invoice{{/i18n}}</button>
+            <input type="hidden" id="invoiceId" name="invoiceId" value="{{invoiceId}}">
+            <input type="hidden" id="payee" name="payee" value="{{payee}}">
+            <button class="btn btn-primary" name="button" value="invoice" type ="submit"{{{primaryButtonOptions}}}>{{#i18n}}generate_invoice{{/i18n}}</button>
+            <label class="text-center" {{{primaryLabelOptions}}}>{{#i18n}}already_paid{{/i18n}}</label>
             <br><br>
-            <label class="text-center" {{{labelOptions}}}>{{#i18n}}remote_request{{/i18n}}</label>
-            <button class="btn btn-secondary" name="button" value="link" type="submit" {{{buttonOptions}}}>{{#i18n}}generate_link{{/i18n}}</button>
+            <label class="text-center" {{{secondaryLabelOptions}}}>{{#i18n}}remote_request{{/i18n}}</label>
+            <button class="btn btn-secondary" name="button" value="link" type="submit" {{{secondaryButtonOptions}}}>{{#i18n}}generate_link{{/i18n}}</button>
           </div>
         </fieldset>
       </form>

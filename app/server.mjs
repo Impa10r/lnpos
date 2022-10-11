@@ -16,6 +16,7 @@ import https from 'https';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { nanoid } from 'nanoid';
 import Keys from './models/keys.mjs';
 import Invoices from './models/invoices.mjs';
 import Gateway from './bitfinex.mjs';
@@ -38,53 +39,20 @@ export default class Server {
     });
   }
 
-  renderRequest(req, res) {
-    const id = req.params.id;
-    this.db.findOne('keys', { id: id.toLowerCase() })
-      .then((record) => {
-        if (record) {
-          let lang = record.lang;
-          if (req.query && req.query.lang) lang = req.query.lang;
-          const currencyFrom = req.query.c || record.currencyFrom;
-          const amountOptions = req.query.a ? 'value="' + req.query.a + '" readonly' : '';
-          const memoOptions = req.query.m ? 'value="' + req.query.m + '" readonly' : '';
-          const buttonOptions = typeof req.query.a !== 'undefined' ? 'hidden' : '';
-          const labelOptions = typeof req.query.a !== 'undefined' ? '' : 'hidden';
-
-          req.setLocale(lang);
-          res.render('request', {
-            currentLocale: lang,
-            id,
-            currencyFrom,
-            amountOptions,
-            memoOptions,
-            buttonOptions,
-            labelOptions,
-          });
-        } else {
-          if (id.length === 10) { // ref code
-            res.render('index', {
-              currentLocale: res.locale,
-              refCode: id,
-            });
-          } else this.renderError(req, res, 'error_id_not_found');   
-        }
-      })
-      .catch((err) => this.renderError(req, res, 'error_database_down', err));
-  }
-
   renderReceipt(req, res) {
-    const id = req.params.id;
-    const timeCreated = parseInt(req.query.i, 10);
+    const invoiceId =req.query.i;
 
-    this.db.findOne('invoices', { $and: [{ id }, { timeCreated }] }).then((record) => {
+    this.db.findOne('invoices', { invoiceId }).then((record) => {
       if (record) {
+        const id = record.payee;
         let lang = record.lang;
         if (req.query && req.query.lang) lang = req.query.lang;
         req.setLocale(lang);
-        const dateTimeCreated = toZulu(timeCreated);
+        const timePresented = record.timePresented;
+        const dateTimeCreated = toZulu(record.timeCreated);
+        const dateTimePresented = toZulu(timePresented);
         const amountFiat = toFix(record.amountFiat, 2);
-        const amountSat = toFix(record.amountSat, 0);
+        const amountSat = parseInt(record.amountSat);
         let paymentPicure = 'check-mark.png';
         let dateTimePaid = '';
 
@@ -99,41 +67,41 @@ export default class Server {
             currentLocale: lang,
             record,
             amountFiat,
-            amountSat,
+            amountSat: toFix(amountSat),
             dateTimeCreated,
+            dateTimePresented,
             dateTimePaid,
             paymentPicure,
           });
         } else {
           this.db.findOne('keys', { id }).then((rec) => {
             this.gw = new Gateway(rec.key, rec.secret);
-            this.gw.getMovements('LNX', timeCreated, timeCreated + 600000)
+            this.gw.getMovements('LNX', timePresented, timePresented + 600000)
               .then((r) => r.json())
               .then((json) => {
                 let received = null;
                 let i = json.length;
-
                 while (i > 0) {
                   i -= 1;
-                  if (json[i][12] * 100000000 === record.amountSat) received = json[i][5];
+                  if (json[i][12] * 100000000 === amountSat) received = json[i][5];
                 }
-
                 if (received) {
-                  this.db.updateOne('invoices', { $and: [{ id }, { timeCreated }] }, { $set: { timePaid: received } });
+                  this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: received } });
                   dateTimePaid = toZulu(received);
                   return res.render('receipt', {
                     currentLocale: lang,
                     record,
                     amountFiat,
-                    amountSat,
+                    amountSat: toFix(amountSat),
                     dateTimeCreated,
+                    dateTimePresented,
                     dateTimePaid,
                     paymentPicure,
                   });
                 }
 
-                if (timeCreated < Date.now() - 600000) {
-                  this.db.updateOne('invoices', { $and: [{ id }, { timeCreated }] }, { $set: { timePaid: -1 } });
+                if (timePresented < Date.now() - 600000) {
+                  this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
                   dateTimePaid = req.__('failed');
                   paymentPicure = 'red-cross.png';
                 } else {
@@ -144,8 +112,9 @@ export default class Server {
                   currentLocale: lang,
                   record,
                   amountFiat,
-                  amountSat,
+                  amountSat: toFix(amountSat),
                   dateTimeCreated,
+                  dateTimePresented,
                   dateTimePaid,
                   paymentPicure,
                 });
@@ -193,61 +162,89 @@ export default class Server {
     this.express.use(helmet());
     this.express.use(limiter);
 
-    this.express.get('/:id/:amount/:memo?', (req, res) => {
-      const amount = req.params.amount;
-      let url = req.protocol + '://' + req.get('host') + '/' + req.params.id + '?a=' + parseFloat(amount);
-      const currency = amount.substring(amount.length - 3).toUpperCase();
-      if (['USD', 'EUR', 'GBP', 'JPY', 'CNH', 'MXN'].includes(currency)) url += '&c=' + currency;
-      if (req.params.memo) url += '&m=' + req.params.memo;
-      if (req.query.lang) url += '&lang=' + req.query.lang;
-      res.redirect(url);
-    });
-
     this.express.get('/:id?', (req, res) => {
       const id = req.params.id;
       const browserLang = req.headers['accept-language'] ? req.headers['accept-language'].substring(0, 2) : 'en';
       if (!res.locale && ['es', 'ru'].includes(browserLang)) req.setLocale(browserLang);
-
-      if (req.query.i) {
-        return this.renderReceipt(req, res);
-      }
-
+      if (req.query.i) return this.renderReceipt(req, res);
       if (id) {
         switch (id) {
           case 'robots.txt':
           case 'sitemap.xml':
             const filename = fileURLToPath(import.meta.url);
             const dirname = path.dirname(filename);
-            fs.createReadStream(path.join(dirname, '../views/', id)).pipe(res);
-            break;
+            return fs.createReadStream(path.join(dirname, '../views/', id)).pipe(res);
           case 'ru':
           case 'es':
           case 'en':
             req.setLocale(id);
-            res.render('index', {
+            return res.render('index', {
               currentLocale: id,
               refCode: 'TuVr9K55M',
             });
-            break;
           case 'a4':
             const url = req.protocol + '://' + req.get('host') + '/' + req.query.id;
-            qr.toDataURL(url, (err, src) => {
+            return qr.toDataURL(url, (err, src) => {
               if (err) this.renderError(req, res, 'error_qr', err);
               res.render('a4', {
                 currentLocale: res.locale,
                 src,
               });
             });
-            break;
           default:
-            this.renderRequest(req, res);
+            switch (id.length) {
+              case 10: // affiliate code
+                return res.render('index', {
+                  currentLocale: res.locale,
+                  refCode: id,
+                });
+              case 11: // user id
+                return this.db.findOne('keys', { id })
+                  .then((record) => {
+                    if (record) {
+                      let lang = record.lang;
+                      if (req.query && req.query.lang) lang = req.query.lang;
+                      req.setLocale(lang);
+                      res.render('request', {
+                        currentLocale: lang,
+                        payee: id,
+                        currencyFrom: record.currencyFrom,
+                        primaryLabelOptions: 'hidden',
+                        secondaryLabelOptions: 'hidden',
+                      });
+                    } else this.renderError(req, res, 'error_id_not_found');   
+                  })
+                  .catch((err) => this.renderError(req, res, 'error_database_down', err));
+              case 12: // invoice id
+                return this.db.findOne('invoices', { invoiceId: id })
+                  .then((record) => {
+                    if (record) {
+                      let lang = record.lang;
+                      if (req.query && req.query.lang) lang = req.query.lang;
+                      const amountOptions = 'value="' + record.amountFiat + '" readonly';
+                      const memoOptions = record.memo ? 'value="' + req.query.m + '" readonly' : '';
+                      const primaryLabelOptions = record.timePaid > 0 ? '' : 'hidden';
+                      const primaryButtonOptions = record.timePaid > 0 ? 'hidden' : '';
+                      const secondaryButtonOptions = 'hidden';
+                      req.setLocale(lang);
+                      res.render('request', {
+                        currentLocale: lang,
+                        invoiceId: record.invoiceId,
+                        payee: record.payee,
+                        currencyFrom: record.currencyFrom,
+                        amountOptions,
+                        memoOptions,
+                        primaryButtonOptions,
+                        secondaryButtonOptions,
+                        primaryLabelOptions
+                      });
+                    } else this.renderError(req, res, 'invoice_not_found');
+                  }).catch((err) => this.renderError(req, res, 'error_database_down', err));
+              default:
+            }
         }
-      } else {
-        res.render('index', {
-          currentLocale: res.locale,
-          refCode: 'TuVr9K55M',
-        });
-      }
+      } 
+      res.render('index', { currentLocale: res.locale, refCode: 'TuVr9K55M', });
     });
 
     this.express.post('/ref', (req, res) => {
@@ -279,9 +276,9 @@ export default class Server {
           if (json[0] === 'error') {
             this.renderError(req, res, 'error_invalid_keys');
           } else {
-            const id = json[2].toLowerCase();
-            // Delete previous to avoid duplicates
-            this.db.deleteMany('keys', { id: new RegExp(`^${id}$`, 'i') }) // case insensitive
+            const id = nanoid(11);
+            // Delete previous key to avoid duplicates
+            this.db.deleteMany('keys', { key: req.body.apiKey }) 
               .then(r => {
                 const data = new Keys({
                   id,
@@ -290,8 +287,7 @@ export default class Server {
                   exchange: req.body.exchange,
                   currencyFrom: req.body.currencyFrom,
                   currencyTo: req.body.currencyTo,
-                  lang,
-                  paymentPending: false,
+                  lang
                 });
                 data.save()
                   .then(() => {
@@ -326,18 +322,18 @@ export default class Server {
 
     this.express.post('/pay', (req, res) => {
       const lang = req.body.lang;
-      const id = req.body.id.toLowerCase();
-      const currency = req.body.currency;
-      const memo = req.body.memo;
+      const payee = req.body.payee;
+      
+      const currencyFrom = req.body.currencyFrom;
+      const memo = typeof req.body.memo === 'undefined' ? '' : req.body.memo ;
       const amountFiat = parseFloat(req.body.amountFiat);
 
       req.setLocale(lang);
 
-      this.db.findOne('keys', { id })
+      this.db.findOne('keys', { id: payee })
         .then((record) => {
-          if (!record || record.paymentPending) return this.renderError(req, res, 'error_payment_pending');
           this.gw = new Gateway(record.key, record.secret);
-          this.gw.getBook('tBTC' + currency)
+          this.gw.getBook('tBTC' + currencyFrom)
             .then((result) => {
               const amountBTC = this.gw.simulateSell(amountFiat, result.data);
               const wap = amountFiat / amountBTC;
@@ -347,7 +343,24 @@ export default class Server {
               if (amountBTC < this.gw.minInvoiceAmount) { return this.renderError(req, res, 'amount_too_small'); }
 
               if (req.body.button === 'link') {
-                const desc = req.get('host') + '/' + id + '/' + amountFiat + (memo ? '/' + memo.replace(/\s/g, "%20") : '');
+                const invoiceId = nanoid(12);
+                const inv = new Invoices({
+                  invoiceId,
+                  payee,
+                  timeCreated: Date.now(),
+                  timePresented: 0,
+                  timePaid: 0,
+                  currencyFrom,
+                  currencyTo,
+                  amountFiat,
+                  exchangeRate: 0,
+                  exchange: record.exchange,
+                  amountSat: 0,
+                  memo,
+                  lang,
+                });
+                inv.save();
+                const desc = req.get('host') + '/' + invoiceId;
                 const url = req.protocol + '://' + desc;
                 return res.render('payremote', {
                   currentLocale: lang,
@@ -355,7 +368,7 @@ export default class Server {
                   desc,
                 });
               }
-
+              
               this.gw.getDepositAddr('LNX', 'exchange')
                 .then((r) => r.json())
                 .then((j) => {
@@ -368,8 +381,8 @@ export default class Server {
                       if (json[0] === 'error') {
                         return this.renderError(req, res, json[2], json);
                       }
-                      const rate = wap.toFixed(2);
-                      const amountSat = (amountBTC * 100000000).toFixed(0);
+                      const exchangeRate = wap.toFixed(2);
+                      const amountSat = amountBTC * 100000000;
                       const invoice = json[1];
 
                       qr.toDataURL(invoice, (err, src) => {
@@ -379,26 +392,38 @@ export default class Server {
                           return;
                         }
 
-                        const timeCreated = Date.now();
-                        const url = req.protocol + '://' + req.get('host') + '/' + id + '?i=' + timeCreated;
+                        let invoiceId = req.body.invoiceId;
+                        
+                        if (invoiceId) {
+                          this.db.updateOne('invoices', { invoiceId }, { $set: { 
+                              timePresented: Date.now(),
+                              timePaid: 0,
+                              exchangeRate,
+                              amountSat,
+                              memo,
+                              lang
+                            } });
+                        } else {
+                          invoiceId = nanoid(12);
+                          const inv = new Invoices({
+                            invoiceId,
+                            timeCreated: Date.now(),
+                            timePresented: Date.now(),
+                            timePaid: 0,
+                            currencyFrom,
+                            currencyTo,
+                            amountFiat,
+                            exchangeRate,
+                            exchange: record.exchange,
+                            amountSat,
+                            memo,
+                            lang,
+                          });
+                          inv.save();  
+                        }
 
-                        const inv = new Invoices({
-                          id,
-                          timeCreated,
-                          timePaid: 0,
-                          currencyFrom: currency,
-                          currencyTo,
-                          amountFiat,
-                          exchangeRate: rate,
-                          exchange: record.exchange,
-                          amountSat,
-                          memo,
-                          lang,
-                        });
-
-                        inv.save();
-                        this.db.updateOne('keys', { id }, { $set: { paymentPending: true } });
-
+                        const url = req.protocol + '://' + req.get('host') + '/?i=' + invoiceId;
+                        
                         let html = '<!DOCTYPE html>';
                         html += '<html lang="' + lang + '">';
                         html += '<head><meta charset="utf-8"><title>' + req.__('lightning_invoice') + '</title>';
@@ -411,8 +436,8 @@ export default class Server {
                         html += 'body { margin: 5px; padding: 5px; }th, td {padding-right: 10px;}</style></head>';
                         html += '<body><div class="container">';
                         html += '<h2 class="text-center">' + req.__('lightning_invoice') + '</h2>';
-                        html += '<hr><center><table><tr><td><h4>' + req.__('Fiat amount:') + ' </td><td><h4>' + currency + ' ' + toFix(amountFiat, 2) + '</h4></td></tr>';
-                        html += '<tr><td><h4>BTC/' + currency + ': </h4></td><td><h4>' + toFix(rate, 2) + '</h4></td>';
+                        html += '<hr><center><table><tr><td><h4>' + req.__('Fiat amount:') + ' </td><td><h4>' + currencyTo + ' ' + toFix(amountFiat, 2) + '</h4></td></tr>';
+                        html += '<tr><td><h4>BTC/' + currencyTo + ': </h4></td><td><h4>' + toFix(exchangeRate, 2) + '</h4></td>';
                         html += '<tr><td><h4>' + req.__('Satoshi amount:') + ' </h4></td><td><h4>' + toFix(amountSat, 0) + '</h4></td></tr></table>';
                         html += '<p class="text-md-center">' + req.__('ln_qr') + '<br>';
                         html += '<a href="lightning:' + invoice + '" target="_blank"><img src=' + src + '></a><br>';
@@ -423,12 +448,12 @@ export default class Server {
 
                         this.gw.convertProceeds(amountBTC, currencyTo, res)
                           .then((success) => {
-                            this.db.updateOne('keys', { id }, { $set: { paymentPending: false } });
                             if (success) {
-                              this.db.updateOne('invoices', { $and: [{ id }, { timeCreated }] }, { $set: { timePaid: Date.now() } });
+                              this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: Date.now() } });
                               const html2 = '<h4 style="color:green"><b>' + req.__('PAID') + '</b></h4></center></div></body></html>';
                               res.end(html2);
                             } else {
+                              this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
                               const html2 = '<h4 style="color:red"><b>' + req.__('FAILED') + '</b></h4></center></div></body></html>';
                               res.end(html2);
                             }
@@ -449,18 +474,19 @@ export default class Server {
 
   resolvePendingInvoices(self) {
     console.log('Resolving hang invoices...');
-    self.db.find('invoices', { timePaid: 0 }).then((resp) => {
+    self.db.find('invoices', { $and: [{ timePresented: { $gt: 0 } }, { timePaid: 0 }] }).then((resp) => {
       resp.toArray((err, records) => {
         if (err) return console.error('resolvePendingInvoices', err);
         let j = records.length;
         while (j > 0) {
           j -= 1;
           const inv = records[j];
-          const id = inv.id;
+          const id = inv.payee;
+          const invoiceId = inv.invoiceId;
           self.db.findOne('keys', { id })
             .then((rec) => {
               self.gw = new Gateway(rec.key, rec.secret);
-              self.gw.getMovements('LNX', inv.timeCreated, inv.timeCreated + 600000)
+              self.gw.getMovements('LNX', inv.timePresented, inv.timePresented + 600000)
                 .then((r) => r.json())
                 .then((json) => {
                   let received = null;
@@ -470,16 +496,14 @@ export default class Server {
                     if (json[i][12] * 100000000 === inv.amountSat) received = json[i][5];
                   }
                   if (received) { // invoice received
-                    console.log('Invoice', id, toZulu(inv.timeCreated), "was paid")
-                    self.db.updateOne('invoices', { $and: [{ id }, { timeCreated: inv.timeCreated }] }, { $set: { timePaid: received } });
-                    self.db.updateOne('keys', { id }, { $set: { paymentPending: false } });
-                  } else if (inv.timeCreated < Date.now() - 600000) { // invoice failed
-                    console.log('Invoice', id, toZulu(inv.timeCreated), "has failed")
-                    self.db.updateOne('invoices', { $and: [{ id }, { timeCreated: inv.timeCreated }] }, { $set: { timePaid: -1 } });
-                    self.db.updateOne('keys', { id }, { $set: { paymentPending: false } });
+                    console.log('Invoice', invoiceId, 'of', id, toZulu(inv.timePresented), "was paid")
+                    self.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: received } });
+                  } else if (inv.timePresented < Date.now() - 600000) { // invoice failed
+                    console.log('Invoice', invoiceId, 'of', id, toZulu(inv.timePresented), "has failed")
+                    self.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
                   } else {
-                    console.log('Invoice', id, toZulu(inv.timeCreated), "is still pending");
-                    setTimeout(self.resolvePendingInvoices, inv.timeCreated + 600001 - Date.now(), self); // repeat after due date
+                    console.log('Invoice', invoiceId, 'of', id, toZulu(inv.timePresented), "is still pending");
+                    setTimeout(self.resolvePendingInvoices, inv.timePresented + 600001 - Date.now(), self); // repeat after due date
                   }
                 });
             });
