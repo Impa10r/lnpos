@@ -214,7 +214,7 @@ export default class Server {
           case 'robots.txt':
             res.type('text/plain');
             //      res.send('User-agent: *\nAllow: /$\nAllow: /es$\nAllow: /ru$\nDisallow: /i=');
-            res.send('User-agent: *\nAllow: /\nDisallow: /?i=');
+            res.send('User-agent: *\nAllow: /');
             break;
           case 'ru':
           case 'es':
