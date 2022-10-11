@@ -13,6 +13,9 @@ import bodyParser from 'body-parser';
 import consolidate from 'consolidate';
 import qr from 'qrcode';
 import https from 'https';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import Keys from './models/keys.mjs';
 import Invoices from './models/invoices.mjs';
 import Gateway from './bitfinex.mjs';
@@ -212,9 +215,10 @@ export default class Server {
       if (id) {
         switch (id) {
           case 'robots.txt':
-            res.type('text/plain');
-            //      res.send('User-agent: *\nAllow: /$\nAllow: /es$\nAllow: /ru$\nDisallow: /i=');
-            res.send('User-agent: *\nAllow: /\nDisallow: /?i=');
+          case 'sitemap.xml':
+            const filename = fileURLToPath(import.meta.url);
+            const dirname = path.dirname(filename);
+            fs.createReadStream(path.join(dirname, '../views/', id)).pipe(res);
             break;
           case 'ru':
           case 'es':
