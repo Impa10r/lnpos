@@ -89,7 +89,7 @@ export default class Server {
         let dateTimePaid = '';
 
         if (record.timePaid) {
-          if (record.timePaid === 'failed') {
+          if (record.timePaid === -1) {
             dateTimePaid = req.__('failed');
             paymentPicure = 'red-cross.png';
           } else {
@@ -133,7 +133,7 @@ export default class Server {
                 }
 
                 if (timeCreated < Date.now() - 600000) {
-                  this.db.updateOne('invoices', { $and: [{ id }, { timeCreated }] }, { $set: { timePaid: 'failed' } });
+                  this.db.updateOne('invoices', { $and: [{ id }, { timeCreated }] }, { $set: { timePaid: -1 } });
                   dateTimePaid = req.__('failed');
                   paymentPicure = 'red-cross.png';
                 } else {
@@ -164,7 +164,7 @@ export default class Server {
   constructor({ i18nProvider }) {
     this.gw = null;
     this.db = new DataBase();
-
+    
     const limiter = rateLimit({
       windowMs: 1 * 60 * 1000, // 1 minute
       max: 20, // limit each IP to 100 requests per windowMs
@@ -291,6 +291,7 @@ export default class Server {
                   currencyFrom: req.body.currencyFrom,
                   currencyTo: req.body.currencyTo,
                   lang,
+                  paymentPending: false,
                 });
                 data.save()
                   .then(() => {
@@ -384,6 +385,7 @@ export default class Server {
                         const inv = new Invoices({
                           id,
                           timeCreated,
+                          timePaid: 0,
                           currencyFrom: currency,
                           currencyTo,
                           amountFiat,
@@ -445,6 +447,47 @@ export default class Server {
     });
   }
 
+  resolvePendingInvoices(self) {
+    console.log('Resolving hang invoices...');
+    self.db.find('invoices', { timePaid: 0 }).then((resp) => {
+      resp.toArray((err, records) => {
+        if (err) return console.error('resolvePendingInvoices', err);
+        let j = records.length;
+        while (j > 0) {
+          j -= 1;
+          const inv = records[j];
+          const id = inv.id;
+          self.db.findOne('keys', { id })
+            .then((rec) => {
+              self.gw = new Gateway(rec.key, rec.secret);
+              self.gw.getMovements('LNX', inv.timeCreated, inv.timeCreated + 600000)
+                .then((r) => r.json())
+                .then((json) => {
+                  let received = null;
+                  let i = json.length;
+                  while (i > 0) {
+                    i -= 1;
+                    if (json[i][12] * 100000000 === inv.amountSat) received = json[i][5];
+                  }
+                  if (received) { // invoice received
+                    console.log('Invoice', id, toZulu(inv.timeCreated), "was paid")
+                    self.db.updateOne('invoices', { $and: [{ id }, { timeCreated: inv.timeCreated }] }, { $set: { timePaid: received } });
+                    self.db.updateOne('keys', { id }, { $set: { paymentPending: false } });
+                  } else if (inv.timeCreated < Date.now() - 600000) { // invoice failed
+                    console.log('Invoice', id, toZulu(inv.timeCreated), "has failed")
+                    self.db.updateOne('invoices', { $and: [{ id }, { timeCreated: inv.timeCreated }] }, { $set: { timePaid: -1 } });
+                    self.db.updateOne('keys', { id }, { $set: { paymentPending: false } });
+                  } else {
+                    console.log('Invoice', id, toZulu(inv.timeCreated), "is still pending");
+                    setTimeout(self.resolvePendingInvoices, inv.timeCreated + 600001 - Date.now(), self); // repeat after due date
+                  }
+                });
+            });
+        }
+      });
+    });
+  }
+
   start(serverPort, httpsOptions) {
     return new Promise((resolve) => {
       if (httpsOptions) {
@@ -459,6 +502,7 @@ export default class Server {
           resolve();
         });
       }
+      setTimeout(this.resolvePendingInvoices, 1000, this); // must wait for db to connect
     });
   }
 }

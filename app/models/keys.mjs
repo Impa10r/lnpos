@@ -10,7 +10,7 @@ const keySchema = new mongoose.Schema(
     currencyTo: { type: String, required: true },
     lang: { type: String, required: true },
     parentId: { type: String, required: false },
-    paymentPending: { type: Boolean, required: false },
+    paymentPending: { type: Boolean, required: true },
   },
 );
 

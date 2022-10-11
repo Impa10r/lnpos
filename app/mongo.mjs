@@ -12,7 +12,7 @@ export default class DataBase {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     })
-      .then(() => { if (!quiet) console.info('DB Connection Successfull');})
+      .then(() => { if (!quiet) console.info('DB Connection Successfull'); })
       .catch((error) => { throw new Error(error); })
 
     // Get the default connection
@@ -21,9 +21,12 @@ export default class DataBase {
     this.db.on('error', console.error.bind(console, 'MongoDB connection error:'));
   }
 
-  // case insensitive
   async findOne(collection, query) {
     return this.db.collection(collection).findOne(query);
+  }
+
+  async find(collection, query) {
+    return this.db.collection(collection).find(query);
   }
 
   async updateOne(collection, query, update) {
