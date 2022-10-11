@@ -1,8 +1,0 @@
-User-agent: *
-Allow: /$
-Allow: /en$
-Allow: /es$
-Allow: /ru$
-Allow: /sitemap.xml$
-Disallow: /
-Sitemap: https://lnpos.me/sitemap.xml

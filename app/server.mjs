@@ -39,6 +39,18 @@ export default class Server {
     });
   }
 
+  renderReport(req, res) {
+    const id = req.query.r;
+    this.db.findOne('keys', { id }).then((rec) => {
+      this.gw = new Gateway(rec.key, rec.secret);
+      this.gw. getTrades('tBTCEUR', 0, Date.now())
+        .then((r) => r.json())
+        .then((json) => {
+          console.log(json);
+        });
+    });
+  }
+
   renderReceipt(req, res) {
     const invoiceId =req.query.i;
 
@@ -167,6 +179,7 @@ export default class Server {
       const browserLang = req.headers['accept-language'] ? req.headers['accept-language'].substring(0, 2) : 'en';
       if (!res.locale && ['es', 'ru'].includes(browserLang)) req.setLocale(browserLang);
       if (req.query.i) return this.renderReceipt(req, res);
+      if (req.query.r) return this.renderReport(req, res);
       if (id) {
         switch (id) {
           case 'robots.txt':
