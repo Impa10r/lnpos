@@ -500,6 +500,7 @@ export default class Server {
           const invoiceId = inv.invoiceId;
           self.db.findOne('keys', { id })
             .then((rec) => {
+              if (!rec) return;
               self.gw = new Gateway(rec.key, rec.secret);
               self.gw.getMovements('LNX', inv.timePresented, inv.timePresented + 600000)
                 .then((r) => r.json())
