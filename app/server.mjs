@@ -236,7 +236,7 @@ export default class Server {
                   .then((record) => {
                     if (record) {
                       const currencyFrom = record.currencyFrom;
-                      const amountOptions = 'value="' + toFix(record.amountFiat) + ' ' + currencyFrom + '" readonly';
+                      const amountOptions = 'value="' + record.amountFiat + '" readonly';
                       const memoOptions = record.memo ? 'value="' + record.memo + '" readonly' : '';
                       const primaryLabelOptions = record.timePaid > 0 ? '' : 'hidden';
                       const primaryButtonOptions = record.timePaid > 0 ? 'hidden' : '';

@@ -28,7 +28,7 @@
 	"new_payment_link": "Below is your unique payment link. Save it to your PC desktop, phone Home Screen or in the bookmarks. You can forward it to your employees or clients to generate payment requests.",
 	"new_payment_link2": "<b>Bonus steps:</b><br><ol start = '6'><li>Install <a href='https://www.bitfinex.com/mobile-trading' target='_blank'>Bitfinex app</a> on your phone to receive trade notifications.</li><li>Don't forget to print <b><em>your personal 'Bitcoin accepted' stickers</em></b> by following this",
 	"remote_payment_link": "<h2>Remote payment link</h2><br>Copy the link below to request a remote payment via email or chat:",
-	"remote_request": "This amount has been requested remotely and cannot be changed.",
+	"remote_request": "This amount has been requested remotely and cannot be changed. Curency:",
 	"ref_link": "Your Referral Link",
   "api_key: permission invalid": "Your API keys lack required permissions",
 	"Fiat amount:": "Amount:",
