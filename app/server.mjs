@@ -177,7 +177,13 @@ export default class Server {
     this.express.get('/:id?', (req, res) => {
       const id = req.params.id;
       const browserLang = req.headers['accept-language'] ? req.headers['accept-language'].substring(0, 2) : 'en';
-      if (!res.locale && ['es', 'ru'].includes(browserLang)) req.setLocale(browserLang);
+      let lang = 'en';
+
+      if (!lang && ['es', 'ru'].includes(browserLang)) lang = browserLang;
+      if (res.locale) lang = res.locale;
+
+      req.setLocale(lang);
+
       if (req.query.i) return this.renderReceipt(req, res);
       if (req.query.r) return this.renderReport(req, res);
       if (id) {
@@ -200,7 +206,7 @@ export default class Server {
             return qr.toDataURL(url, (err, src) => {
               if (err) this.renderError(req, res, 'error_qr', err);
               res.render('a4', {
-                currentLocale: res.locale,
+                currentLocale: lang,
                 src,
               });
             });
@@ -208,16 +214,13 @@ export default class Server {
             switch (id.length) {
               case 10: // affiliate code
                 return res.render('index', {
-                  currentLocale: res.locale,
+                  currentLocale: lang,
                   refCode: id,
                 });
               case 11: // user id
                 return this.db.findOne('keys', { id })
                   .then((record) => {
                     if (record) {
-                      let lang = record.lang;
-                      if (req.query && req.query.lang) lang = req.query.lang;
-                      req.setLocale(lang);
                       res.render('request', {
                         currentLocale: lang,
                         payee: id,
@@ -232,8 +235,6 @@ export default class Server {
                 return this.db.findOne('invoices', { invoiceId: id })
                   .then((record) => {
                     if (record) {
-                      let lang = record.lang;
-                      if (req.query && req.query.lang) lang = req.query.lang;
                       const amountOptions = 'value="' + record.amountFiat + '" readonly';
                       const memoOptions = record.memo ? 'value="' + record.memo + '" readonly' : '';
                       const primaryLabelOptions = record.timePaid > 0 ? '' : 'hidden';
