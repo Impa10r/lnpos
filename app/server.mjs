@@ -220,12 +220,14 @@ export default class Server {
                 return this.db.findOne('keys', { id })
                   .then((record) => {
                     if (record) {
+                      const memoOptions = req.query.memo ? 'value="' + req.query.memo + '" readonly' : '';
                       res.render('request', {
                         currentLocale: lang,
                         payee: id,
                         currencyFrom: record.currencyFrom,
                         primaryLabelOptions: 'hidden',
                         secondaryLabelOptions: 'hidden',
+                        memoOptions,
                       });
                     } else this.renderError(req, res, 'error_id_not_found');   
                   })
