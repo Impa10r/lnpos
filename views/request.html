@@ -58,9 +58,9 @@
             <input type="hidden" id="invoiceId" name="invoiceId" value="{{invoiceId}}">
             <input type="hidden" id="payee" name="payee" value="{{payee}}">
             <button class="btn btn-primary" name="button" value="invoice" type ="submit"{{{primaryButtonOptions}}}>{{#i18n}}generate_invoice{{/i18n}}</button>
-            <h6 class="text-center" {{{primaryLabelOptions}}}>{{#i18n}}already_paid{{/i18n}}</h6>
+            <p class="text-center" {{{primaryLabelOptions}}}>{{#i18n}}already_paid{{/i18n}}</p>
             <br><br>
-            <h6 class="text-center" {{{secondaryLabelOptions}}}>{{#i18n}}remote_request{{/i18n}} {{currencyFrom}}.</h6>
+            <p class="text-center" {{{secondaryLabelOptions}}}>{{#i18n}}remote_request{{/i18n}} {{currencyFrom}}.</p>
             <button class="btn btn-secondary" name="button" value="link" type="submit" {{{secondaryButtonOptions}}}>{{#i18n}}generate_link{{/i18n}}</button>
           </div>
         </fieldset>
