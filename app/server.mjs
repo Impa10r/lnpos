@@ -52,7 +52,7 @@ export default class Server {
   }
 
   renderReceipt(req, res) {
-    const invoiceId =req.query.i;
+    const invoiceId = req.params.id;
 
     this.db.findOne('invoices', { invoiceId }).then((record) => {
       if (record) {
@@ -62,9 +62,9 @@ export default class Server {
         req.setLocale(lang);
         const timePresented = record.timePresented;
         const dateTimeCreated = toZulu(record.timeCreated);
-        const dateTimePresented = toZulu(timePresented);
+        const dateTimePresented = timePresented > 0 ? toZulu(timePresented) : req.__('pending');
         const amountFiat = toFix(record.amountFiat, 2);
-        const amountSat = parseInt(record.amountSat);
+        const amountSat = record.amountSat > 0 ? toFix(record.amountSat, 0) : req.__('pending');
         let paymentPicure = 'check-mark.png';
         let dateTimePaid = '';
 
@@ -79,7 +79,7 @@ export default class Server {
             currentLocale: lang,
             record,
             amountFiat,
-            amountSat: toFix(amountSat),
+            amountSat,
             dateTimeCreated,
             dateTimePresented,
             dateTimePaid,
@@ -95,7 +95,7 @@ export default class Server {
                 let i = json.length;
                 while (i > 0) {
                   i -= 1;
-                  if (json[i][12] * 100000000 === amountSat) received = json[i][5];
+                  if (json[i][12] * 100000000 === record.amountSat) received = json[i][5];
                 }
                 if (received) {
                   this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: received } });
@@ -104,7 +104,7 @@ export default class Server {
                     currentLocale: lang,
                     record,
                     amountFiat,
-                    amountSat: toFix(amountSat),
+                    amountSat,
                     dateTimeCreated,
                     dateTimePresented,
                     dateTimePaid,
@@ -112,7 +112,7 @@ export default class Server {
                   });
                 }
 
-                if (timePresented < Date.now() - 600000) {
+                if (timePresented > 0 && timePresented < Date.now() - 600000) {
                   this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
                   dateTimePaid = req.__('failed');
                   paymentPicure = 'red-cross.png';
@@ -124,7 +124,7 @@ export default class Server {
                   currentLocale: lang,
                   record,
                   amountFiat,
-                  amountSat: toFix(amountSat),
+                  amountSat,
                   dateTimeCreated,
                   dateTimePresented,
                   dateTimePaid,
@@ -184,7 +184,6 @@ export default class Server {
 
       req.setLocale(lang);
 
-      if (req.query.i) return this.renderReceipt(req, res);
       if (req.query.r) return this.renderReport(req, res);
       if (id) {
         switch (id) {
@@ -232,6 +231,7 @@ export default class Server {
                   })
                   .catch((err) => this.renderError(req, res, 'error_database_down', err));
               case 12: // invoice id
+                if (typeof req.query.status !== 'undefined') return this.renderReceipt(req, res);
                 return this.db.findOne('invoices', { invoiceId: id })
                   .then((record) => {
                     if (record) {
@@ -438,7 +438,7 @@ export default class Server {
                           inv.save();  
                         }
 
-                        const url = req.protocol + '://' + req.get('host') + '/?i=' + invoiceId;
+                        const url = req.protocol + '://' + req.get('host') + '/' + invoiceId + '?status';
                         
                         let html = '<!DOCTYPE html>';
                         html += '<html lang="' + lang + '">';
@@ -453,7 +453,7 @@ export default class Server {
                         html += '<body><div class="container">';
                         html += '<h2 class="text-center">' + req.__('lightning_invoice') + '</h2>';
                         html += '<hr><center><table><tr><td><h4>' + req.__('Fiat amount:') + ' </td><td><h4>' + currencyFrom + ' ' + toFix(amountFiat, 2) + '</h4></td></tr>';
-                        html += '<tr><td><h4>BTC/' + currencyTo + ': </h4></td><td><h4>' + toFix(exchangeRate, 2) + '</h4></td>';
+                        html += '<tr><td><h4>BTC/' + currencyFrom + ': </h4></td><td><h4>' + toFix(exchangeRate, 2) + '</h4></td>';
                         html += '<tr><td><h4>' + req.__('Satoshi amount:') + ' </h4></td><td><h4>' + toFix(amountSat, 0) + '</h4></td></tr></table>';
                         html += '<p class="text-md-center">' + req.__('ln_qr') + '<br>';
                         html += '<a href="lightning:' + invoice + '" target="_blank"><img src=' + src + '></a><br>';
