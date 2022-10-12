@@ -235,6 +235,7 @@ export default class Server {
                 return this.db.findOne('invoices', { invoiceId: id })
                   .then((record) => {
                     if (record) {
+                      const currencyFrom = record.currencyFrom;
                       const amountOptions = 'value="' + toFix(record.amountFiat) + ' ' + currencyFrom + '" readonly';
                       const memoOptions = record.memo ? 'value="' + record.memo + '" readonly' : '';
                       const primaryLabelOptions = record.timePaid > 0 ? '' : 'hidden';
@@ -245,7 +246,7 @@ export default class Server {
                         currentLocale: lang,
                         invoiceId: record.invoiceId,
                         payee: record.payee,
-                        currencyFrom: record.currencyFrom,
+                        currencyFrom,
                         amountOptions,
                         memoOptions,
                         primaryButtonOptions,
