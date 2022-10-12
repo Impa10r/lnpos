@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="{{currentLocale}}">
+
+<head>
+  <meta charset="utf-8">
+  <title>{{#i18n}}login{{/i18n}}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <!-- Custom CSS -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+    * {
+        font-family: Montserrat;
+    }
+    body {
+        margin: 10px;
+        padding: 10px;
+    }
+
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h3 class="text-center">{{#i18n}}login{{/i18n}}</h3>
+    <hr>
+    <form  class="form" autocomplete="off" action="/report" method="POST">
+      <fieldset>
+        <div class="form-group row">
+          <label for="inputPassword" class="col-sm-2 col-form-label">{{#i18n}}password{{/i18n}}</label>
+          <div class="col-sm-10">
+            <input type="password" class="form-control" id="password" name = "password" required autofocus placeholder="{{#i18n}}password_explain{{/i18n}}">
+          </div>
+        </div>
+        <input type="hidden" id="lang" name="lang" value="{{currentLocale}}">
+        <input type="hidden" readonly id="id" name = "id" value="{{id}}">
+        <center>
+          <button type="submit" class="btn btn-primary mb-2">{{#i18n}}confirm{{/i18n}}</button>
+        </center>
+      </fieldset>
+    </form>
+  </div>
+</body>
+</html>

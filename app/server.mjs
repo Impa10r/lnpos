@@ -40,13 +40,57 @@ export default class Server {
   }
 
   renderReport(req, res) {
-    const id = req.query.r;
-    this.db.findOne('keys', { id }).then((rec) => {
-      this.gw = new Gateway(rec.key, rec.secret);
-      this.gw. getTrades('tBTCEUR', 0, Date.now())
-        .then((r) => r.json())
-        .then((json) => {
-          console.log(json);
+    const fromDateTime = 1;
+    const toDateTime = Date.now();
+    const limit = 25;
+
+
+    let html = '<table class="table"><thead class="thead-light"><tr><th scope="col">#</th><th scope="col">';
+    html += req.__('tbl_date') + '</th><th scope="col">' + req.__('tbl_cur_from') + '</th>';
+    html += '<th scope="col">' + req.__('tbl_amt_from') + '</th>';
+    html += '<th scope="col">' + req.__('tbl_cur_to') + '</th>';
+    html += '<th scope="col">' + req.__('tbl_amt_to') + '</th>';
+    html += '<th scope="col">' + req.__('tbl_memo') + '</th>';
+    html += '</tr></thead><tbody>';
+
+   // this.db.find('invoices', { $and: [{ payee: id }, { timeCreated: { $gte: fromDateTime } }, 
+   //   { timeCreated: { $lte: toDateTime } } ], sort:{ timeCreated: -1} })
+   
+  }
+
+
+
+  async completeInvoices() {
+    this.db.find('invoices', { $and: [{ currencyTo: { $ne : "BTC" } }, { timePaid: {$gt: 0} }, { payee: {$exists: true} }, { amountTo: {$exists: false} } ] } )
+      .then((resp) => {
+        resp.toArray((err, invoices) => {
+          const promises = invoices.map(inv => {
+            return new Promise((resolve) => { 
+              this.db.find('keys', { id: inv.payee }).then((rec) => {
+                if (rec.length === 1) {
+                  this.gw = new Gateway(rec.key, rec.secret);
+                  this.gw.getTrades('tBTC' + inv.currencyTo, inv.timePresented, Date.now(), 1, 1)
+                    .then((r) => r.json())
+                    .then((json) => {
+                      if (json.length === 1) {
+                        const tradeAmount = -json[0][4] * 100000000;
+                        // one trade can convert many small previous deposits
+                        const ratio = inv.amountSat / tradeAmount;
+                        const amountTo = -json[0][4] * json[0][5] * ratio;
+                        const feeAmount = json[0][9] * ratio;
+                        const feeCurrency = json[0][10];
+                        const invoiceId = inv.invoiceId;
+                        console.log(inv.amountFiat, amountTo, feeAmount);
+                        //this.db.updateOne('invoices', { invoiceId }, { $set: { amountTo, feeAmount, feeCurrency } });
+                        resolve(true);
+                      }
+                    });
+                } else resolve(true);
+              })
+              .catch((err) => console.log(err));
+            });
+          });
+          return Promise.all(promises);
         });
     });
   }
@@ -112,7 +156,7 @@ export default class Server {
                   });
                 }
 
-                if (timePresented > 0 && timePresented < Date.now() - 600000) {
+                 if (timePresented > 0 && timePresented < Date.now() - 600000) {
                   this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
                   dateTimePaid = req.__('failed');
                   paymentPicure = 'red-cross.png';
@@ -184,7 +228,6 @@ export default class Server {
 
       req.setLocale(lang);
 
-      if (req.query.r) return this.renderReport(req, res);
       if (id) {
         switch (id) {
           case 'robots.txt':
@@ -220,6 +263,12 @@ export default class Server {
                 return this.db.findOne('keys', { id })
                   .then((record) => {
                     if (record) {
+                      if (typeof req.query.login !== 'undefined') {
+                        return res.render('login', {
+                          currentLocale: lang,
+                          id,
+                        });
+                      }
                       const memoOptions = req.query.memo ? 'value="' + req.query.memo + '" readonly' : '';
                       res.render('request', {
                         currentLocale: lang,
@@ -233,17 +282,18 @@ export default class Server {
                   })
                   .catch((err) => this.renderError(req, res, 'error_database_down', err));
               case 12: // invoice id
-                if (typeof req.query.status !== 'undefined') return this.renderReceipt(req, res);
                 return this.db.findOne('invoices', { invoiceId: id })
                   .then((record) => {
                     if (record) {
+                      if (typeof req.query.status !== 'undefined') return this.renderReceipt(req, res);
+                
                       const currencyFrom = record.currencyFrom;
                       const amountOptions = 'value="' + record.amountFiat + '" readonly';
                       const memoOptions = record.memo ? 'value="' + record.memo + '" readonly' : '';
                       const primaryLabelOptions = record.timePaid > 0 ? '' : 'hidden';
                       const primaryButtonOptions = record.timePaid > 0 ? 'hidden' : '';
                       const secondaryButtonOptions = 'hidden';
-                      req.setLocale(lang);
+
                       res.render('request', {
                         currentLocale: lang,
                         invoiceId: record.invoiceId,
@@ -262,6 +312,18 @@ export default class Server {
         }
       } 
       res.render('index', { currentLocale: res.locale, refCode: 'TuVr9K55M', });
+    });
+
+    this.express.post('/report', (req, res) => {
+      req.setLocale(req.body.lang);
+      this.db.findOne('keys', { id: req.body.id })
+        .then((record) => {
+          if (!record || record.secret.substring(0, 7) !==  req.body.password) {
+            this.renderError(req, res, 'error_password');
+          } else {
+            this.completeInvoices().then(() => console.log('done'));
+          }
+        });
     });
 
     this.express.post('/ref', (req, res) => {
@@ -293,42 +355,48 @@ export default class Server {
           if (json[0] === 'error') {
             this.renderError(req, res, 'error_invalid_keys');
           } else {
+            const accountId = json[0];
             const id = nanoid(11);
-            // Delete previous key to avoid duplicates
-            this.db.deleteMany('keys', { key: req.body.apiKey }) 
-              .then(r => {
-                const data = new Keys({
-                  id,
-                  key: req.body.apiKey,
-                  secret: req.body.apiSecret,
-                  exchange: req.body.exchange,
-                  currencyFrom: req.body.currencyFrom,
-                  currencyTo: req.body.currencyTo,
-                  lang
-                });
-                data.save()
-                  .then(() => {
-                    // check that it was saved ok
-                    this.db.findOne('keys', { id })
-                      .then((record) => {
-                        if (!record) {
-                          this.renderError(req, res, 'error_database_down');
-                        } else {
-                          const i = record.id;
-                          const desc = req.get('host') + '/' + i;
-                          const url = req.protocol + '://' + desc;
-                          res.render('add', {
-                            currentLocale: lang,
-                            url,
-                            desc,
-                            id: i,
+            this.db.findOne('keys', { id: req.body.id })
+              .then((record) => {
+                if(record) id = record.id; // keep old id
+                // Delete previous key to avoid duplicates
+                this.db.deleteMany('keys', { key: req.body.apiKey }) 
+                  .then(r => {
+                    const data = new Keys({
+                      id,
+                      accountId,
+                      key: req.body.apiKey,
+                      secret: req.body.apiSecret,
+                      exchange: req.body.exchange,
+                      currencyFrom: req.body.currencyFrom,
+                      currencyTo: req.body.currencyTo,
+                      lang
+                    });
+                    data.save()
+                      .then(() => {
+                        // check that it was saved ok
+                        this.db.findOne('keys', { id })
+                          .then((record) => {
+                            if (!record) {
+                              this.renderError(req, res, 'error_database_down');
+                            } else {
+                              const i = record.id;
+                              const desc = req.get('host') + '/' + i;
+                              const url = req.protocol + '://' + desc;
+                              res.render('add', {
+                                currentLocale: lang,
+                                url,
+                                desc,
+                                id: i,
+                              });
+                            }
                           });
-                        }
                       });
+                  })
+                  .catch((err) => {
+                    this.renderError(req, res, 'error_database_down', err);
                   });
-              })
-              .catch((err) => {
-                this.renderError(req, res, 'error_database_down', err);
               });
           }
         })

@@ -15,6 +15,9 @@ const keySchema = new mongoose.Schema(
     amountSat: { type: Number, required: true },
     memo: { type: String, required: false },
     lang: { type: String, required: true },
+    amountTo: { type: Number, required: false },
+    feeAmount: { type: Number, required: false },
+    feeCurrency: { type: String, required: false },
   },
 );
 
