@@ -355,9 +355,11 @@ export default class Server {
           if (json[0] === 'error') {
             this.renderError(req, res, 'error_invalid_keys');
           } else {
-            const accountId = json[0];
-            const id = nanoid(11);
-            this.db.findOne('keys', { id: req.body.id })
+            const userName = json[2];
+            const email = json[1];
+            const timeZone = json[7];
+            let id = nanoid(11);
+            this.db.findOne('keys', { key: req.body.apiKey })
               .then((record) => {
                 if(record) id = record.id; // keep old id
                 // Delete previous key to avoid duplicates
@@ -365,7 +367,9 @@ export default class Server {
                   .then(r => {
                     const data = new Keys({
                       id,
-                      accountId,
+                      userName,
+                      email,
+                      timeZone,
                       key: req.body.apiKey,
                       secret: req.body.apiSecret,
                       exchange: req.body.exchange,
