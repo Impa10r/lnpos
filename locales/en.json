@@ -50,7 +50,7 @@
   "error_payment_pending": "Only one pending invoice is allowed at a time. Please wait for another payment to resolve (max. 10 minutes), then try again.",
 	"pay_currency": "Amount in",
 	"memo": "Details (optional)",
-	"generate_invoice": "Generate Lighting invoice",
+	"generate_invoice": "Pay now via Lightning",
 	"amount_too_small": "Amount is too small",
 	"amount_too_large": "Amount is too large",
 	"ln_qr": "Scan or click",

@@ -48,7 +48,7 @@
   "error_payment_pending": "Solo se permite una factura pendiente a la vez. Espere a que se resuelva otro pago (máx. 10 minutos) y vuelva a intentarlo.",
 	"pay_currency": "La cantidad en",
   "memo": "Detalles (opcional)",
-	"generate_invoice": "Generar factura de Lightning",
+	"generate_invoice": "Pagar ahora con Lightning",
 	"amount_too_small": "La cantidad es demasiado pequeña",
 	"amount_too_large": "La cantidad es demasiado grande",
 	"Fiat amount:": "Cantidad:",
