@@ -110,9 +110,6 @@ export default class Server {
       if (record) {
         const userName = record.userName;
         const lang = res.getLocale();
-//        let lang = record.lang;
-//        if (req.query && req.query.lang) lang = req.query.lang;
-//        req.setLocale(lang);
         const timePresented = record.timePresented;
         const dateTimeCreated = toZulu(record.timeCreated);
         const dateTimePresented = timePresented > 0 ? toZulu(timePresented) : req.__('pending');
@@ -201,7 +198,7 @@ export default class Server {
     
     const limiter = rateLimit({
       windowMs: 1 * 60 * 1000, // 1 minute
-      max: 20, // limit each IP to 100 requests per windowMs
+      max: 20, // limit each IP 
     });
 
     this.express = express();
@@ -231,17 +228,6 @@ export default class Server {
     this.express.get('/:id?', (req, res) => {
       const id = req.params.id;
       const lang = res.getLocale();
-
-//      const browserLang = req.headers['accept-language'] ? req.headers['accept-language'].substring(0, 2) : 'en';
-
-
-      //      let lang = 'en';
-
-//      if (!lang && ['es', 'ru'].includes(browserLang)) lang = browserLang;
-//      if (res.locale) lang = res.locale;
-
-//      req.setLocale(lang);
-
       if (id) {
         switch (id) {
           case 'robots.txt':
@@ -631,7 +617,7 @@ export default class Server {
           resolve();
         });
       }
-      setTimeout(this.resolvePendingInvoices, 1000, this); // wait 1s for db to connect
+      setTimeout(this.resolvePendingInvoices, 1000, this); // wait 1 sec for db to connect
     });
   }
 }
