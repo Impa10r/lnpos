@@ -369,7 +369,7 @@ export default class Server {
           if (json[0] === 'error') {
             this.renderError(req, res, 'error_invalid_keys');
           } else {
-            const userName = json[2];
+            const userName = json[2].toLowerCase();
             const email = json[1];
             const timeZone = json[7];
             let id = nanoid(11);
