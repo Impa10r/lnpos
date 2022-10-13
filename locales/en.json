@@ -83,6 +83,8 @@
   "pending": "Pending",
 	"failed": "Failed",
   "login": "Access to personal account",
+  "user_name": "User name",
+  "user_name_explain": "Your Bitfinex user name",
   "password": "Password",
   "password_explain": "First 7 letters of key secret",
   "confirm": "Confirm identity",

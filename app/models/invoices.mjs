@@ -15,6 +15,8 @@ const keySchema = new mongoose.Schema(
     amountSat: { type: Number, required: true },
     memo: { type: String, required: false },
     lang: { type: String, required: true },
+    timeHedged: { type: Number, required: false },
+    executionPrice: { type: Number, required: false },
     amountTo: { type: Number, required: false },
     feeAmount: { type: Number, required: false },
     feeCurrency: { type: String, required: false },

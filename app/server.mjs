@@ -15,6 +15,7 @@ import qr from 'qrcode';
 import https from 'https';
 import fs from 'fs';
 import path from 'path';
+import locale from 'locale';
 import { fileURLToPath } from 'url';
 import { nanoid } from 'nanoid';
 import Keys from './models/keys.mjs';
@@ -60,15 +61,15 @@ export default class Server {
 
 
 
-  async completeInvoices() {
-    this.db.find('invoices', { $and: [{ currencyTo: { $ne : "BTC" } }, { timePaid: {$gt: 0} }, { amountTo: {$exists: false} } ] } )
-      .then((resp) => {
-        resp.toArray((err, invoices) => {
-          const promises = invoices.map(inv => {
-            return new Promise((resolve) => { 
-              this.db.find('keys', { userName: inv.userName }).then((rec) => {
-                if (rec.length === 1) {
-                  this.gw = new Gateway(rec.key, rec.secret);
+  async completeInvoices(userName) {
+    const p = new Promise((allResolve) => {
+      this.db.findOne('keys', { userName }).then((rec) => {
+        this.gw = new Gateway(rec.key, rec.secret);
+        this.db.find('invoices', { $and: [{ userName }, { currencyTo: { $ne : "BTC" } }, { timePaid: {$gt: 0} }, { amountTo: {$exists: false} } ] } )
+          .then((resp) => {
+            resp.toArray((err, invoices) => {
+              const promises = invoices.map(inv => {
+                return new Promise((resolve) => { 
                   this.gw.getTrades('tBTC' + inv.currencyTo, inv.timePresented, Date.now(), 1, 1)
                     .then((r) => r.json())
                     .then((json) => {
@@ -76,23 +77,30 @@ export default class Server {
                         const tradeAmount = -json[0][4] * 100000000;
                         // one trade can convert many small previous deposits
                         const ratio = inv.amountSat / tradeAmount;
-                        const amountTo = -json[0][4] * json[0][5] * ratio;
+                        const timeHedged = json[0][2];
+                        const executionPrice = json[0][5];
+                        const amountTo = -json[0][4] * executionPrice * ratio;
                         const feeAmount = json[0][9] * ratio;
                         const feeCurrency = json[0][10];
                         const invoiceId = inv.invoiceId;
                         console.log(inv.amountFiat, amountTo, feeAmount);
-                        //this.db.updateOne('invoices', { invoiceId }, { $set: { amountTo, feeAmount, feeCurrency } });
+                        this.db.updateOne('invoices', { invoiceId }, { $set: { timeHedged, executionPrice, amountTo, feeAmount, feeCurrency } });
                         resolve(true);
                       }
+                      resolve(true);
                     });
-                } else resolve(true);
-              })
-              .catch((err) => console.log(err));
+                })
+                .catch((err) => { 
+                  console.log(err); 
+                  resolve(true);
+                } );
+              });
             });
+            Promise.all(promises).then(() => {allResolve(true)});
           });
-          return Promise.all(promises);
-        });
+      });
     });
+    return p;
   }
 
   renderReceipt(req, res) {
@@ -101,9 +109,10 @@ export default class Server {
     this.db.findOne('invoices', { invoiceId }).then((record) => {
       if (record) {
         const userName = record.userName;
-        let lang = record.lang;
-        if (req.query && req.query.lang) lang = req.query.lang;
-        req.setLocale(lang);
+        const lang = res.getLocale();
+//        let lang = record.lang;
+//        if (req.query && req.query.lang) lang = req.query.lang;
+//        req.setLocale(lang);
         const timePresented = record.timePresented;
         const dateTimeCreated = toZulu(record.timeCreated);
         const dateTimePresented = timePresented > 0 ? toZulu(timePresented) : req.__('pending');
@@ -201,6 +210,7 @@ export default class Server {
     this.express.use(bodyParser.json());
     this.express.engine('html', consolidate.mustache);
     this.express.use(i18nProvider.init);
+    this.express.use(locale(i18nProvider.getLocales(), 'en'));
     this.express.use((req, res, next) => {
       // mustache helper
       res.locals.i18n = () => (text, render) => req.__(text, render);
@@ -220,13 +230,17 @@ export default class Server {
 
     this.express.get('/:id?', (req, res) => {
       const id = req.params.id;
-      const browserLang = req.headers['accept-language'] ? req.headers['accept-language'].substring(0, 2) : 'en';
-      let lang = 'en';
+      const lang = res.getLocale();
 
-      if (!lang && ['es', 'ru'].includes(browserLang)) lang = browserLang;
-      if (res.locale) lang = res.locale;
+//      const browserLang = req.headers['accept-language'] ? req.headers['accept-language'].substring(0, 2) : 'en';
 
-      req.setLocale(lang);
+
+      //      let lang = 'en';
+
+//      if (!lang && ['es', 'ru'].includes(browserLang)) lang = browserLang;
+//      if (res.locale) lang = res.locale;
+
+//      req.setLocale(lang);
 
       if (id) {
         switch (id) {
@@ -617,7 +631,7 @@ export default class Server {
           resolve();
         });
       }
-      setTimeout(this.resolvePendingInvoices, 1000, this); // must wait for db to connect
+      setTimeout(this.resolvePendingInvoices, 1000, this); // wait 1s for db to connect
     });
   }
 }

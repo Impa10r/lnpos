@@ -28,6 +28,7 @@
     "express-rate-limit": "6.6.0",
     "helmet": "6.0.0",
     "i18n": "0.15.0",
+    "locale": "0.1.0",
     "mongoose": "6.6.1",
     "mustache": "4.2.0",
     "nanoid": "4.0.0",
