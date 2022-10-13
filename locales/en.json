@@ -59,7 +59,7 @@
 	"about": "<center><h2>About the project</h2></center><br>LNPOS is an open source project with the end goal to see 'Bitcoin accepted here' stickers in every small business venue in your neighbourhood. Everyone is welcome to participate in the project development and its promotion as an <a href='#affiliate'>affiliate</a>.<br><br>Like the project and have a Lightning wallet? You may test functionality by <a href='/VSWxK7V1sw4?lang=",
   "about2": "&memo=Donation'>donating</a> some sats towards running costs.",
 	"powered": "Powered by",
-	"help": "If you still have questions or concerns, please join our Telegram <a href='https://t.me/lnpos'>support group</a> or send a direct message to <a href='https://t.me/lnpos_me'>@lnpos_me</a>.",
+	"help": "If you still have questions or concerns, please join our Telegram <a href='https://t.me/lnpos'>support group</a> or send a direct message to <a href='https://t.me/lnposme'>@LNPOSme</a>.",
 	"faq": "Frequently Asked Questions",
 	"q1": "<b>Are my funds secure?</b><br>Bitfinex is one of the oldest and largest crypto exchanges. It doesn't insure user funds, but it had taken responsibility to compensate users when assets were lost due to security breaches. You can limit your risk by regular withdrawals. As for the keys you store on LNPOS.me, they do not allow any withdrawals. So funds are safe even if our database gets compromised one day. If you still don't trust the website LNPOS.me you are more than welcome to install a copy of our software on your local server.",
 	"q2": "<b>Why do you recommend Authy over Google Authenticator?</b><br>Functionally these two apps are the same but Authy allows to recover your keys if you lost the phone.",
