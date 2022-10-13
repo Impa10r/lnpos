@@ -209,8 +209,8 @@ export default class Server {
     this.express.set('view engine', 'html');
     this.express.use(bodyParser.json());
     this.express.engine('html', consolidate.mustache);
-    this.express.use(i18nProvider.init);
     this.express.use(locale(i18nProvider.getLocales(), 'en'));
+    this.express.use(i18nProvider.init);
     this.express.use((req, res, next) => {
       // mustache helper
       res.locals.i18n = () => (text, render) => req.__(text, render);
