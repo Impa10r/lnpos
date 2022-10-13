@@ -53,7 +53,7 @@ export default class Server {
     html += '<th scope="col">' + req.__('tbl_memo') + '</th>';
     html += '</tr></thead><tbody>';
 
-   // this.db.find('invoices', { $and: [{ payee: id }, { timeCreated: { $gte: fromDateTime } }, 
+   // this.db.find('invoices', { $and: [{ userName }, { timeCreated: { $gte: fromDateTime } }, 
    //   { timeCreated: { $lte: toDateTime } } ], sort:{ timeCreated: -1} })
    
   }
@@ -61,12 +61,12 @@ export default class Server {
 
 
   async completeInvoices() {
-    this.db.find('invoices', { $and: [{ currencyTo: { $ne : "BTC" } }, { timePaid: {$gt: 0} }, { payee: {$exists: true} }, { amountTo: {$exists: false} } ] } )
+    this.db.find('invoices', { $and: [{ currencyTo: { $ne : "BTC" } }, { timePaid: {$gt: 0} }, { amountTo: {$exists: false} } ] } )
       .then((resp) => {
         resp.toArray((err, invoices) => {
           const promises = invoices.map(inv => {
             return new Promise((resolve) => { 
-              this.db.find('keys', { id: inv.payee }).then((rec) => {
+              this.db.find('keys', { userName: inv.userName }).then((rec) => {
                 if (rec.length === 1) {
                   this.gw = new Gateway(rec.key, rec.secret);
                   this.gw.getTrades('tBTC' + inv.currencyTo, inv.timePresented, Date.now(), 1, 1)
@@ -100,7 +100,7 @@ export default class Server {
 
     this.db.findOne('invoices', { invoiceId }).then((record) => {
       if (record) {
-        const id = record.payee;
+        const userName = record.userName;
         let lang = record.lang;
         if (req.query && req.query.lang) lang = req.query.lang;
         req.setLocale(lang);
@@ -130,7 +130,7 @@ export default class Server {
             paymentPicure,
           });
         } else {
-          this.db.findOne('keys', { id }).then((rec) => {
+          this.db.findOne('keys', { userName }).then((rec) => {
             this.gw = new Gateway(rec.key, rec.secret);
             this.gw.getMovements('LNX', timePresented, timePresented + 600000)
               .then((r) => r.json())
@@ -272,7 +272,7 @@ export default class Server {
                       const memoOptions = req.query.memo ? 'value="' + req.query.memo + '" readonly' : '';
                       res.render('request', {
                         currentLocale: lang,
-                        payee: id,
+                        userName: record.userName,
                         currencyFrom: record.currencyFrom,
                         primaryLabelOptions: 'hidden',
                         secondaryLabelOptions: 'hidden',
@@ -297,7 +297,7 @@ export default class Server {
                       res.render('request', {
                         currentLocale: lang,
                         invoiceId: record.invoiceId,
-                        payee: record.payee,
+                        userName: record.userName,
                         currencyFrom,
                         amountOptions,
                         memoOptions,
@@ -411,7 +411,7 @@ export default class Server {
 
     this.express.post('/pay', (req, res) => {
       const lang = req.body.lang;
-      const payee = req.body.payee;
+      const userName = req.body.userName;
       
       const currencyFrom = req.body.currencyFrom;
       const memo = typeof req.body.memo === 'undefined' ? '' : req.body.memo ;
@@ -419,7 +419,7 @@ export default class Server {
 
       req.setLocale(lang);
 
-      this.db.findOne('keys', { id: payee })
+      this.db.findOne('keys', { userName })
         .then((record) => {
           this.gw = new Gateway(record.key, record.secret);
           this.gw.getBook('tBTC' + currencyFrom)
@@ -435,7 +435,7 @@ export default class Server {
                 const invoiceId = nanoid(12);
                 const inv = new Invoices({
                   invoiceId,
-                  payee,
+                  userName,
                   timeCreated: Date.now(),
                   timePresented: 0,
                   timePaid: 0,
@@ -496,7 +496,7 @@ export default class Server {
                           invoiceId = nanoid(12);
                           const inv = new Invoices({
                             invoiceId,
-                            payee,
+                            userName,
                             timeCreated: Date.now(),
                             timePresented: Date.now(),
                             timePaid: 0,
@@ -571,9 +571,9 @@ export default class Server {
         while (j > 0) {
           j -= 1;
           const inv = records[j];
-          const id = inv.payee;
+          const userName = inv.userName;
           const invoiceId = inv.invoiceId;
-          self.db.findOne('keys', { id })
+          self.db.findOne('keys', { userName })
             .then((rec) => {
               if (!rec) return;
               self.gw = new Gateway(rec.key, rec.secret);
@@ -587,13 +587,13 @@ export default class Server {
                     if (json[i][12] * 100000000 === inv.amountSat) received = json[i][5];
                   }
                   if (received) { // invoice received
-                    console.log('Invoice', invoiceId, 'of', id, toZulu(inv.timePresented), "was paid")
+                    console.log('Invoice', invoiceId, 'of', userName, toZulu(inv.timePresented), "was paid")
                     self.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: received } });
                   } else if (inv.timePresented < Date.now() - 600000) { // invoice failed
-                    console.log('Invoice', invoiceId, 'of', id, toZulu(inv.timePresented), "has failed")
+                    console.log('Invoice', invoiceId, 'of', userName, toZulu(inv.timePresented), "has failed")
                     self.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
                   } else {
-                    console.log('Invoice', invoiceId, 'of', id, toZulu(inv.timePresented), "is still pending");
+                    console.log('Invoice', invoiceId, 'of', userName, toZulu(inv.timePresented), "is still pending");
                     setTimeout(self.resolvePendingInvoices, inv.timePresented + 600001 - Date.now(), self); // repeat after due date
                   }
                 });

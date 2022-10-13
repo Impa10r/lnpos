@@ -3,7 +3,7 @@ import { mongoose } from 'mongoose';
 const keySchema = new mongoose.Schema(
   {
     invoiceId: { type: String, index: { unique: false } },
-    payee: { type: String, index: { unique: false } },
+    userName: { type: String, index: { unique: false } },
     timeCreated: { type: Number, required: true },
     timePresented: { type: Number, required: true }, // 0 = in transit
     timePaid: { type: Number, required: true }, // 0 = in transit, -1 = failed
