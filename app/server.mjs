@@ -41,7 +41,7 @@ export default class Server {
   }
 
   renderReport(req, res) {
-    const userName = req.body.userName;
+    const userName = req.body.userName.toLowerCase();
     const fromDate = req.body.fromDate ? Date.parse(req.body.fromDate + 'T00:00:00.000Z') : 1;
     const toDate = req.body.toDate ? Date.parse(req.body.toDate + 'T23:59:59.999Z') : Date.now();
     const limit = parseInt(req.body.limit);
