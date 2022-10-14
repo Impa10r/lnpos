@@ -54,9 +54,13 @@ export default class Server {
     html += '<th scope="col">' + req.__('tbl_memo') + '</th>';
     html += '</tr></thead><tbody>';
 
-   // this.db.find('invoices', { $and: [{ userName }, { timeCreated: { $gte: fromDateTime } }, 
-   //   { timeCreated: { $lte: toDateTime } } ], sort:{ timeCreated: -1} })
-   
+    this.db.find('invoices', { $and: [{ userName }, { timeCreated: { $gte: fromDateTime } }, { timeCreated: { $lte: toDateTime } } ], sort:{ timeCreated: -1} })
+      .then((resp) => {
+        resp.toArray((err, invoices) => {
+          
+        });
+      });
+    
   }
 
 
