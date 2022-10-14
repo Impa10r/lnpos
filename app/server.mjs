@@ -46,9 +46,10 @@ export default class Server {
     const toDate = req.body.toDate ? Date.parse(req.body.toDate + 'T23:59:59.999Z') : Date.now();
     const limit = parseInt(req.body.limit);
     
-    this.db.find('invoices', { $and: [{ userName }, { timeCreated: { $gte: fromDate } }, { timeCreated: { $lte: toDate } } ] }, { timeCreated: -1 } )
+    this.db.find('invoices', { $and: [{ userName }, { timeCreated: { $gte: fromDate } }, { timeCreated: { $lte: toDate } } ] }, { timeCreated: -1 }, limit )
       .then((resp) => {
         resp.toArray((err, invoices) => {
+          if (err) console.error(err);
           let table = '<table class="table table-sm table-hover"><thead class="thead-light"><tr><th scope="col">';
           table += '#</th><th scope="col">' + req.__('tbl_date') + '</th>'; 
           table += '<th scope="col">' + req.__('tbl_amt_from') + '</th>';
@@ -79,7 +80,8 @@ export default class Server {
             limit,
           });
         });
-      });
+      })
+      .catch((err) => console.log(err)); 
   }
 
   async completeInvoices(userName) {
