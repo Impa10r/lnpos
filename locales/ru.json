@@ -77,7 +77,7 @@
 	"details": "Описание",
 	"invoice_created": "Счет выпущен",
   "invoice_presented": "QR-код создан",
-	"invoice_paid": "Счет оплачен",
+	"invoice_paid": "Платеж получен",
 	"invoice_not_found": "Счет не найден",
 	"invoice: error": "Ошибка создания счета Lightning. Если та же проблема наблюдается в приложении Bitfinex, обратитесь в их службу поддержки.",
 	"pending": "В ожидании",
@@ -88,5 +88,12 @@
   "password": "Пароль",
   "password_explain": "Первые 7 букв секретного ключа",
   "confirm": "Подтвердить личность",
-  "error_password": "Пароль не совпадает. Убедитесь, что вы НЕ используете свой пароль Bitfinex. Вы можете найти первые 7 букв вашего секретного ключа API <a href='https://setting.bitfinex.com/api#my-keys' target='_blank'>здесь</a>"
+  "error_password": "Пароль не совпадает. Убедитесь, что вы НЕ используете свой пароль Bitfinex. Вы можете найти первые 7 букв вашего секретного ключа API <a href='https://setting.bitfinex.com/api#my-keys' target='_blank'>здесь</a>",
+  "tbl_date": "Дата выпуска",
+	"tbl_status": "Статус",
+	"tbl_amt_from": "Сумма счета",
+	"tbl_amt_to": "Получено как",
+	"tbl_memo": "Детали платежа",
+	"report": "Отчет по счетам",
+  "_login": "Войти"
 }

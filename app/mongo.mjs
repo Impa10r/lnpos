@@ -26,8 +26,8 @@ export default class DataBase {
     return this.db.collection(collection).findOne(query);
   }
 
-  async find(collection, query) {
-    return this.db.collection(collection).find(query);
+  async find(collection, query, sort = {}, limit = 0) {
+    return this.db.collection(collection).find(query).sort(sort).limit(limit);
   }
 
   async updateOne(collection, query, update) {

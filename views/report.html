@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="{{currentLocale}}">
+
+<head>
+  <meta charset="utf-8">
+  <title>{{#i18n}}report{{/i18n}}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <!-- Custom CSS -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+    * {
+        font-family: Montserrat;
+    }
+    body {
+        margin: 10px;
+        padding: 10px;
+    }
+
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h3 class="text-center">{{#i18n}}report{{/i18n}}</h3>
+    <hr>
+    {{{table}}}
+  </div>
+</body>
+</html>

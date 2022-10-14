@@ -77,7 +77,7 @@
 	"details": "Detalles",
   "invoice_created": "Factura emitida",
   "invoice_presented": "QR generado",
-	"invoice_paid": "Factura pagada",
+	"invoice_paid": "Pago recibido",
   "invoice_not_found": "Factura no encontrada",
 	"invoice: error": "Error al generar la Factura Lightning. Si el mismo problema persiste en la aplicación Bitfinex, comuníquese con su soporte.",
   "pending": "Pendiente",
@@ -88,5 +88,12 @@
   "password": "Contraseña",
   "password_explain": "Primeras 7 letras de clave secreta",
   "confirm": "Confirmar identidad",
-  "error_password": "Las contraseñas no coinciden. Asegúrese de NO estar utilizando su contraseña de Bitfinex. Puede buscar las primeras 7 letras de su clave secreta API <a href='https://setting.bitfinex.com/api#my-keys' target='_blank'>aquí</a>."
+  "error_password": "Las contraseñas no coinciden. Asegúrese de NO estar utilizando su contraseña de Bitfinex. Puede buscar las primeras 7 letras de su clave secreta API <a href='https://setting.bitfinex.com/api#my-keys' target='_blank'>aquí</a>.",
+  "tbl_date": "Fecha de emisión",
+	"tbl_status": "Recibido como",
+	"tbl_amt_from": "Importe de factura",
+	"tbl_amt_to": "Convertido a",
+	"tbl_memo": "Detalles",
+	"report": "Informe de facturas",
+  "_login": "Iniciar"
 }

@@ -41,29 +41,46 @@ export default class Server {
   }
 
   renderReport(req, res) {
-    const fromDateTime = 1;
-    const toDateTime = Date.now();
-    const limit = 25;
-
-
-    let html = '<table class="table"><thead class="thead-light"><tr><th scope="col">#</th><th scope="col">';
-    html += req.__('tbl_date') + '</th><th scope="col">' + req.__('tbl_cur_from') + '</th>';
-    html += '<th scope="col">' + req.__('tbl_amt_from') + '</th>';
-    html += '<th scope="col">' + req.__('tbl_cur_to') + '</th>';
-    html += '<th scope="col">' + req.__('tbl_amt_to') + '</th>';
-    html += '<th scope="col">' + req.__('tbl_memo') + '</th>';
-    html += '</tr></thead><tbody>';
-
-    this.db.find('invoices', { $and: [{ userName }, { timeCreated: { $gte: fromDateTime } }, { timeCreated: { $lte: toDateTime } } ], sort:{ timeCreated: -1} })
+    const userName = req.body.userName;
+    const fromDate = req.body.fromDate ? Date.parse(req.body.fromDate + 'T00:00:00.000Z') : 1;
+    const toDate = req.body.toDate ? Date.parse(req.body.toDate + 'T23:59:59.999Z') : Date.now();
+    const limit = parseInt(req.body.limit);
+    
+    this.db.find('invoices', { $and: [{ userName }, { timeCreated: { $gte: fromDate } }, { timeCreated: { $lte: toDate } } ] }, { timeCreated: -1 } )
       .then((resp) => {
         resp.toArray((err, invoices) => {
+          let table = '<table class="table table-sm table-hover"><thead class="thead-light"><tr><th scope="col">';
+          table += '#</th><th scope="col">' + req.__('tbl_date') + '</th>'; 
+          table += '<th scope="col">' + req.__('tbl_amt_from') + '</th>';
+          table += '<th scope="col">' + req.__('tbl_amt_to') + '</th>';
+          table += '<th scope="col">' + req.__('tbl_memo') + '</th>';
+          table += '<th scope="col">' + req.__('tbl_status') + '</th>';
+          table += '</tr></thead><tbody>';
+
+          for (let i = 0; i < invoices.length; i += 1) {
+            const inv = invoices[i];
+            const status = inv.timePaid < 0 ? 'failed' : (inv.timePaid > 0 ? 'paid' : 'pending');
+            const receivedAs = (status === 'paid' ? (typeof inv.amountTo === 'undefined' || inv.currencyTo === 'BTC' ? toFix(inv.amountSat, 0) + ' Sats': toFix(inv.amountTo + inv.feeAmount, 2) + ' ' + inv.currencyTo) : req.__(status));
+
+            table += '<tr><th scope="row">' + (i + 1)+ '</th>';
+            table += '<td>' + toZulu(inv.timeCreated) + '</td>';
+            table += '<td>' + toFix(inv.amountFiat, 2) + ' ' + inv.currencyFrom + '</td>';
+            table += '<td>' + receivedAs + '</td>';
+            table += '<td>' + inv.memo + '</td>';
+            table += '<td><a href="/' + inv.invoiceId + '?status"><img src="' + status + '.png" style="width: auto; height: 20px"></a></td></tr>';
+          }
+          table += '</tbody></table>';
           
+          res.render('report', {
+            currentLocale: res.getLocale(),
+            table,
+            toDate: toZulu(new Date(toDate)).substring(0, 10),
+            fromDate: toZulu(new Date(fromDate)).substring(0, 10),
+            limit,
+          });
         });
       });
-    
   }
-
-
 
   async completeInvoices(userName) {
     const p = new Promise((allResolve) => {
@@ -99,8 +116,8 @@ export default class Server {
                   resolve(true);
                 } );
               });
+              Promise.all(promises).then(() => {allResolve(true)});
             });
-            Promise.all(promises).then(() => {allResolve(true)});
           });
       });
     });
@@ -119,13 +136,13 @@ export default class Server {
         const dateTimePresented = timePresented > 0 ? toZulu(timePresented) : req.__('pending');
         const amountFiat = toFix(record.amountFiat, 2);
         const amountSat = record.amountSat > 0 ? toFix(record.amountSat, 0) : req.__('pending');
-        let paymentPicure = 'check-mark.png';
+        let paymentPicure = 'paid.png';
         let dateTimePaid = '';
 
         if (record.timePaid) {
           if (record.timePaid === -1) {
             dateTimePaid = req.__('failed');
-            paymentPicure = 'red-cross.png';
+            paymentPicure = 'failed.png';
           } else {
             dateTimePaid = toZulu(record.timePaid);
           }
@@ -169,10 +186,10 @@ export default class Server {
                  if (timePresented > 0 && timePresented < Date.now() - 600000) {
                   this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
                   dateTimePaid = req.__('failed');
-                  paymentPicure = 'red-cross.png';
+                  paymentPicure = 'failed.png';
                 } else {
                   dateTimePaid = req.__('pending');
-                  paymentPicure = 'question-mark.png';
+                  paymentPicure = 'pending.png';
                 }
                 return res.render('receipt', {
                   currentLocale: lang,
@@ -247,6 +264,10 @@ export default class Server {
               currentLocale: id,
               refCode: 'TuVr9K55M',
             });
+          case 'login':
+              return res.render('login', {
+                currentLocale: res.getLocale()
+              });
           case 'a4':
             const url = req.protocol + '://' + req.get('host') + '/' + req.query.id;
             return qr.toDataURL(url, (err, src) => {
@@ -267,12 +288,6 @@ export default class Server {
                 return this.db.findOne('keys', { id })
                   .then((record) => {
                     if (record) {
-                      if (typeof req.query.login !== 'undefined') {
-                        return res.render('login', {
-                          currentLocale: lang,
-                          id,
-                        });
-                      }
                       const memoOptions = req.query.memo ? 'value="' + req.query.memo + '" readonly' : '';
                       res.render('request', {
                         currentLocale: lang,
@@ -320,12 +335,13 @@ export default class Server {
 
     this.express.post('/report', (req, res) => {
       req.setLocale(req.body.lang);
-      this.db.findOne('keys', { id: req.body.id })
+      const userName = req.body.userName.toLowerCase();
+      this.db.findOne('keys', { userName })
         .then((record) => {
           if (!record || record.secret.substring(0, 7) !==  req.body.password) {
             this.renderError(req, res, 'error_password');
           } else {
-            this.completeInvoices().then(() => console.log('done'));
+            this.completeInvoices(userName).then(() => this.renderReport(req, res));
           }
         });
     });
