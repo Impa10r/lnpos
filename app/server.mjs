@@ -68,7 +68,7 @@ export default class Server {
             table += '<td>' + toFix(inv.amountFiat, 2) + ' ' + inv.currencyFrom + '</td>';
             table += '<td>' + receivedAs + '</td>';
             table += '<td>' + inv.memo + '</td>';
-            table += '<td><a href="/' + inv.invoiceId + '?status"><img src="' + status + '.png" style="width: auto; height: 20px"></a></td></tr>';
+            table += '<td><a href="/' + inv.invoiceId + '?status" target="_blank"><img src="' + status + '.png" style="width: auto; height: 20px"></a></td></tr>';
           }
           table += '</tbody></table>';
           
