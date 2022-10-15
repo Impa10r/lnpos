@@ -534,7 +534,7 @@ export default class Server {
                           inv.save();  
                         }
 
-                        const url = req.protocol + '://' + req.get('host') + '/' + invoiceId + '?status';
+                        const url = req.protocol + '://' + req.get('host') + '/' + invoiceId + '?status&lang=' + lang;
                         
                         let html = '<!DOCTYPE html>';
                         html += '<html lang="' + lang + '">';
