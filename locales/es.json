@@ -90,9 +90,9 @@
   "confirm": "Confirmar identidad",
   "error_password": "Las contraseñas no coinciden. Asegúrese de NO estar utilizando su contraseña de Bitfinex. Puede buscar las primeras 7 letras de su clave secreta API <a href='https://setting.bitfinex.com/api#my-keys' target='_blank'>aquí</a>.",
   "tbl_date": "Fecha de emisión",
-	"tbl_status": "Recibido como",
-	"tbl_amt_from": "Importe facturado",
-	"tbl_amt_to": "Convertido a",
+	"tbl_status": "Estado",
+	"tbl_amt_from": "Facturado",
+	"tbl_amt_to": "Recibido",
 	"tbl_memo": "Detalles",
 	"report": "Informe de facturas",
   "_login": "Iniciar"

@@ -91,9 +91,9 @@
   "error_password": "Пароль не совпадает. Убедитесь, что вы НЕ используете свой пароль Bitfinex. Вы можете найти первые 7 букв вашего секретного ключа API <a href='https://setting.bitfinex.com/api#my-keys' target='_blank'>здесь</a>",
   "tbl_date": "Дата выпуска",
 	"tbl_status": "Статус",
-	"tbl_amt_from": "Сумма счета",
-	"tbl_amt_to": "Получено как",
-	"tbl_memo": "Детали платежа",
+	"tbl_amt_from": "Выставлено",
+	"tbl_amt_to": "Получено",
+	"tbl_memo": "Детали",
 	"report": "Отчет по счетам",
   "_login": "Войти"
 }
