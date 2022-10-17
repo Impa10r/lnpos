@@ -90,6 +90,6 @@
 	"tbl_amt_from": "Facturado",
 	"tbl_amt_to": "Recibido",
 	"tbl_memo": "Detalles",
-	"report": "Informe de facturas",
+	"report": "Historial de pagos",
   "_login": "Iniciar"
 }
