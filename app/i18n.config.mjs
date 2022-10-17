@@ -2,7 +2,7 @@ import i18n from 'i18n';
 import path from 'path';
 
 i18n.configure({
-  locales: ['en', 'es', 'ru'],
+  locales: ['en', 'es', 'fr', 'ru'],
   defaultLocale: 'en',
   queryParameter: 'lang',
   directory: path.join('./', 'locales'),

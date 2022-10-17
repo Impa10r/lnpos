@@ -2,9 +2,11 @@ User-agent: *
 Allow: /$
 Allow: /en$
 Allow: /es$
+Allow: /fr$
 Allow: /ru$
 Allow: /?lang=en$
 Allow: /?lang=es$
+Allow: /?lang=fr$
 Allow: /?lang=ru$
 Allow: /sitemap.xml$
 Disallow: /

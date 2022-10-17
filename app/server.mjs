@@ -264,6 +264,7 @@ export default class Server {
             return fs.createReadStream(path.join(dirname, '../views/', id)).pipe(res);
           case 'ru':
           case 'es':
+          case 'fr':
           case 'en':
             req.setLocale(id);
             return res.render('index', {
