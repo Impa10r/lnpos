@@ -157,6 +157,7 @@ export default class Server {
             dateTimePresented,
             dateTimePaid,
             paymentPicure,
+            invoiceId,
           });
         } else {
           this.db.findOne('keys', { userName }).then((rec) => {
@@ -182,6 +183,8 @@ export default class Server {
                     dateTimePresented,
                     dateTimePaid,
                     paymentPicure,
+                    invoiceId,
+
                   });
                 }
 
@@ -202,6 +205,7 @@ export default class Server {
                   dateTimePresented,
                   dateTimePaid,
                   paymentPicure,
+                  invoiceId,
                 });
               });
           });
