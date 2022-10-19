@@ -89,6 +89,6 @@
 	"tbl_amt_from": "Invoiced",
 	"tbl_amt_to": "Received",
 	"tbl_memo": "Details",
-	"report": "Payment history",
+	"report": "Transactions history",
 	"_login": "Log in"
 }
