@@ -45,6 +45,7 @@ export default class Server {
     const fromDate = req.body.fromDate ? Date.parse(req.body.fromDate + 'T00:00:00.000Z') : 1;
     const toDate = req.body.toDate ? Date.parse(req.body.toDate + 'T23:59:59.999Z') : Date.now();
     const limit = parseInt(req.body.limit);
+    const lang = res.getLocale();
     
     this.db.find('invoices', { $and: [{ userName }, { timeCreated: { $gte: fromDate } }, { timeCreated: { $lte: toDate } } ] }, { timeCreated: -1 }, limit )
       .then((resp) => {
@@ -68,12 +69,12 @@ export default class Server {
             table += '<td>' + toFix(inv.amountFiat, 2) + ' ' + inv.currencyFrom + '</td>';
             table += '<td>' + receivedAs + '</td>';
             table += '<td>' + inv.memo + '</td>';
-            table += '<td><a href="/' + inv.invoiceId + '?status" target="_blank"><img src="' + status + '.png" style="width: auto; height: 20px"></a></td></tr>';
+            table += '<td><a href="/' + inv.invoiceId + '?status&lang=' + lang + '" target="_blank"><img src="' + status + '.png" style="width: auto; height: 20px"></a></td></tr>';
           }
           table += '</tbody></table>';
           
           res.render('report', {
-            currentLocale: res.getLocale(),
+            currentLocale: lang,
             table,
             toDate: toZulu(new Date(toDate)).substring(0, 10),
             fromDate: toZulu(new Date(fromDate)).substring(0, 10),
