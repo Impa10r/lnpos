@@ -46,7 +46,7 @@
 	"error_id_not_found": "This payment link is not valid.",
 	"pay_currency": "Amount in",
 	"memo": "Details (optional)",
-	"generate_invoice": "Pay now via Lightning",
+	"generate_invoice": "Generate Lightning invoice",
 	"amount_too_small": "Amount is too small",
 	"amount_too_large": "Amount is too large",
 	"ln_qr": "Scan or click",

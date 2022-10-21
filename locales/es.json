@@ -44,7 +44,7 @@
 	"error_id_not_found": "Este enlace de pago no es válido.",
   "pay_currency": "La cantidad en",
   "memo": "Detalles (opcional)",
-	"generate_invoice": "Pagar ahora con Lightning",
+	"generate_invoice": "Generar factura Lightning",
 	"amount_too_small": "La cantidad es demasiado pequeña",
 	"amount_too_large": "La cantidad es demasiado grande",
 	"Fiat amount:": "Cantidad:",
