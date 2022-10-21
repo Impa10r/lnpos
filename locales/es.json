@@ -70,6 +70,7 @@
   "payment_receipt": "Estado de Factura",
   "already_paid": "Esta factura ya ha sido pagada",
 	"details": "Detalles",
+  "invoice_number": "Número de factura",
   "invoice_created": "Factura emitida",
   "invoice_presented": "QR generado",
 	"invoice_paid": "Pago recibido",

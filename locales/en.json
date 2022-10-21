@@ -70,6 +70,7 @@
 	"payment_receipt": "Invoice Status",
 	"already_paid": "This invoice has already been paid",
 	"details": "Details",
+  "invoice_number": "Invoice number",
 	"invoice_created": "Invoice issued",
 	"invoice_presented": "QR generated",
 	"invoice_paid": "Payment received",

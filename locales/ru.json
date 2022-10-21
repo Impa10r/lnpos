@@ -70,6 +70,7 @@
 	"payment_receipt": "Статус счета-фактуры",
 	"already_paid": "Этот счет уже оплачен",
 	"details": "Описание",
+  "invoice_number": "Номер счета",
 	"invoice_created": "Счет выпущен",
   "invoice_presented": "QR-код создан",
 	"invoice_paid": "Платеж получен",
