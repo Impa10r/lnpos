@@ -265,9 +265,6 @@ export default class Server {
           case 'sitemap.xml':
           case 'favicon.ico':
             return fs.createReadStream(path.join(dirname, '../views/', id)).pipe(res);
-          case 'android-chrome-192x192.png':
-          case 'android-chrome-512x512.png':
-            return fs.createReadStream(path.join(dirname, '../views/img/', id)).pipe(res);
           case 'ru':
           case 'es':
           case 'fr':
