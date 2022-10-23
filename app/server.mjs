@@ -260,6 +260,7 @@ export default class Server {
         switch (id) {
           case 'robots.txt':
           case 'sitemap.xml':
+          case 'favicon.ico':
             const filename = fileURLToPath(import.meta.url);
             const dirname = path.dirname(filename);
             return fs.createReadStream(path.join(dirname, '../views/', id)).pipe(res);
