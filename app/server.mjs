@@ -261,6 +261,8 @@ export default class Server {
           case 'robots.txt':
           case 'sitemap.xml':
           case 'favicon.ico':
+          case 'android-chrome-192x192.png':
+          case 'android-chrome-512x512.png':
             const filename = fileURLToPath(import.meta.url);
             const dirname = path.dirname(filename);
             return fs.createReadStream(path.join(dirname, '../views/', id)).pipe(res);
