@@ -256,18 +256,17 @@ export default class Server {
     this.express.get('/:id?', (req, res) => {
       const id = req.params.id;
       const lang = res.getLocale();
+      const filename = fileURLToPath(import.meta.url);
+      const dirname = path.dirname(filename);
+            
       if (id) {
         switch (id) {
           case 'robots.txt':
           case 'sitemap.xml':
           case 'favicon.ico':
-            const filename = fileURLToPath(import.meta.url);
-            const dirname = path.dirname(filename);
             return fs.createReadStream(path.join(dirname, '../views/', id)).pipe(res);
           case 'android-chrome-192x192.png':
           case 'android-chrome-512x512.png':
-            const filename = fileURLToPath(import.meta.url);
-            const dirname = path.dirname(filename);
             return fs.createReadStream(path.join(dirname, '../views/img/', id)).pipe(res);
           case 'ru':
           case 'es':
