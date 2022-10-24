@@ -6,6 +6,7 @@ Allow: /fr$
 Allow: /ru$
 Allow: /de$
 Allow: /it$
+Allow: /pt$
 Allow: /sitemap.xml$
 Disallow: /
 Sitemap: https://lnpos.me/sitemap.xml
