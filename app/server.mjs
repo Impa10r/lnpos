@@ -549,8 +549,9 @@ export default class Server {
                         html += '<html lang="' + lang + '">';
                         html += '<head><meta charset="utf-8"><title>' + req.__('lightning_invoice') + '</title>';
                         html += '<meta name="viewport" content="width=device-width, initial-scale=1">';
+                        html += '<link rel="mask-icon" href="safari-pinned-tab.svg" color="#000000"></link>';
                         html += '<link rel="icon" type="image/svg+xml" href="favicon.svg">';
-                        html += '<link rel="icon" type="image/png" href="favicon.png">';
+                        html += '<link rel="alternate icon" type="image/png" href="favicon.png">';
                         html += '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
                         html += '<style>@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap");';
                         html += '* {font-family: Montserrat;}';
