@@ -5,11 +5,7 @@ Allow: /es$
 Allow: /fr$
 Allow: /ru$
 Allow: /de$
-Allow: /?lang=en$
-Allow: /?lang=es$
-Allow: /?lang=fr$
-Allow: /?lang=ru$
-Allow: /?lang=de$
+Allow: /it$
 Allow: /sitemap.xml$
 Disallow: /
 Sitemap: https://lnpos.me/sitemap.xml

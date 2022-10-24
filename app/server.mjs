@@ -270,6 +270,7 @@ export default class Server {
           case 'fr':
           case 'en':
           case 'de':
+          case 'it':
             req.setLocale(id);
             return res.render('index', {
               currentLocale: id,
