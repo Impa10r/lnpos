@@ -77,7 +77,7 @@
   "invoice_not_found": "Factura no encontrada",
 	"invoice: error": "Error al generar la Factura Lightning. Si el mismo problema persiste en la aplicación Bitfinex, comuníquese con su soporte.",
   "pending": "Pendiente",
-	"failed": "Ha fallado",
+	"failed": "Caducado",
   "login": "Acceso a cuenta personal",
   "user_name": "Нombre de usuario",
   "user_name_explain": "Su nombre de usuario de Bitfinex",

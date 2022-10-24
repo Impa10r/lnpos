@@ -77,7 +77,7 @@
 	"invoice_not_found": "Invoice not found",
 	"invoice: error": "Error generating Lightning Invoice. If the same problem persists in Bitfinex app, please contact their support.",
 	"pending": "Pending",
-	"failed": "Failed",
+	"failed": "Expired",
 	"login": "Access to personal account",
 	"user_name": "User name",
 	"user_name_explain": "Your Bitfinex user name",
