@@ -395,8 +395,8 @@ export default class Server {
             this.db.findOne('keys', { key: req.body.apiKey })
               .then((record) => {
                 if(record) id = record.id; // keep old id
-                // Delete previous key to avoid duplicates
-                this.db.deleteMany('keys', { key: req.body.apiKey }) 
+                // Delete previous keys to avoid duplicates
+                this.db.deleteMany('keys', { userName }) 
                   .then(r => {
                     const data = new Keys({
                       id,
