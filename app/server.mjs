@@ -36,7 +36,7 @@ export default class Server {
     if (err) console.error(err);
     res.render('error', {
       currentLocale: req.locale,
-      error: 'Error: ' + req.__(errCode),
+      error: req.__(errCode),
     });
   }
 
