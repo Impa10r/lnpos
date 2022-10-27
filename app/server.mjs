@@ -423,11 +423,15 @@ export default class Server {
                               const i = record.id;
                               const desc = req.get('host') + '/' + i;
                               const url = req.protocol + '://' + desc;
-                              res.render('add', {
-                                currentLocale: lang,
-                                url,
-                                desc,
-                                id: i,
+                              qr.toDataURL(url, (err, src) => {
+                                if (err) this.renderError(req, res, 'error_qr', err);
+                                res.render('add', {
+                                  currentLocale: lang,
+                                  url,
+                                  desc,
+                                  src,
+                                  id: i,
+                                });
                               });
                             }
                           });
