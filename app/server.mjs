@@ -54,6 +54,7 @@ export default class Server {
           let table = '<table class="table table-sm table-hover"><thead class="thead-light"><tr><th scope="col">';
           table += '#</th><th scope="col">' + req.__('tbl_date') + '</th>'; 
           table += '<th scope="col">' + req.__('tbl_amt_from') + '</th>';
+          table += '<th scope="col">' + req.__('Satoshi') + '</th>';
           table += '<th scope="col">' + req.__('tbl_amt_to') + '</th>';
           table += '<th scope="col">' + req.__('tbl_memo') + '</th>';
           table += '<th scope="col">' + req.__('tbl_status') + '</th>';
@@ -67,6 +68,7 @@ export default class Server {
             table += '<tr><th scope="row">' + (i + 1)+ '</th>';
             table += '<td>' + toZulu(inv.timeCreated) + '</td>';
             table += '<td>' + toFix(inv.amountFiat, 2) + ' ' + inv.currencyFrom + '</td>';
+            table += '<td>' + toFix(inv.amountSat, 0) + '</td>';
             table += '<td>' + receivedAs + '</td>';
             table += '<td>' + inv.memo + '</td>';
             table += '<td><a href="/' + inv.invoiceId + '?status&lang=' + lang + '" target="_blank"><img src="' + status + '.png" style="width: auto; height: 20px"></a></td></tr>';
@@ -583,7 +585,7 @@ export default class Server {
                             html += '<h2 class="text-center">' + req.__('lightning_invoice') + '</h2>';
                             html += '<hr><center><table><tr><td><h4>' + req.__('Fiat amount:') + ' </td><td><h4>' + currencyFrom + ' ' + toFix(amountFiat, 2) + '</h4></td></tr>';
                             html += '<tr><td><h4>BTC/' + currencyFrom + ': </h4></td><td><h4>' + toFix(exchangeRate, 2) + '</h4></td>';
-                            html += '<tr><td><h4>' + req.__('Satoshi amount:') + ' </h4></td><td><h4>' + toFix(amountSat, 0) + '</h4></td></tr></table>';
+                            html += '<tr><td><h4>' + req.__('Satoshi') + ': </h4></td><td><h4>' + toFix(amountSat, 0) + '</h4></td></tr></table>';
                             html += '<p class="text-md-center">' + req.__('ln_qr') + '<br>';
                             html += '<a href="lightning:' + invoice + '" target="_blank"><img src=' + src + '></a><br>';
                             html += '<a href="' + url + '" target="_blank">' + req.__('show_receipt') + '</a><br>';

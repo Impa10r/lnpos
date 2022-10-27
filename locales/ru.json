@@ -31,7 +31,7 @@
 	"ref_link": "Ваша реферальная ссылка",
 	"api_key: permission invalid": "В ваших ключах API отсутствуют необходимые разрешения",
 	"Fiat amount:": "Сумма:",
-	"Satoshi amount:": "Сатоши:",
+	"Satoshi": "Сатоши",
 	"signup": "Регистрация",
 	"register_key": "Зарегистрировать ключ API",
 	"api_key_saved": "Поздравляем! Ваш ключ API зарегистрирован.",

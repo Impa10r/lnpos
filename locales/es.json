@@ -49,7 +49,7 @@
 	"amount_too_small": "La cantidad es demasiado pequeña",
 	"amount_too_large": "La cantidad es demasiado grande",
 	"Fiat amount:": "Cantidad:",
-	"Satoshi amount:": "Satoshi:",
+	"Satoshi": "Satoshi",
 	"ln_qr": "Escanee o haga clic",
 	"lightning_invoice": "Factura de Lightning",
 	"error_qr": "el código QR ha caducado, genere uno nuevo",

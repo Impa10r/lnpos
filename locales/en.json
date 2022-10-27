@@ -31,7 +31,7 @@
 	"ref_link": "Your Referral Link",
 	"api_key: permission invalid": "Your API keys lack required permissions",
 	"Fiat amount:": "Amount:",
-	"Satoshi amount:": "Satoshi:",
+	"Satoshi": "Satoshi",
 	"signup": "Signup",
 	"register_key": "Register API Key",
 	"api_key_saved": "Congratualtions! Your API key is registered.",
