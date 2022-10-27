@@ -23,7 +23,7 @@
 	"step_3af": "Haga clic en 'Generate New Code', copie el código de 10 símbolos y péguelo en el campo de abajo. Pulse el botón 'Generar enlace de referencia'.",
 	"generate_ref": "Generar enlace de referencia",
 	"new_referral_link": "A continuación se muestra su enlace de referencia único. Guárdelo en el escritorio de su PC, en la pantalla de inicio del teléfono o en los marcadores. Puede compartirlo en las redes sociales y enviarlo a sus contactos directos.",
-	"new_payment_link": "A continuación se muestra su enlace de pago único. Haga clic o escanee, luego guárdelo en el escritorio de su PC, en la pantalla de inicio del teléfono o en los marcadores. Puede reenviarlo a sus empleados y clientes para generar solicitudes de pago.",
+	"new_payment_link": "A continuación se muestra su enlace de pago único. Haga clic o escanee, luego guárdelo en el escritorio de su PC, en la pantalla de inicio del teléfono y/o en los marcadores. Puede reenviarlo a sus empleados y clientes para generar solicitudes de pago.",
   "new_payment_link2": "<b>Pasos adicionales:</b><br><ol start = '5'><li>Instale la <a href='https://www.bitfinex.com/mobile-trading' target='_blank'>aplicación Bitfinex</a> en su teléfono para recibir notificaciones de transaction.</li><li>No te olvides de imprimir sus <b><em>pegatinas personales de 'Bitcoin aceptado'</em></b> siguiendo este",
   "remote_payment_link": "<h2>Enlace de pago remoto</h2><br>Copie el enlace a continuación para solicitar un pago remoto por correo electrónico o chat:",
   "remote_payment_link2": "Puede monitorear el estado del pago en su cuenta personal o en este enlace:",
