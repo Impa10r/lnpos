@@ -303,6 +303,8 @@ export default class Server {
                     if (record) {
                       const memoOptions = req.query.memo ? 'value="' + req.query.memo + '" readonly' : '';
                       res.render('request', {
+                        invoiceId: nanoid(12),
+                        timeCreated: Date.now(),
                         currentLocale: lang,
                         userName: record.userName,
                         currencyFrom: record.currencyFrom,
@@ -445,7 +447,8 @@ export default class Server {
     this.express.post('/pay', (req, res) => {
       const lang = req.body.lang;
       const userName = req.body.userName;
-      
+      const invoiceId = req.body.invoiceId;
+      const timeCreated = req.body.timeCreated;
       const currencyFrom = req.body.currencyFrom;
       const memo = typeof req.body.memo === 'undefined' ? '' : req.body.memo ;
       const amountFiat = parseFloat(req.body.amountFiat);
@@ -465,30 +468,44 @@ export default class Server {
               if (amountBTC < this.gw.minInvoiceAmount) { return this.renderError(req, res, 'amount_too_small'); }
 
               if (req.body.button === 'link') {
-                const invoiceId = nanoid(12);
-                const inv = new Invoices({
-                  invoiceId,
-                  userName,
-                  timeCreated: Date.now(),
-                  timePresented: 0,
-                  timePaid: 0,
-                  currencyFrom,
-                  currencyTo,
-                  amountFiat,
-                  exchangeRate: 0,
-                  exchange: record.exchange,
-                  amountSat: 0,
-                  memo,
-                  lang,
-                });
-                inv.save();
-                const desc = req.get('host') + '/' + invoiceId;
-                const url = req.protocol + '://' + desc;
-                return res.render('payremote', {
-                  currentLocale: lang,
-                  url,
-                  desc,
-                });
+                this.db.findOne('invoices', { invoiceId })
+                  .then((i) => {
+                    if (i) {
+                      this.db.updateOne('invoices', { invoiceId }, { $set: { 
+                          timePresented: 0,
+                          timePaid: 0,
+                          amountFiat,
+                          exchangeRate: 0,
+                          amountSat: 0,
+                          memo,
+                          lang
+                        } });
+                    } else {
+                      const inv = new Invoices({
+                        invoiceId,
+                        userName,
+                        timeCreated,
+                        timePresented: 0,
+                        timePaid: 0,
+                        currencyFrom,
+                        currencyTo,
+                        amountFiat,
+                        exchangeRate: 0,
+                        exchange: record.exchange,
+                        amountSat: 0,
+                        memo,
+                        lang,
+                      });
+                      inv.save();
+                    }
+                    const desc = req.get('host') + '/' + invoiceId;
+                    const url = req.protocol + '://' + desc;
+                    return res.render('payremote', {
+                      currentLocale: lang,
+                      url,
+                      desc,
+                    }); 
+                  });            
               }
               
               this.gw.getDepositAddr('LNX', 'exchange')
@@ -514,73 +531,77 @@ export default class Server {
                           return;
                         }
 
-                        let invoiceId = req.body.invoiceId;
-                        
-                        if (invoiceId) {
-                          this.db.updateOne('invoices', { invoiceId }, { $set: { 
-                              timePresented: Date.now(),
-                              timePaid: 0,
-                              exchangeRate,
-                              amountSat,
-                              memo,
-                              lang
-                            } });
-                        } else {
-                          invoiceId = nanoid(12);
-                          const inv = new Invoices({
-                            invoiceId,
-                            userName,
-                            timeCreated: Date.now(),
-                            timePresented: Date.now(),
-                            timePaid: 0,
-                            currencyFrom,
-                            currencyTo,
-                            amountFiat,
-                            exchangeRate,
-                            exchange: record.exchange,
-                            amountSat,
-                            memo,
-                            lang,
-                          });
-                          inv.save();  
-                        }
-
-                        const url = req.protocol + '://' + req.get('host') + '/' + invoiceId + '?status&lang=' + lang;
-                        
-                        let html = '<!DOCTYPE html>';
-                        html += '<html lang="' + lang + '">';
-                        html += '<head><meta charset="utf-8"><title>' + req.__('lightning_invoice') + '</title>';
-                        html += '<meta name="viewport" content="width=device-width, initial-scale=1">';
-                        html += '<link rel="mask-icon" href="safari-pinned-tab.svg" color="#000000"></link>';
-                        html += '<link rel="icon" type="image/svg+xml" href="favicon.svg">';
-                        html += '<link rel="alternate icon" type="image/png" href="favicon.png">';
-                        html += '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
-                        html += '<style>@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap");';
-                        html += '* {font-family: Montserrat;}';
-                        html += 'body { margin: 5px; padding: 5px; }th, td {padding-right: 10px;}</style></head>';
-                        html += '<body><div class="container">';
-                        html += '<h2 class="text-center">' + req.__('lightning_invoice') + '</h2>';
-                        html += '<hr><center><table><tr><td><h4>' + req.__('Fiat amount:') + ' </td><td><h4>' + currencyFrom + ' ' + toFix(amountFiat, 2) + '</h4></td></tr>';
-                        html += '<tr><td><h4>BTC/' + currencyFrom + ': </h4></td><td><h4>' + toFix(exchangeRate, 2) + '</h4></td>';
-                        html += '<tr><td><h4>' + req.__('Satoshi amount:') + ' </h4></td><td><h4>' + toFix(amountSat, 0) + '</h4></td></tr></table>';
-                        html += '<p class="text-md-center">' + req.__('ln_qr') + '<br>';
-                        html += '<a href="lightning:' + invoice + '" target="_blank"><img src=' + src + '></a><br>';
-                        html += '<a href="' + url + '" target="_blank">' + req.__('show_receipt') + '</a><br>';
-
-                        res.set('Content-type', 'text/html');
-                        res.write(html);
-
-                        this.gw.convertProceeds(amountBTC, currencyTo, res)
-                          .then((success) => {
-                            if (success) {
-                              this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: Date.now() } });
-                              const html2 = '<h4 style="color:green"><b>' + req.__('PAID') + '</b></h4></center></div></body></html>';
-                              res.end(html2);
+                        this.db.findOne('invoices', { invoiceId })
+                          .then((inv) => {
+                            if (inv) {
+                              this.db.updateOne('invoices', { invoiceId }, { $set: { 
+                                  timePresented: Date.now(),
+                                  timePaid: 0,
+                                  amountFiat,
+                                  exchangeRate,
+                                  amountSat,
+                                  memo,
+                                  lang
+                                } });
                             } else {
-                              this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
-                              const html2 = '<h4 style="color:red"><b>' + req.__('FAILED') + '</b></h4></center></div></body></html>';
-                              res.end(html2);
+                              const inv = new Invoices({
+                                invoiceId,
+                                userName,
+                                timeCreated,
+                                timePresented: Date.now(),
+                                timePaid: 0,
+                                currencyFrom,
+                                currencyTo,
+                                amountFiat,
+                                exchangeRate,
+                                exchange: record.exchange,
+                                amountSat,
+                                memo,
+                                lang,
+                              });
+                              inv.save();  
                             }
+
+                            const url = req.protocol + '://' + req.get('host') + '/' + invoiceId + '?status&lang=' + lang;
+                            
+                            let html = '<!DOCTYPE html>';
+                            html += '<html lang="' + lang + '">';
+                            html += '<head><meta charset="utf-8"><title>' + req.__('lightning_invoice') + '</title>';
+                            html += '<meta name="viewport" content="width=device-width, initial-scale=1">';
+                            html += '<link rel="mask-icon" href="safari-pinned-tab.svg" color="#000000"></link>';
+                            html += '<link rel="icon" type="image/svg+xml" href="favicon.svg">';
+                            html += '<link rel="alternate icon" type="image/png" href="favicon.png">';
+                            html += '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
+                            html += '<style>@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap");';
+                            html += '* {font-family: Montserrat;}';
+                            html += 'body { margin: 5px; padding: 5px; }th, td {padding-right: 10px;}</style></head>';
+                            html += '<body><div class="container">';
+                            html += '<h2 class="text-center">' + req.__('lightning_invoice') + '</h2>';
+                            html += '<hr><center><table><tr><td><h4>' + req.__('Fiat amount:') + ' </td><td><h4>' + currencyFrom + ' ' + toFix(amountFiat, 2) + '</h4></td></tr>';
+                            html += '<tr><td><h4>BTC/' + currencyFrom + ': </h4></td><td><h4>' + toFix(exchangeRate, 2) + '</h4></td>';
+                            html += '<tr><td><h4>' + req.__('Satoshi amount:') + ' </h4></td><td><h4>' + toFix(amountSat, 0) + '</h4></td></tr></table>';
+                            html += '<p class="text-md-center">' + req.__('ln_qr') + '<br>';
+                            html += '<a href="lightning:' + invoice + '" target="_blank"><img src=' + src + '></a><br>';
+                            html += '<a href="' + url + '" target="_blank">' + req.__('show_receipt') + '</a><br>';
+
+                            try {
+                              res.set('Content-type', 'text/html');
+                            } catch (e) { return console.error("Cannot set headers error") };
+
+                            res.write(html);
+
+                            this.gw.convertProceeds(amountBTC, currencyTo, res)
+                              .then((success) => {
+                                if (success) {
+                                  this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: Date.now() } });
+                                  const html2 = '<h4 style="color:green"><b>' + req.__('PAID') + '</b></h4></center></div></body></html>';
+                                  res.end(html2);
+                                } else {
+                                  this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
+                                  const html2 = '<h4 style="color:red"><b>' + req.__('FAILED') + '</b></h4></center></div></body></html>';
+                                  res.end(html2);
+                                }
+                              });
                           });
                       });
                     });
