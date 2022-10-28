@@ -87,6 +87,7 @@ export default class Server {
       .catch((err) => console.log(err)); 
   }
 
+  // append details of conversion to fiat or stablecoin for all paid invoices
   async completeInvoices(userName) {
     const p = new Promise((allResolve) => {
       this.db.findOne('keys', { userName }).then((rec) => {
@@ -129,40 +130,19 @@ export default class Server {
     return p;
   }
 
-  renderReceipt(req, res) {
-    const invoiceId = req.params.id;
-
-    this.db.findOne('invoices', { invoiceId }).then((record) => {
-      if (record) {
-        const userName = record.userName;
-        const lang = res.getLocale();
-        const timePresented = record.timePresented;
-        const dateTimeCreated = toZulu(record.timeCreated);
-        const dateTimePresented = timePresented > 0 ? toZulu(timePresented) : req.__('pending');
-        const amountFiat = toFix(record.amountFiat, 2);
-        const amountSat = record.amountSat > 0 ? toFix(record.amountSat, 0) : req.__('pending');
-        let paymentPicure = 'paid.png';
-        let dateTimePaid = '';
-
-        if (record.timePaid) {
-          if (record.timePaid === -1) {
-            dateTimePaid = req.__('failed');
-            paymentPicure = 'failed.png';
-          } else {
-            dateTimePaid = toZulu(record.timePaid);
+  // check and update the payment status of one invoice
+  invoiceStatus(invoiceId) {
+    const promise = new Promise((resolve, reject) => {
+      this.db.findOne('invoices', { invoiceId }).then((record) => {
+        if (record) {
+          const userName = record.userName;
+          const timePresented = record.timePresented;
+          
+          if (record.timePaid) {
+            if (record.timePaid === -1) return resolve('failed'); 
+            return resolve('paid');
           }
-          res.render('receipt', {
-            currentLocale: lang,
-            record,
-            amountFiat,
-            amountSat,
-            dateTimeCreated,
-            dateTimePresented,
-            dateTimePaid,
-            paymentPicure,
-            invoiceId,
-          });
-        } else {
+
           this.db.findOne('keys', { userName }).then((rec) => {
             this.gw = new Gateway(rec.key, rec.secret);
             this.gw.getMovements('LNX', timePresented, timePresented + 600000)
@@ -170,49 +150,59 @@ export default class Server {
               .then((json) => {
                 let received = null;
                 let i = json.length;
+                
                 while (i > 0) {
                   i -= 1;
                   if (json[i][12] * 100000000 === record.amountSat) received = json[i][5];
                 }
+
                 if (received) {
                   this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: received } });
-                  dateTimePaid = toZulu(received);
-                  return res.render('receipt', {
-                    currentLocale: lang,
-                    record,
-                    amountFiat,
-                    amountSat,
-                    dateTimeCreated,
-                    dateTimePresented,
-                    dateTimePaid,
-                    paymentPicure,
-                    invoiceId,
-
-                  });
+                  return resolve('paid');
                 }
 
-                 if (timePresented > 0 && timePresented < Date.now() - 600000) {
+                if (timePresented > 0 && timePresented < Date.now() - 600000) {
                   this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
-                  dateTimePaid = req.__('failed');
-                  paymentPicure = 'failed.png';
-                } else {
-                  dateTimePaid = req.__('pending');
-                  paymentPicure = 'pending.png';
-                }
-                return res.render('receipt', {
-                  currentLocale: lang,
-                  record,
-                  amountFiat,
-                  amountSat,
-                  dateTimeCreated,
-                  dateTimePresented,
-                  dateTimePaid,
-                  paymentPicure,
-                  invoiceId,
-                });
+                  return resolve('failed');
+                } 
+                return resolve('pending');
               });
           });
-        }
+        } else { reject('invoice_not_found') }
+      })
+      .catch((err) => {
+        reject('error_database_down');
+        console.error(err);
+      });
+    });
+    return promise;
+  }
+
+  renderReceipt(req, res, status) {
+    const invoiceId = req.params.id;
+    this.db.findOne('invoices', { invoiceId }).then((record) => {
+      if (record) {
+        const currentLocale = res.getLocale();
+        const timePresented = record.timePresented;
+        const dateTimeCreated = toZulu(record.timeCreated);
+        const dateTimePresented = timePresented > 0 ? toZulu(timePresented) : req.__('pending');
+        const amountFiat = toFix(record.amountFiat, 2);
+        const amountSat = record.amountSat > 0 ? toFix(record.amountSat, 0) : req.__('pending');
+        const paymentPicure = status +'.png';
+        let dateTimePaid = req.__(status);
+
+        if (status === 'paid') dateTimePaid = toZulu(record.timePaid);
+        
+        res.render('receipt', {
+          currentLocale,
+          record,
+          amountFiat,
+          amountSat,
+          dateTimeCreated,
+          dateTimePresented,
+          dateTimePaid,
+          paymentPicure
+        });
       } else {
         this.renderError(req, res, 'invoice_not_found');
       }
@@ -304,6 +294,10 @@ export default class Server {
                   .then((record) => {
                     if (record) {
                       const memoOptions = req.query.memo ? 'value="' + req.query.memo + '" readonly' : '';
+                      const amountOptions = req.query.amount ? 'value="' + req.query.amount + '" readonly' : '';
+                      const secondaryButtonOptions = req.query.amount ? 'hidden' : '';
+                      const secondaryLabelOptions = secondaryButtonOptions === 'hidden' ? '' : 'hidden';
+
                       res.render('request', {
                         invoiceId: nanoid(12),
                         timeCreated: Date.now(),
@@ -313,6 +307,9 @@ export default class Server {
                         primaryLabelOptions: 'hidden',
                         secondaryLabelOptions: 'hidden',
                         memoOptions,
+                        amountOptions,
+                        secondaryButtonOptions,
+                        secondaryLabelOptions
                       });
                     } else this.renderError(req, res, 'error_id_not_found');   
                   })
@@ -321,7 +318,16 @@ export default class Server {
                 return this.db.findOne('invoices', { invoiceId: id })
                   .then((record) => {
                     if (record) {
-                      if (typeof req.query.status !== 'undefined') return this.renderReceipt(req, res);
+                      if (typeof req.query.status !== 'undefined') {
+                        this.invoiceStatus(id)
+                          .then((status) => {
+                            this.renderReceipt(req, res, status);
+                          })
+                          .catch((error) => {
+                            this.renderError(error);
+                          })
+                        return;
+                      }
                 
                       const currencyFrom = record.currencyFrom;
                       const amountOptions = 'value="' + record.amountFiat + '" readonly';
@@ -347,7 +353,10 @@ export default class Server {
             }
         }
       } 
-      res.render('index', { currentLocale: res.locale, refCode: 'TuVr9K55M', });
+      res.render('index', { 
+        currentLocale: res.locale, 
+        refCode: 'TuVr9K55M', 
+      });
     });
 
     this.express.post('/report', (req, res) => {
@@ -624,6 +633,7 @@ export default class Server {
     });
   }
 
+  // check and update payment status of all pending invoices
   resolvePendingInvoices(self) {
     console.log('Resolving hang invoices...');
     self.db.find('invoices', { $and: [{ timePresented: { $gt: 0 } }, { timePaid: 0 }] }).then((resp) => {
