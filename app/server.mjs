@@ -335,6 +335,7 @@ export default class Server {
                       const secondaryButtonOptions = 'hidden';
 
                       res.render('request', {
+                        invoiceId: id,
                         currentLocale,
                         amountOptions,
                         memoOptions,
