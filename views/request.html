@@ -44,20 +44,9 @@
 <body>
   <div class="container">
     <center>
-      <a href="?lang=en"><img src="en.png" alt="EN"></a>  
-      <a href="?lang=es"><img src="es.png" alt="ES"></a>
-      <a href="?lang=fr"><img src="fr.png" alt="FR"></a>
-      <a href="?lang=de"><img src="de.png" alt="DE"></a>
-      <a href="?lang=it"><img src="it.png" alt="IT"></a>
-      <a href="?lang=ru"><img src="ru.png" alt="RU"></a>
-      <a href="?lang=pt"><img src="pt.png" alt="PT"></a>
-      <br>
-      <br>
       <h3 class="text-center">{{#i18n}}lnpos{{/i18n}}</h3>
       <hr>
-      <table>
-        <tr><td><h4>{{#i18n}}payee{{/i18n}}:</h4></td><td><h4>{{record.payee}}</h4></td></tr>
-      </table>
+      <h4>{{#i18n}}payee{{/i18n}}: {{record.payee}}</h4>
       <br>
       <form class="form" autocomplete="off" action="/pay" method="POST">
         <fieldset>
