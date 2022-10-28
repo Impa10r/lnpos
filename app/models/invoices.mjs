@@ -20,6 +20,7 @@ const keySchema = new mongoose.Schema(
     amountTo: { type: Number, required: false },
     feeAmount: { type: Number, required: false },
     feeCurrency: { type: String, required: false },
+    payee: { type: String, required: false },
   },
 );
 

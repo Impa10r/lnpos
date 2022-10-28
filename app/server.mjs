@@ -393,6 +393,7 @@ export default class Server {
 
     this.express.post('/add', (req, res) => {
       const lang = req.body.lang;
+      const payee = req.body.payee;
       req.setLocale(lang);
       this.gw = new Gateway(req.body.apiKey, req.body.apiSecret);
       this.gw.getUserInfo()
@@ -421,7 +422,8 @@ export default class Server {
                       exchange: req.body.exchange,
                       currencyFrom: req.body.currencyFrom,
                       currencyTo: req.body.currencyTo,
-                      lang
+                      lang,
+                      payee 
                     });
                     data.save()
                       .then(() => {
@@ -478,6 +480,7 @@ export default class Server {
               const amountBTC = this.gw.simulateSell(amountFiat, result.data);
               const wap = amountFiat / amountBTC;
               const currencyTo = record.currencyTo;
+              const payee = record.payee;
 
               if (amountBTC > this.gw.maxInvoiceAmount) { return this.renderError(req, res, 'amount_too_large'); }
               if (amountBTC < this.gw.minInvoiceAmount) { return this.renderError(req, res, 'amount_too_small'); }
@@ -510,6 +513,7 @@ export default class Server {
                         amountSat: 0,
                         memo,
                         lang,
+                        payee,
                       });
                       inv.save();
                     }
@@ -574,6 +578,7 @@ export default class Server {
                                 amountSat,
                                 memo,
                                 lang,
+                                payee,
                               });
                               inv.save();  
                             }

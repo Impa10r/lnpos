@@ -4,6 +4,7 @@ const keySchema = new mongoose.Schema(
   {
     id: { type: String, index: { unique: true } },
     userName: { type: String, index: { unique: false } },
+    payee: { type: String, required: false },
     email: { type: String, required: true },
     timeZone: { type: String, required: false },
     key: { type: String, index: { unique: true } },

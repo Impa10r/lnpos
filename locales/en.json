@@ -95,5 +95,7 @@
 	"tbl_memo": "Details",
 	"report": "Transaction history",
 	"_login": "Log in",
-	"password_reminder": "Password reminder"
+	"password_reminder": "Password reminder",
+  "branding": "Company name to show on receipts",
+  "payee": "Payee"
 }
