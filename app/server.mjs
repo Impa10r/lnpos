@@ -45,7 +45,7 @@ export default class Server {
     const fromDate = req.body.fromDate ? Date.parse(req.body.fromDate + 'T00:00:00.000Z') : 1;
     const toDate = req.body.toDate ? Date.parse(req.body.toDate + 'T23:59:59.999Z') : Date.now();
     const limit = parseInt(req.body.limit);
-    const lang = res.getLocale();
+    const currentLocale = res.getLocale();
     
     this.db.find('invoices', { $and: [{ userName }, { timeCreated: { $gte: fromDate } }, { timeCreated: { $lte: toDate } } ] }, { timeCreated: -1 }, limit )
       .then((resp) => {
@@ -71,12 +71,12 @@ export default class Server {
             table += '<td>' + toFix(inv.amountSat, 0) + '</td>';
             table += '<td>' + receivedAs + '</td>';
             table += '<td>' + inv.memo + '</td>';
-            table += '<td><a href="/' + inv.invoiceId + '?status&lang=' + lang + '" target="_blank"><img src="' + status + '.png" style="width: auto; height: 20px"></a></td></tr>';
+            table += '<td><a href="/' + inv.invoiceId + '?status&lang=' + currentLocale + '" target="_blank"><img src="' + status + '.png" style="width: auto; height: 20px"></a></td></tr>';
           }
           table += '</tbody></table>';
           
           res.render('report', {
-            currentLocale: lang,
+            currentLocale,
             table,
             toDate: toZulu(new Date(toDate)).substring(0, 10),
             fromDate: toZulu(new Date(fromDate)).substring(0, 10),
@@ -247,7 +247,7 @@ export default class Server {
 
     this.express.get('/:id?', (req, res) => {
       const id = req.params.id;
-      const lang = res.getLocale();
+      const currentLocale = res.getLocale();
       const filename = fileURLToPath(import.meta.url);
       const dirname = path.dirname(filename);
             
@@ -278,7 +278,7 @@ export default class Server {
             return qr.toDataURL(url, (err, src) => {
               if (err) this.renderError(req, res, 'error_qr', err);
               res.render('a4', {
-                currentLocale: lang,
+                currentLocale,
                 src,
               });
             });
@@ -286,7 +286,7 @@ export default class Server {
             switch (id.length) {
               case 10: // affiliate code
                 return res.render('index', {
-                  currentLocale: lang,
+                  currentLocale,
                   refCode: id,
                 });
               case 11: // user id
@@ -301,15 +301,14 @@ export default class Server {
                       res.render('request', {
                         invoiceId: nanoid(12),
                         timeCreated: Date.now(),
-                        currentLocale: lang,
-                        userName: record.userName,
-                        currencyFrom: record.currencyFrom,
+                        currentLocale,
                         primaryLabelOptions: 'hidden',
                         secondaryLabelOptions: 'hidden',
                         memoOptions,
                         amountOptions,
                         secondaryButtonOptions,
-                        secondaryLabelOptions
+                        secondaryLabelOptions,
+                        record
                       });
                     } else this.renderError(req, res, 'error_id_not_found');   
                   })
@@ -329,7 +328,6 @@ export default class Server {
                         return;
                       }
                 
-                      const currencyFrom = record.currencyFrom;
                       const amountOptions = 'value="' + record.amountFiat + '" readonly';
                       const memoOptions = record.memo ? 'value="' + record.memo + '" readonly' : '';
                       const primaryLabelOptions = record.timePaid > 0 ? '' : 'hidden';
@@ -337,15 +335,13 @@ export default class Server {
                       const secondaryButtonOptions = 'hidden';
 
                       res.render('request', {
-                        currentLocale: lang,
-                        invoiceId: record.invoiceId,
-                        userName: record.userName,
-                        currencyFrom,
+                        currentLocale,
                         amountOptions,
                         memoOptions,
                         primaryButtonOptions,
                         secondaryButtonOptions,
-                        primaryLabelOptions
+                        primaryLabelOptions,
+                        record
                       });
                     } else this.renderError(req, res, 'invoice_not_found');
                   }).catch((err) => this.renderError(req, res, 'error_database_down', err));
@@ -373,9 +369,9 @@ export default class Server {
     });
 
     this.express.post('/ref', (req, res) => {
-      const lang = req.body.lang;
+      const currentLocale = req.body.lang;
       const code = req.body.refCode;
-      req.setLocale(lang);
+      req.setLocale(currentLocale);
       if (code.length !== 10)
         return this.renderError(req, res, 'error_invalid_ref');
       const desc = req.get('host') + '/' + code;
@@ -383,7 +379,7 @@ export default class Server {
       qr.toDataURL(url, (err, src) => {
         if (err) this.renderError(req, res, 'error_qr', err);
         res.render('ref', {
-          currentLocale: lang,
+          currentLocale,
           url,
           desc,
           src,
@@ -392,9 +388,9 @@ export default class Server {
     });
 
     this.express.post('/add', (req, res) => {
-      const lang = req.body.lang;
+      const currentLocale = req.body.lang;
       const payee = req.body.payee;
-      req.setLocale(lang);
+      req.setLocale(currentLocale);
       this.gw = new Gateway(req.body.apiKey, req.body.apiSecret);
       this.gw.getUserInfo()
         .then((r) => r.json())
@@ -422,7 +418,7 @@ export default class Server {
                       exchange: req.body.exchange,
                       currencyFrom: req.body.currencyFrom,
                       currencyTo: req.body.currencyTo,
-                      lang,
+                      lang: currentLocale,
                       payee 
                     });
                     data.save()
@@ -439,7 +435,7 @@ export default class Server {
                               qr.toDataURL(url, (err, src) => {
                                 if (err) this.renderError(req, res, 'error_qr', err);
                                 res.render('add', {
-                                  currentLocale: lang,
+                                  currentLocale,
                                   url,
                                   desc,
                                   src,
@@ -462,7 +458,7 @@ export default class Server {
     });
 
     this.express.post('/pay', (req, res) => {
-      const lang = req.body.lang;
+      const currentLocale = req.body.lang;
       const userName = req.body.userName;
       const invoiceId = req.body.invoiceId;
       const timeCreated = req.body.timeCreated;
@@ -470,7 +466,7 @@ export default class Server {
       const memo = typeof req.body.memo === 'undefined' ? '' : req.body.memo ;
       const amountFiat = parseFloat(req.body.amountFiat);
 
-      req.setLocale(lang);
+      req.setLocale(currentLocale);
 
       this.db.findOne('keys', { userName })
         .then((record) => {
@@ -496,7 +492,7 @@ export default class Server {
                           exchangeRate: 0,
                           amountSat: 0,
                           memo,
-                          lang
+                          lang: currentLocale
                         } });
                     } else {
                       const inv = new Invoices({
@@ -512,7 +508,7 @@ export default class Server {
                         exchange: record.exchange,
                         amountSat: 0,
                         memo,
-                        lang,
+                        lang: currentLocale,
                         payee,
                       });
                       inv.save();
@@ -520,7 +516,7 @@ export default class Server {
                     const desc = req.get('host') + '/' + invoiceId;
                     const url = req.protocol + '://' + desc;
                     res.render('payremote', {
-                      currentLocale: lang,
+                      currentLocale,
                       url,
                       desc,
                     }); 
@@ -561,7 +557,7 @@ export default class Server {
                                   exchangeRate,
                                   amountSat,
                                   memo,
-                                  lang
+                                  lang: currentLocale
                                 } });
                             } else {
                               const inv = new Invoices({
@@ -577,16 +573,16 @@ export default class Server {
                                 exchange: record.exchange,
                                 amountSat,
                                 memo,
-                                lang,
+                                lang: currentLocale,
                                 payee,
                               });
                               inv.save();  
                             }
 
-                            const url = req.protocol + '://' + req.get('host') + '/' + invoiceId + '?status&lang=' + lang;
+                            const url = req.protocol + '://' + req.get('host') + '/' + invoiceId + '?status&lang=' + currentLocale;
                             
                             let html = '<!DOCTYPE html>';
-                            html += '<html lang="' + lang + '">';
+                            html += '<html lang="' + currentLocale + '">';
                             html += '<head><meta charset="utf-8"><title>' + req.__('lightning_invoice') + '</title>';
                             html += '<meta name="viewport" content="width=device-width, initial-scale=1">';
                             html += '<link rel="mask-icon" href="safari-pinned-tab.svg" color="#000000"></link>';
