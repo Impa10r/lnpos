@@ -191,7 +191,7 @@ export default class Server {
         const paymentPicure = status +'.png';
         const url = req.protocol + '://' + req.get('host') + '/' + invoiceId + '?status&lang=' + currentLocale;
 
-        let dateTimePaid = req.__(status);
+        let dateTimePaid = '';
         let copyHtml = '';
         
         qr.toDataURL(url, (err, src) => {
@@ -200,7 +200,7 @@ export default class Server {
           if (status === 'paid') {
             dateTimePaid = toZulu(record.timePaid);
             copyHtml = '<p>' + req.__('need_copy') + '</p><img src="' + src + '" alt="QR code"></img>';
-          }
+          } else dateTimePaid = req.__(status);
 
           res.render('receipt', {
             currentLocale,
@@ -211,7 +211,7 @@ export default class Server {
             dateTimePresented,
             dateTimePaid,
             paymentPicure,
-            copyHtml
+            copyHtml,
           });
         });
       } else {
