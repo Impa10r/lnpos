@@ -506,12 +506,13 @@ export default class Server {
                     }
                     const desc = req.get('host') + '/' + invoiceId;
                     const url = req.protocol + '://' + desc;
-                    return res.render('payremote', {
+                    res.render('payremote', {
                       currentLocale: lang,
                       url,
                       desc,
                     }); 
-                  });            
+                  });
+                return;            
               }
               
               this.gw.getDepositAddr('LNX', 'exchange')
