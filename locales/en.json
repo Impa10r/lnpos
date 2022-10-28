@@ -96,6 +96,6 @@
 	"report": "Transaction history",
 	"_login": "Log in",
 	"password_reminder": "Password reminder",
-  "branding": "Company name to show on receipts",
+  "branding": "Company name",
   "payee": "Payee"
 }
