@@ -96,5 +96,6 @@
 	"report": "Historial de transacciones",
   "_login": "Entrar",
   "password_reminder": "Recordatorio de contraseña",
-  "branding": "Nombre de la empresa"
+  "branding": "Nombre de la empresa",
+  "need_copy": "¿Necesita una copia? Escanea este código QR:"
 }

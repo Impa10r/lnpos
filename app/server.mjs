@@ -189,19 +189,30 @@ export default class Server {
         const amountFiat = toFix(record.amountFiat, 2);
         const amountSat = record.amountSat > 0 ? toFix(record.amountSat, 0) : req.__('pending');
         const paymentPicure = status +'.png';
-        let dateTimePaid = req.__(status);
+        const url = req.protocol + '://' + req.get('host') + '/' + invoiceId + '?status&lang=' + currentLocale;
 
-        if (status === 'paid') dateTimePaid = toZulu(record.timePaid);
+        let dateTimePaid = req.__(status);
+        let copyHtml = '';
         
-        res.render('receipt', {
-          currentLocale,
-          record,
-          amountFiat,
-          amountSat,
-          dateTimeCreated,
-          dateTimePresented,
-          dateTimePaid,
-          paymentPicure
+        qr.toDataURL(url, (err, src) => {
+          if (err) this.renderError(req, res, 'error_qr', err);
+          
+          if (status === 'paid') {
+            dateTimePaid = toZulu(record.timePaid);
+            copyHtml = '<p>' + req.__('need_copy') + '</p><img src="' + src + '" alt="QR code"></img>';
+          }
+
+          res.render('receipt', {
+            currentLocale,
+            record,
+            amountFiat,
+            amountSat,
+            dateTimeCreated,
+            dateTimePresented,
+            dateTimePaid,
+            paymentPicure,
+            copyHtml
+          });
         });
       } else {
         this.renderError(req, res, 'invoice_not_found');
