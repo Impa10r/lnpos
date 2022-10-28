@@ -44,9 +44,7 @@
 <body>
   <div class="container">
     <center>
-      <h3 class="text-center">{{#i18n}}lnpos{{/i18n}}</h3>
-      <hr>
-      <h4>{{#i18n}}payee{{/i18n}}: {{record.payee}}</h4>
+      <p>{{#i18n}}payee{{/i18n}}: {{record.payee}}</p>
       <br>
       <form class="form" autocomplete="off" action="/pay" method="POST">
         <fieldset>
