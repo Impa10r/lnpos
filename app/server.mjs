@@ -411,7 +411,6 @@ export default class Server {
             this.renderError(req, res, 'error_invalid_keys');
           } else {
             const userName = json[2].toLowerCase();
-            const email = json[1];
             const timeZone = json[7];
             let id = nanoid(11);
             this.db.findOne('keys', { key: req.body.apiKey })
@@ -423,7 +422,6 @@ export default class Server {
                     const data = new Keys({
                       id,
                       userName,
-                      email,
                       timeZone,
                       key: req.body.apiKey,
                       secret: req.body.apiSecret,

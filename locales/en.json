@@ -98,5 +98,6 @@
 	"password_reminder": "Password reminder",
 	"branding": "Company name",
 	"payee": "Payee",
-	"need_copy": "Need a copy? Please scan this QR code:"
+	"need_copy": "Need a copy? Please scan this QR code:",
+  "license": "Content Released under ISC license.<br>This website does not use cookies nor collect personal data beyound API keys."
 }
