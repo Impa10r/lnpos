@@ -70,14 +70,14 @@ export default class Server {
           for (let i = 0; i < invoices.length; i += 1) {
             const inv = invoices[i];
             const status = inv.timePaid < 0 ? 'failed' : (inv.timePaid > 0 ? 'paid' : 'pending');
-            const receivedAs = (status === 'paid' ? (typeof inv.amountTo === 'undefined' || inv.currencyTo === 'BTC' ? toFix(inv.amountSat, 0) + ' Sats': toFix(inv.amountTo + inv.feeAmount, 2) + ' ' + inv.currencyTo) : req.__(status));
+            const receivedAs = (status === 'paid' ? (typeof inv.amountTo === 'undefined' || inv.currencyTo === 'BTC' ? toFix(inv.amountSat, 0) + ' Sats': toFix(inv.amountTo + inv.feeAmount, 2) + ' ' + inv.currencyTo) : '');
 
             if (inv.timeCreated < earliestDate) earliestDate = inv.timeCreated;
 
             table += '<tr><th scope="row">' + (i + 1)+ '</th>';
             table += '<td>' + toZulu(inv.timeCreated) + '</td>';
             table += '<td>' + toFix(inv.amountFiat, 2) + ' ' + inv.currencyFrom + '</td>';
-            table += '<td>' + toFix(inv.amountSat, 0) + '</td>';
+            table += '<td>' + (inv.amountSat > 0 ? toFix(inv.amountSat, 0) : '') + '</td>';
             table += '<td>' + receivedAs + '</td>';
             table += '<td>' + inv.memo + '</td>';
             table += '<td><a href="/' + inv.invoiceId + '?status&lang=' + currentLocale + '" target="_blank"><img src="' + status + '.png" style="width: auto; height: 20px"></a></td></tr>';
