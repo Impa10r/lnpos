@@ -108,9 +108,9 @@
         <input class="form-control" type="text" id = "payee" name="payee" size="50"  placeholder="{{#i18n}}branding{{/i18n}}" required>
         <br> 
         <div class="form-row">
-          <div class="form-group col-md-6">
-            <label for="currencyFrom"> {{#i18n}}quote_cur_list{{/i18n}}: </label>
-            <select class="form-control" id="currencyFrom" name="currencyFrom" required>
+          <label for="currencyFrom" class="col-sm-3 col-form-label"> {{#i18n}}quote_cur_list{{/i18n}}: </label>
+          <div class="col-sm-2">
+            <select class="form-control" id="currencyFrom" name="currencyFrom" required style="width: 8em">
               <option value="EUR"> EUR </option>  
               <option value="GBP"> GBP </option>  
               <option value="USD"> USD </option>  
@@ -119,9 +119,9 @@
               <option value="MXN"> MXN </option>
             </select>
           </div>
-          <div class="form-group col-md-6">
-            <label for="currencyTo"> {{#i18n}}receive_cur_list{{/i18n}}: </label>
-            <select class="form-control" id="currencyTo" name="currencyTo" required>
+          <label for="currencyTo" class="col-sm-3 col-form-label"> {{#i18n}}receive_cur_list{{/i18n}}: </label>
+          <div class="col-sm-2">
+            <select class="form-control" id="currencyTo" name="currencyTo" required style="width: 8em">
               <option value="EUR"> EUR </option>  
               <option value="GBP"> GBP </option>  
               <option value="USD"> USD </option>  
@@ -136,6 +136,7 @@
         </div>
         <input type="hidden" id="lang" name="lang" value="{{currentLocale}}">
         <input type="hidden" id="exchange" name="exchange" value="Bitfinex">
+        <br>
         <center>
           <button class="btn btn-primary" type ="submit">{{#i18n}}register_key{{/i18n}}</button>
         </center>      
