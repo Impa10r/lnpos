@@ -64,7 +64,7 @@ export default class Server {
           if (err) console.error(err);
           let table = '<table class="table table-sm table-hover"><thead class="thead-light"><tr><th scope="col">';
           table += '#</th><th scope="col">' + req.__('tbl_date') + '</th>'; 
-          table += '<th scope="col">' + req.__('tbl_amt_from') + '</th>';
+          table += '<th scope="col">' + req.__('amount') + '</th>';
           table += '<th scope="col">' + req.__('satoshi') + '</th>';
           table += '<th scope="col">' + req.__('tbl_amt_to') + '</th>';
           table += '<th scope="col">' + req.__('tbl_memo') + '</th>';
