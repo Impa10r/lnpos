@@ -100,10 +100,11 @@
 	"branding": "Company name",
 	"payee": "Payee",
 	"need_copy": "Need a copy? Please scan this QR code:",
-  "try_again": "Try again?",
-  "license": "Content under ISC license.<br>This website does not use cookies nor collect personal data beyound API keys.",
-  "from": "From",
-  "to": "To",
-  "limit": "Limit",
-  "refresh": "Refresh"
+	"try_again": "Try again?",
+	"license": "Content under ISC license.<br>This website does not use cookies nor collect personal data beyound API keys.",
+	"from": "From",
+	"to": "To",
+	"limit": "Limit",
+	"refresh": "Refresh",
+  "paid_only": "Paid"
 }

@@ -104,5 +104,6 @@
   "from": "Desde",
   "to": "A",
   "limit": "Limite",
-  "refresh": "Actualizar"
+  "refresh": "Actualizar",
+  "paid_only": "Pagado"
 }

@@ -2,5 +2,6 @@
   "from": "Von",
   "to": "An",
   "limit": "Grenze",
-  "refresh": "Aktualisieren"
+  "refresh": "Aktualisieren",
+  "paid_only": "Bezahlt"
 }

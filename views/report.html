@@ -56,9 +56,15 @@
             <label for="toDate" class="my-1 mr-2">{{#i18n}}to{{/i18n}}</label>
             <input type="text" class="form-control" id="toDate" name="toDate" value="{{toDate}}" maxlength="10">
           </div>
-          <div class="form-group mr-3">
+          <div class="form-group mr-4">
             <label for="limit" class="my-1 mr-2">{{#i18n}}limit{{/i18n}}</label>
             <input type="number" class="form-control" id="limit" name="limit" value="{{limit}}">
+          </div>
+          <div class="form-group mr-4">
+            <input class="form-check-input" type="checkbox" {{paidOnly}} name="paidOnly" id="paidOnly">
+            <label class="form-check-label" for="paidOnly">
+              {{#i18n}}paid_only{{/i18n}}
+            </label>
           </div>
           <input type="hidden" id="lang" name="lang" value="{{currentLocale}}">
           <input type="hidden" id="authToken" name="authToken" value="{{authToken}}">
@@ -67,7 +73,7 @@
         </form>
       </div>
       <div class="col-sm">
-        <a href="{{authToken}}?fromDate={{fromDate}}&toDate={{toDate}}&limit={{limit}}"><img src="csv.webp" alt="CSV" style="width: auto; height: 40px" align="right"></a>
+        <a href="{{authToken}}?fromDate={{fromDate}}&toDate={{toDate}}&limit={{limit}}&paidOnly={{paidOnly}}"><img src="csv.webp" alt="CSV" style="width: auto; height: 40px" align="right"></a>
       </div>
     </div>
     <br>

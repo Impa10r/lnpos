@@ -2,5 +2,6 @@
   "from": "Da",
   "to": "A",
   "limit": "Limite",
-  "refresh": "Aggiorna"
+  "refresh": "Aggiorna",
+  "paid_only": "Pagato"
 }
