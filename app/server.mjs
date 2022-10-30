@@ -89,7 +89,7 @@ export default class Server {
             table,
             toDate: toZulu(new Date(toDate)).substring(0, 10),
             fromDate: toZulu(new Date(earliestDate)).substring(0, 10),
-            limit: invoices.length,
+            limit,
             userName,
             authToken,
           });
