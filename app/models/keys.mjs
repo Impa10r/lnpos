@@ -11,7 +11,9 @@ const keySchema = new mongoose.Schema(
     exchange: { type: String, required: true },
     currencyFrom: { type: String, required: true },
     currencyTo: { type: String, required: true },
-    lang: { type: String, required: true }
+    lang: { type: String, required: true },
+    authToken: { type: String, required: false },
+    authExpire: { type: Number, required: false },
   },
 );
 

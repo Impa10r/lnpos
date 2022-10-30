@@ -18,6 +18,7 @@ import path from 'path';
 import locale from 'locale';
 import { fileURLToPath } from 'url';
 import { nanoid } from 'nanoid';
+import { format } from '@fast-csv/format';
 import Keys from './models/keys.mjs';
 import Invoices from './models/invoices.mjs';
 import Gateway from './bitfinex.mjs';
@@ -46,7 +47,13 @@ export default class Server {
     const toDate = req.body.toDate ? Date.parse(req.body.toDate + 'T23:59:59.999Z') : Date.now();
     const limit = parseInt(req.body.limit);
     const currentLocale = res.getLocale();
-    
+
+    const authToken = nanoid(13);
+    const authExpire = Date.now() + 3600000; // 1 hour
+    let earliestDate = Date.now();
+
+    this.db.updateOne('keys', { userName }, { $set: { authToken, authExpire } });
+
     this.db.find('invoices', { $and: [{ userName }, { timeCreated: { $gte: fromDate } }, { timeCreated: { $lte: toDate } } ] }, { timeCreated: -1 }, limit )
       .then((resp) => {
         resp.toArray((err, invoices) => {
@@ -65,6 +72,8 @@ export default class Server {
             const status = inv.timePaid < 0 ? 'failed' : (inv.timePaid > 0 ? 'paid' : 'pending');
             const receivedAs = (status === 'paid' ? (typeof inv.amountTo === 'undefined' || inv.currencyTo === 'BTC' ? toFix(inv.amountSat, 0) + ' Sats': toFix(inv.amountTo + inv.feeAmount, 2) + ' ' + inv.currencyTo) : req.__(status));
 
+            if (inv.timeCreated < earliestDate) earliestDate = inv.timeCreated;
+
             table += '<tr><th scope="row">' + (i + 1)+ '</th>';
             table += '<td>' + toZulu(inv.timeCreated) + '</td>';
             table += '<td>' + toFix(inv.amountFiat, 2) + ' ' + inv.currencyFrom + '</td>';
@@ -79,8 +88,10 @@ export default class Server {
             currentLocale,
             table,
             toDate: toZulu(new Date(toDate)).substring(0, 10),
-            fromDate: toZulu(new Date(fromDate)).substring(0, 10),
-            limit,
+            fromDate: toZulu(new Date(earliestDate)).substring(0, 10),
+            limit: invoices.length,
+            userName,
+            authToken,
           });
         });
       })
@@ -178,6 +189,60 @@ export default class Server {
     return promise;
   }
 
+  renderCSV(req, res, userName) { 
+    const fromDate = req.query.fromDate ? Date.parse(req.query.fromDate + 'T00:00:00.000Z') : 1;
+    const toDate = req.query.toDate ? Date.parse(req.query.toDate + 'T23:59:59.999Z') : Date.now();
+    const limit = parseInt(req.query.limit); 
+
+    this.db.find('invoices', { $and: [{ userName }, { timeCreated: { $gte: fromDate } }, { timeCreated: { $lte: toDate } } ] }, { timeCreated: -1 }, limit )
+      .then((resp) => {
+        resp.toArray((err, invoices) => {
+          if (err) console.error(err);
+          
+          const csvStream = format({ headers: true });
+          res.setHeader('Content-disposition', 'attachment; filename=report.csv');
+          res.setHeader('Content-type', 'text/csv');
+          csvStream.pipe(res);
+
+          for (let i = 0; i < invoices.length; i += 1) {
+            const inv = invoices[i];
+            const invoiceId = inv.invoiceId;
+            const issueDate = toZulu(inv.timeCreated).substring(0, 19);
+            const invoiceCurency = inv.currencyFrom;
+            const invoiceAmount = inv.amountFiat;
+            const satoshiAmount = inv.amountSat;
+            const status = inv.timePaid < 0 ? 'Failed' : (inv.timePaid > 0 ? 'Paid' : 'Pending');
+            const receivedCurency = (status === 'Paid' ? (typeof inv.amountTo === 'undefined' || inv.currencyTo === 'BTC' ? 'BTC': inv.currencyTo) : '');
+            const receivedAmount = (status === 'Paid' ? (typeof inv.amountTo === 'undefined' || inv.currencyTo === 'BTC' ? inv.amountSat / 100000000: inv.amountTo + inv.feeAmount) : '');
+            const paymentDate = status === 'Paid' ? toZulu(inv.timePaid).substring(0, 19) : '';
+            const conversionDate = status === 'Paid' && typeof inv.timeHedged !== 'undefined' ? toZulu(inv.timeHedged).substring(0, 19) : '';
+            const profitLoss = (status === 'Paid' && receivedCurency === invoiceCurency ) ?  receivedAmount - invoiceAmount : ''; 
+            const details = inv.memo;
+
+            csvStream.write({ 
+              issueDate, 
+              invoiceId,
+              invoiceCurency,
+              invoiceAmount,
+              satoshiAmount,
+              details,
+              paymentDate,
+              conversionDate,
+              receivedCurency,
+              receivedAmount,
+              profitLoss,
+              status,
+              url: req.protocol + '://' + req.get('host') + '/' + inv.invoiceId + '?status',
+            });
+          }
+          csvStream.end();
+        });
+      })
+      .catch((err) => {
+        this.renderError(req, res, 'error_database_down', err);
+      });
+  }
+  
   renderReceipt(req, res, status) {
     const invoiceId = req.params.id;
     this.db.findOne('invoices', { invoiceId }).then((record) => {
@@ -202,9 +267,8 @@ export default class Server {
               dateTimePaid = toZulu(record.timePaid);
               copyHtml = '<p>' + req.__('need_copy') + '</p><img src="' + src + '" alt="QR code"></img>';
               break;
-            case 'failed':
-              copyHtml = '<p><a href="/' + invoiceId + '?lang='+ currentLocale + '">' + req.__('try_again') + '</a></p>';
             default:
+              copyHtml = '<p><a href="/' + invoiceId + '?lang='+ currentLocale + '">' + req.__('try_again') + '</a></p>';
               dateTimePaid = req.__(status);
           }
             
@@ -363,14 +427,18 @@ export default class Server {
                       });
                     } else this.renderError(req, res, 'invoice_not_found');
                   }).catch((err) => this.renderError(req, res, 'error_database_down', err));
+                
+                case 13: // authToken to download csv
+                  return this.db.findOne('keys', { authToken: id })
+                    .then((record) => {
+                      if (record && record.authExpire > Date.now()) this.renderCSV(req, res, record.userName);
+                      else res.render('index', { currentLocale, refCode: 'TuVr9K55M'});
+                    });
               default:
             }
         }
       } 
-      res.render('index', { 
-        currentLocale: res.locale, 
-        refCode: 'TuVr9K55M', 
-      });
+      res.render('index', { currentLocale, refCode: 'TuVr9K55M' });
     });
 
     this.express.post('/report', (req, res) => {
@@ -378,11 +446,17 @@ export default class Server {
       const userName = req.body.userName.toLowerCase();
       this.db.findOne('keys', { userName })
         .then((record) => {
-          if (!record || record.secret.substring(0, 7) !==  req.body.password) {
-            this.renderError(req, res, 'error_password');
-          } else {
-            this.completeInvoices(userName).then(() => this.renderReport(req, res));
+          if (!record) return this.renderError(req, res, 'error_password');
+
+          if (req.body.password && record.secret.substring(0, 7) !== req.body.password) {
+            return this.renderError(req, res, 'error_password');
+          } 
+
+          if (req.body.authToken && !(record.authToken === req.body.authToken && record.authExpire > Date.now())) { 
+            return res.render('index', { currentLocale: req.body.lang, refCode: 'TuVr9K55M'});
           }
+          
+          this.completeInvoices(userName).then(() => this.renderReport(req, res));
         });
     });
 

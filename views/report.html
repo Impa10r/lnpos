@@ -45,6 +45,32 @@
   <div class="container">
     <h3 class="text-center">{{#i18n}}report{{/i18n}}</h3>
     <hr>
+    <div class="row">
+      <div class="col-md-auto">
+        <form class="form-inline" autocomplete="off" action="/report" method="POST">
+          <div class="form-group mr-3">
+            <label for="fromDate" class="my-1 mr-2">{{#i18n}}from{{/i18n}}</label>
+            <input type="text" class="form-control" id="fromDate" name="fromDate" value="{{fromDate}}" maxlength="10">
+          </div>
+          <div class="form-group mr-3">
+            <label for="toDate" class="my-1 mr-2">{{#i18n}}to{{/i18n}}</label>
+            <input type="text" class="form-control" id="toDate" name="toDate" value="{{toDate}}" maxlength="10">
+          </div>
+          <div class="form-group mr-3">
+            <label for="limit" class="my-1 mr-2">{{#i18n}}limit{{/i18n}}</label>
+            <input type="number" class="form-control" id="limit" name="limit" value="{{limit}}">
+          </div>
+          <input type="hidden" id="lang" name="lang" value="{{currentLocale}}">
+          <input type="hidden" id="authToken" name="authToken" value="{{authToken}}">
+          <input type="hidden" id="userName" name="userName" value="{{userName}}">
+          <button type="submit" class="btn btn-primary">{{#i18n}}refresh{{/i18n}}</button>
+        </form>
+      </div>
+      <div class="col-sm">
+        <a href="{{authToken}}?fromDate={{fromDate}}&toDate={{toDate}}&limit={{limit}}"><img src="csv.webp" alt="CSV" style="width: auto; height: 40px" align="right"></a>
+      </div>
+    </div>
+    <br>
     {{{table}}}
   </div>
 </body>
