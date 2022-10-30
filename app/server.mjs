@@ -197,11 +197,17 @@ export default class Server {
         qr.toDataURL(url, (err, src) => {
           if (err) this.renderError(req, res, 'error_qr', err);
           
-          if (status === 'paid') {
-            dateTimePaid = toZulu(record.timePaid);
-            copyHtml = '<p>' + req.__('need_copy') + '</p><img src="' + src + '" alt="QR code"></img>';
-          } else dateTimePaid = req.__(status);
-
+          switch(status) {
+            case  'paid':
+              dateTimePaid = toZulu(record.timePaid);
+              copyHtml = '<p>' + req.__('need_copy') + '</p><img src="' + src + '" alt="QR code"></img>';
+              break;
+            case 'failed':
+              copyHtml = '<p><a href="/' + invoiceId + '?lang='+ currentLocale + '">' + req.__('try_again') + '</a></p>';
+            default:
+              dateTimePaid = req.__(status);
+          }
+            
           res.render('receipt', {
             currentLocale,
             record,
