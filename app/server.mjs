@@ -43,7 +43,7 @@ export default class Server {
 
   renderReport(req, res) {
     const userName = req.body.userName.toLowerCase();
-    const fromDate = req.body.fromDate ? Date.parse(req.body.fromDate + 'T00:00:00.000Z') : 1;
+    const fromDate = Date.parse((req.body.fromDate ? req.body.fromDate : new Date().getFullYear() + '-01-01') + 'T00:00:00.000Z');
     const toDate = req.body.toDate ? Date.parse(req.body.toDate + 'T23:59:59.999Z') : Date.now();
     const limit = parseInt(req.body.limit);
     const paidOnly = req.body.paidOnly === 'on' ? 'checked' : '';
@@ -52,10 +52,7 @@ export default class Server {
 
     const authToken = nanoid(13);
     const authExpire = Date.now() + 3600000; // 1 hour
-    let earliestDate = Date.now();
-
     
-
     this.db.updateOne('keys', { userName }, { $set: { authToken, authExpire } });
 
     this.db.find('invoices', { $and: [{ userName }, { timePaid: { $gte: paidDate } }, { timeCreated: { $gte: fromDate } }, { timeCreated: { $lte: toDate } } ] }, { timeCreated: -1 }, limit )
@@ -74,9 +71,7 @@ export default class Server {
             const inv = invoices[i];
             const status = inv.timePaid < 0 ? 'failed' : (inv.timePaid > 0 ? 'paid' : 'pending');
             const receivedAs = (status === 'paid' ? (typeof inv.amountTo === 'undefined' || inv.currencyTo === 'BTC' ? toFix(inv.amountSat, 0) + ' Sats': toFix(inv.amountTo + inv.feeAmount, 2) + ' ' + inv.currencyTo) : '');
-
-            if (inv.timeCreated < earliestDate) earliestDate = inv.timeCreated;
-
+ 
             table += '<tr><th scope="row">' + (i + 1)+ '</th>';
             table += '<td>' + toZulu(inv.timeCreated) + '</td>';
             table += '<td>' + toFix(inv.amountFiat, 2) + ' ' + inv.currencyFrom + '</td>';
@@ -90,7 +85,7 @@ export default class Server {
             currentLocale,
             table,
             toDate: toZulu(new Date(toDate)).substring(0, 10),
-            fromDate: toZulu(new Date(earliestDate)).substring(0, 10),
+            fromDate: toZulu(new Date(fromDate)).substring(0, 10),
             limit,
             userName,
             authToken,
