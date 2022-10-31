@@ -559,7 +559,7 @@ export default class Server {
 
       if (req.body.button === 'pricetag') {
         const url = req.protocol + '://' + req.get('host') + '/' + req.body.userId + '?amount=' + amountFiat + '&memo=' + memo;
-        qr.toDataURL(url, (err, src) => {
+        return qr.toDataURL(url, (err, src) => {
           if (err) this.renderError(req, res, 'error_qr', err);
           res.render('pricetag', {
             currentLocale,
