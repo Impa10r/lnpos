@@ -335,6 +335,7 @@ export default class Server {
           case 'robots.txt':
           case 'sitemap.xml':
           case 'favicon.ico':
+          case 'license.txt':
             return fs.createReadStream(path.join(dirname, '../views/', id)).pipe(res);
           case 'ru':
           case 'es':

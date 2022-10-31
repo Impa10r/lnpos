@@ -100,7 +100,7 @@
   "branding": "Nombre de la empresa",
   "need_copy": "¿Necesita una copia? Escanea este código QR:",
   "try_again": "¿Intentar otra vez?",
-  "license": "Contenido bajo licencia ISC.<br>Este sitio web no utiliza cookies ni recopila datos personales más allá de las claves API.",
+  "license": "Contenido publicado bajo <a href='/license.txt' target='_blank'>licencia ISC</a>.<br>Este sitio web no utiliza cookies ni recopila datos personales más allá de las claves API.",
   "from": "Desde",
   "to": "A",
   "limit": "Limite",
