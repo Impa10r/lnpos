@@ -66,14 +66,16 @@
               {{#i18n}}paid_only{{/i18n}}
             </label>
           </div>
-          <input type="hidden" id="lang" name="lang" value="{{currentLocale}}">
-          <input type="hidden" id="authToken" name="authToken" value="{{authToken}}">
-          <input type="hidden" id="userName" name="userName" value="{{userName}}">
-          <button type="submit" class="btn btn-primary">{{#i18n}}refresh{{/i18n}}</button>
+          <div class="form-group ml-3 mr-3">
+            <input type="hidden" id="lang" name="lang" value="{{currentLocale}}">
+            <input type="hidden" id="authToken" name="authToken" value="{{authToken}}">
+            <input type="hidden" id="userName" name="userName" value="{{userName}}">
+            <button type="submit" class="btn btn-primary">{{#i18n}}refresh{{/i18n}}</button>
+          </div>
+          <div class="form-group">
+            <a href="{{authToken}}?fromDate={{fromDate}}&toDate={{toDate}}&limit={{limit}}&paidOnly={{paidOnly}}"><img src="csv.webp" alt="CSV" style="width: auto; height: 50px" align="right"></a>
+          </div>
         </form>
-      </div>
-      <div class="col-sm">
-        <a href="{{authToken}}?fromDate={{fromDate}}&toDate={{toDate}}&limit={{limit}}&paidOnly={{paidOnly}}"><img src="csv.webp" alt="CSV" style="width: auto; height: 50px" align="right"></a>
       </div>
     </div>
     {{{table}}}
