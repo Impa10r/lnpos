@@ -105,5 +105,6 @@
   "to": "A",
   "limit": "Limite",
   "refresh": "Actualizar",
-  "paid_only": "Pagado"
+  "paid_only": "Pagado",
+  "generate_pricetag": "Generar etiqueta de precio"
 }

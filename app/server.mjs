@@ -353,11 +353,11 @@ export default class Server {
               return res.render('login', {
                 currentLocale: res.getLocale()
               });
-          case 'a4':
+          case 'stickers':
             const url = req.protocol + '://' + req.get('host') + '/' + req.query.id;
             return qr.toDataURL(url, (err, src) => {
               if (err) this.renderError(req, res, 'error_qr', err);
-              res.render('a4', {
+              res.render('stickers', {
                 currentLocale,
                 src,
               });
@@ -556,6 +556,19 @@ export default class Server {
       const amountFiat = parseFloat(req.body.amountFiat);
 
       req.setLocale(currentLocale);
+
+      if (req.body.button === 'pricetag') {
+        const url = req.protocol + '://' + req.get('host') + '/' + req.body.userId + '?amount=' + amountFiat + '&memo=' + memo;
+        qr.toDataURL(url, (err, src) => {
+          if (err) this.renderError(req, res, 'error_qr', err);
+          res.render('pricetag', {
+            currentLocale,
+            src,
+            memo,
+            price: toFix(amountFiat, 2) + ' ' + currencyFrom
+          });
+        });
+      }
 
       this.db.findOne('keys', { userName })
         .then((record) => {

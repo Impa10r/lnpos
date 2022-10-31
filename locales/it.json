@@ -3,5 +3,6 @@
   "to": "A",
   "limit": "Limite",
   "refresh": "Aggiorna",
-  "paid_only": "Pagato"
+  "paid_only": "Pagato",
+  "generate_pricetag": "Genera cartellino del prezzo"
 }

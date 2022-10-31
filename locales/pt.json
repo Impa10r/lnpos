@@ -3,5 +3,6 @@
   "to": "Para",
   "limit": "Limite",
   "refresh": "Atualizar",
-  "paid_only": "Pago"
+  "paid_only": "Pago",
+  "generate_pricetag": "Gerar etiqueta de preço"
 }
