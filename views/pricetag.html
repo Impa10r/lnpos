@@ -26,17 +26,25 @@
         margin: 10px;
         padding: 10px;
     }
+    div.b {
+      width: 400px; 
+      max-width: 90%;
+      word-wrap: break-word;
+    }
   </style>
 </head>
 
 <body style="--bleeding: 0.5cm;--margin: 1cm;">
   <div class="page">
     <center>
-      <h1>{{memo}}</h1>
-      <h1>{{price}}</h1>
+      <div class="b">
+        <h1>{{memo}}</h1>
+        <h2>{{price}}</h2>
+      </div>
       <img src="{{src}}">
       <br>
-      <img src="bitcoin-lightning-accepted.png" style="width: 250px; height: auto" >
+      <br>
+      <img src="bitcoin-lightning-accepted.png" style="width: 300px; height: auto" >
     </center>
   </div>
 </body>
