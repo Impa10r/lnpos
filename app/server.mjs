@@ -93,7 +93,7 @@ export default class Server {
           });
         });
       })
-      .catch((err) => console.log(err)); 
+      .catch((err) => console.error(err)); 
   }
 
   renderCSV(req, res, userName) { 
@@ -173,7 +173,7 @@ export default class Server {
                         const feeAmount = json[0][9] * ratio;
                         const feeCurrency = json[0][10];
                         const invoiceId = inv.invoiceId;
-                        console.log(inv.amountFiat, amountTo, feeAmount);
+                        
                         this.db.updateOne('invoices', { invoiceId }, { $set: { timeHedged, executionPrice, amountTo, feeAmount, feeCurrency } });
                         resolve(true);
                       }
@@ -181,7 +181,7 @@ export default class Server {
                     });
                 })
                 .catch((err) => { 
-                  console.log(err); 
+                  console.error(err); 
                   resolve(true);
                 } );
               });
