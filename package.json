@@ -16,7 +16,7 @@
     "point of sale",
     "gateway"
   ],
-  "author": "LNPOS.me",
+  "author": "Vlad Goryachev",
   "license": "ISC",
   "dependencies": {
     "awilix": "7.0.3",
