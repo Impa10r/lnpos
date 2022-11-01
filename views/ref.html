@@ -31,6 +31,37 @@
         max-width: 90%;
         word-wrap: break-word;
       }
+      /** Social Button CSS **/
+
+      .share-btn {
+        display: inline-block;
+        color: #ffffff;
+        border: none;
+        padding: 0.1em 0.6em;
+        outline: none;
+        text-align: center;
+        font-size: 0.9em;
+        margin: 0 0.2em;
+      }
+
+      .share-btn:focus,
+      .share-btn:hover {
+        text-decoration: none;
+        opacity: 0.8;
+      }
+
+      .share-btn:active {
+        color: #e2e2e2;
+      }
+
+      .share-btn.twitter     { background: #55acee; }
+      .share-btn.google-plus { background: #dd4b39; }
+      .share-btn.facebook    { background: #3B5998; }
+      .share-btn.stumbleupon { background: #EB4823; }
+      .share-btn.reddit      { background: #ff5700; }
+      .share-btn.hackernews  { background: #ff6600; }
+      .share-btn.linkedin    { background: #4875B4; }
+      .share-btn.email       { background: #444444; }
   </style>
 </head>
 
@@ -43,7 +74,11 @@
       <p>{{#i18n}}new_referral_link{{/i18n}}</p>
       <div class="b"><a href="{{url}}">{{desc}}</a></div>
       <br>
-      <img src={{src}} alt="QR Code Image">
+      <a href="https://twitter.com/share?url={{url}}" class="share-btn twitter">Twitter</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u={{url}}" class="share-btn facebook">Facebook</a>
+      <a href="https://reddit.com/submit?url={{url}}&title=LNPOS" class="share-btn reddit">Reddit</a>
+      <a href="https://www.linkedin.com/shareArticle?url={{url}}&title=LNPOS" class="share-btn linkedin">LinkedIn</a>
+      <a href="mailto:?subject=LNPOS&body={{url}}" class="share-btn email">Email</a>
     </center>
   </div>
 </body>
