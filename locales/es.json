@@ -26,7 +26,7 @@
 	"new_payment_link": "A continuación se muestra su enlace de pago único. Haga clic o escanee, luego guárdelo en el escritorio de su PC, en la pantalla de inicio del teléfono y/o en los marcadores. Puede reenviarlo a sus empleados y clientes para generar solicitudes de pago.",
   "new_payment_link2": "<b>Pasos adicionales:</b><br><ol start = '5'><li>Instale la <a href='https://www.bitfinex.com/mobile-trading' target='_blank'>aplicación Bitfinex</a> en su teléfono para recibir notificaciones de transaction.</li><li>No te olvides de imprimir sus <b><em>pegatinas personales de 'Bitcoin aceptado'</em></b> siguiendo este",
   "remote_payment_link": "<h4>Enlace de pago remoto</h4><br>Copie el enlace a continuación para solicitar un pago remoto por correo electrónico o chat:",
-  "remote_payment_link2": "Puede monitorear el estado de este pago en su cuenta personal o en este enlace:",
+  "remote_payment_link2": "Puede monitorear el estado de este pago en <a href='/login' target='_blank'>su cuenta personal</a> o en",
 	"remote_request": "Divisa:",
   "ref_link": "Su enlace de referencia",
 	"api_key: permission invalid": "Sus claves API carecen de los permisos necesarios",
