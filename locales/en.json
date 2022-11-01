@@ -27,7 +27,7 @@
 	"new_payment_link2": "<b>Bonus steps:</b><br><ol start = '5'><li>Install <a href='https://www.bitfinex.com/mobile-trading' target='_blank'>Bitfinex app</a> on your phone to receive trade notifications.</li><li>Don't forget to print <b><em>your personal 'Bitcoin accepted' stickers</em></b> by following this",
 	"remote_payment_link": "<h4>Remote payment link</h4><br>Copy the link below to request a remote payment via email or chat:",
 	"remote_payment_link2": "You can motitor the status of this payment in <a href='/login' target='_blank'>your personal account</a> or at",
-	"remote_request": "Curency:",
+	"remote_request": "Please pay via Lightning.",
 	"ref_link": "Your Referral Link",
 	"api_key: permission invalid": "Your API keys lack required permissions",
 	"amount": "Amount",
