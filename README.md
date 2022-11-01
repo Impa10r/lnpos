@@ -23,7 +23,7 @@ You will need to create an `.env` file in the root dir. You can use a sample env
 cp .env-sample .env
 ```
 ## MongoDB
-You will need to have [mongo](https://www.mongodb.com) installed and fill the mongo variables on the .env file, those that start with `DB_`.
+You will need to have [mongo](https://www.mongodb.com) installed and fill the mongo variables in the .env file, those that start with `DB_`.
 
 # Running it
 ```
