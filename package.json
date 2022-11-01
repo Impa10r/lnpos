@@ -16,7 +16,7 @@
     "point of sale",
     "gateway"
   ],
-  "author": "Impalor",
+  "author": "LNPOS.me",
   "license": "ISC",
   "dependencies": {
     "awilix": "7.0.3",
