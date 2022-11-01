@@ -375,8 +375,8 @@ export default class Server {
                     if (record) {
                       const memoOptions = req.query.memo ? 'value="' + req.query.memo + '" readonly' : '';
                       const amountOptions = req.query.amount ? 'value="' + req.query.amount + '" readonly' : '';
-                      const secondaryButtonOptions = req.query.amount ? 'hidden' : '';
-                      const secondaryLabelOptions = secondaryButtonOptions === 'hidden' ? '' : 'hidden';
+                      const secondaryButtonOptions = req.query.amount || req.query.memo ? 'hidden' : '';
+                      const secondaryLabelOptions = req.query.amount ? '' : 'hidden';
 
                       res.render('request', {
                         invoiceId: nanoid(12),
