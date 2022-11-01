@@ -44,9 +44,10 @@
 <body>
   <div class="container">
     <center>
+      <h4 class="text-center" {{{secondaryLabelOptions}}}>{{#i18n}}remote_request{{/i18n}}</h4>
       {{#i18n}}payee{{/i18n}}:
       <h4>{{record.payee}}</h4>
-      <br>
+      <p class="text-center" {{{secondaryLabelOptions}}}>{{#i18n}}pay_currency{{/i18n}} {{record.currencyFrom}}</p>
       <form class="form" autocomplete="off" action="/pay" method="POST">
         <fieldset>
           <div class="form-group">
@@ -63,8 +64,6 @@
             <button class="btn btn-primary" name="button" value="invoice" type ="submit"{{{primaryButtonOptions}}}>{{#i18n}}generate_invoice{{/i18n}}</button>
             <p class="text-center" {{{primaryLabelOptions}}}>{{#i18n}}already_paid{{/i18n}}</p>
             <br><br>
-            <h4 class="text-center" {{{secondaryLabelOptions}}}>{{#i18n}}remote_request{{/i18n}}</h4>
-            <p class="text-center" {{{secondaryLabelOptions}}}>{{#i18n}}pay_currency{{/i18n}} {{record.currencyFrom}}</p>
             <button class="btn btn-secondary" name="button" value="link" type="submit" {{{secondaryButtonOptions}}}>{{#i18n}}generate_link{{/i18n}}</button>
             <br><br>
             <button class="btn btn-secondary" name="button" value="pricetag" type="submit" {{{secondaryButtonOptions}}}>{{#i18n}}generate_pricetag{{/i18n}}</button>
