@@ -179,6 +179,7 @@ export default class Gateway {
               case 'deposit_complete':
                 if (data[2][4].currency === 'LNX' && parseFloat(data[2][4].amount) === amountBtc) {
                   depositComplete = true;
+                  if (currencyTo === 'LNX') wss.close(); // all done
                   resolve(true);
                 }
                 break;
@@ -197,7 +198,7 @@ export default class Gateway {
               const amount = data[2][2]; // balance total amount
               switch (data[2][1]) { // balance currency
                 case 'LNX':
-                  if (amount > 0) this.transferBetweenWallets('exchange', 'exchange', 'LNX', 'BTC', amount);
+                  if (amount > 0 && currencyTo !== 'LNX') this.transferBetweenWallets('exchange', 'exchange', 'LNX', 'BTC', amount);
                   break;
                 case 'BTC':
                   if (currencyTo !== 'BTC' && amount > 0 && transferComplete && depositComplete) {

@@ -459,7 +459,7 @@ export default class Server {
         });
     });
 
-    this.express.post('/ref', (req, res) => {
+    this.express.post('/referral', (req, res) => {
       const currentLocale = req.body.lang;
       const code = req.body.refCode;
       req.setLocale(currentLocale);
@@ -469,7 +469,7 @@ export default class Server {
       const url = req.protocol + '://' + desc;
       qr.toDataURL(url, (err, src) => {
         if (err) this.renderError(req, res, 'error_qr', err);
-        res.render('ref', {
+        res.render('referral', {
           currentLocale,
           url,
           desc,

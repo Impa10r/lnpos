@@ -99,13 +99,16 @@
       <br>
       <li>{{#i18n}}step_4{{/i18n}}</li>
     </ol>
+    <br>
+    <center><img src="certificate.png" style="max-width:100%; width: 150%; height: auto" alt="Check certificate"></center>
+    <br>
     <form class="form" autocomplete="off" action="/add" method="POST">
       <fieldset>
         <input class="form-control" type ="text" id = 'apiKey' name="apiKey" size="50" placeholder="{{#i18n}}api_key{{/i18n}}" required>
         <br>
         <input class="form-control" type="text" id = "apiSecret" name="apiSecret" size="50"  placeholder="{{#i18n}}api_secret{{/i18n}}" required>
         <br>
-        <input class="form-control" type="text" id = "payee" name="payee" size="50"  placeholder="{{#i18n}}branding{{/i18n}}" required>
+        <input class="form-control" type="text" id = "payee" name="payee" size="50"  placeholder="{{#i18n}}branding{{/i18n}}">
         <br> 
         <div class="form-row">
           <label for="currencyFrom" class="col- col-form-label"> {{#i18n}}quote_cur_list{{/i18n}} </label>
@@ -115,8 +118,6 @@
               <option value="GBP"> GBP </option>  
               <option value="USD"> USD </option>  
               <option value="JPY"> JPY </option>
-              <option value="CNH"> CNH </option>
-              <option value="MXN"> MXN </option>
             </select>
           </div>
           <label for="currencyTo" class="col- col-form-label"> {{#i18n}}receive_cur_list{{/i18n}} </label>
@@ -126,11 +127,10 @@
               <option value="GBP"> GBP </option>  
               <option value="USD"> USD </option>  
               <option value="RUB"> JPY </option>
+              <option value="LNX"> LN-BTC </option>
               <option value="BTC"> BTC </option>
               <option value="UST"> USDt </option>
               <option value="EUT"> EURt </option>
-              <option value="CNHT"> CNHt </option>
-              <option value="MXNT"> MXNt </option>
             </select>
           </div>
         </div>
@@ -158,7 +158,7 @@
       <br>
       <li>{{#i18n}}step_3af{{/i18n}}</li>
     </ol>
-    <form class="form" action="/ref" method="POST">
+    <form class="form" action="/referral" method="POST">
       <fieldset>
         <center>
         <input class="form-control" type ="text" id = 'refCode' name="refCode"  placeholder="Referral Code" required>

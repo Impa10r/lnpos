@@ -44,14 +44,19 @@
       <hr>
       <br>
       <p>{{#i18n}}new_payment_link{{/i18n}}</p>
-      <div class="b"><b><a href="{{url}}" target="_blank">{{desc}}</a></b></div>
+      <div class="b"><a href="{{url}}" target="_blank">{{desc}}</amount></a></div>
       <img src="{{src}}" alt="QR code">
       <br>
       <br>
       <img src="add_to_home.png" style="max-width: 80%; height: auto">
     </center>
     <br>
-    <p>{{#i18n}}new_payment_link2{{/i18n}} <a href="stickers?id={{id}}" target="_blank">{{#i18n}}link{{/i18n}}.</a></p>
+    <p>
+      {{#i18n}}new_payment_link2{{/i18n}} <a href="stickers?id={{id}}" target="_blank">{{#i18n}}link{{/i18n}}.</a>
+      {{#i18n}}new_payment_link3{{/i18n}}: 
+      <br>
+      <em>{{desc}}?amount=123.45&memo=Details</em>
+    </p>
     
 </div>
 
