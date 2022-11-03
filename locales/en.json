@@ -40,7 +40,7 @@
 	"api_secret": "API key secret",
 	"quote_cur_list": "Invoicing currency",
 	"receive_cur_list": "Convert proceeds into",
-	"generate_link": "Generate payment link",
+	"generate_link": "Create payment link",
 	"error_invalid_ref": "Invalid referral ID. Please try again!",
 	"error_invalid_keys": "Invalid API credentials. Please try again!",
 	"error_database_down": "Internal database error. Sorry! It the problem persists, please contact support.",
@@ -108,5 +108,5 @@
 	"limit": "Limit",
 	"refresh": "Refresh",
   "paid_only": "Paid",
-  "generate_pricetag": "Generate price tag"
+  "generate_pricetag": "Print price tag"
 }

@@ -38,7 +38,7 @@
 	"api_secret": "API secreto",
 	"quote_cur_list": "Moneda de facturación",
 	"receive_cur_list": "Convertir ganancias en",
-	"generate_link": "Generar enlace de pago",
+	"generate_link": "Crear enlace de pago",
   "error_invalid_ref": "Identificación de referencia no válida. ¡Inténtalo de nuevo!",
 	"error_invalid_keys": "Credenciales de API no válidas. ¡Inténtalo de nuevo!",
 	"error_database_down": "Error interno de base de datos. ¡Lo siento! Si el problema persiste, póngase en contacto con el soporte.",
@@ -108,5 +108,5 @@
   "limit": "Limite",
   "refresh": "Actualizar",
   "paid_only": "Pagado",
-  "generate_pricetag": "Generar etiqueta de precio"
+  "generate_pricetag": "Impresión etiqueta de precio"
 }
