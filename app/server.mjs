@@ -549,7 +549,7 @@ export default class Server {
     this.express.post('/pay', (req, res) => {
       const currentLocale = req.body.lang;
       const userName = req.body.userName;
-      const invoiceId = req.body.invoiceId;
+      let invoiceId = req.body.invoiceId;
       const timeCreated = req.body.timeCreated;
       const currencyFrom = req.body.currencyFrom;
       const memo = typeof req.body.memo === 'undefined' ? '' : req.body.memo ;
@@ -586,7 +586,7 @@ export default class Server {
               if (req.body.button === 'link') {
                 this.db.findOne('invoices', { invoiceId })
                   .then((i) => {
-                    if (i) {
+                    if (i && i.timePaid < 1) {
                       this.db.updateOne('invoices', { invoiceId }, { $set: { 
                           timePresented: 0,
                           timePaid: 0,
@@ -597,6 +597,7 @@ export default class Server {
                           lang: currentLocale
                         } });
                     } else {
+                      if (i) invoiceId = nanoid(12); // request form was reused after completed payment
                       const inv = new Invoices({
                         invoiceId,
                         userName,
@@ -651,7 +652,7 @@ export default class Server {
 
                         this.db.findOne('invoices', { invoiceId })
                           .then((inv) => {
-                            if (inv) {
+                            if (inv && inv.timePaid < 1) {
                               this.db.updateOne('invoices', { invoiceId }, { $set: { 
                                   timePresented: Date.now(),
                                   timePaid: 0,
@@ -662,7 +663,8 @@ export default class Server {
                                   lang: currentLocale
                                 } });
                             } else {
-                              const inv = new Invoices({
+                              if (inv) invoiceId = nanoid(12); // request form was reused after completed payment 
+                              const newInv = new Invoices({
                                 invoiceId,
                                 userName,
                                 timeCreated,
@@ -678,7 +680,7 @@ export default class Server {
                                 lang: currentLocale,
                                 payee,
                               });
-                              inv.save();  
+                              newInv.save();  
                             }
 
                             const url = req.protocol + '://' + req.get('host') + '/' + invoiceId + '?status&lang=' + currentLocale;
