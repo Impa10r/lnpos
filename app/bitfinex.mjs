@@ -165,7 +165,11 @@ export default class Gateway {
       let depositComplete = false;
 
       wss.on('message', (msg) => {
-        const data = JSON.parse(msg);
+        try {
+          const data = JSON.parse(msg);
+        } catch (e) {
+          return; // not JSON
+        }
         switch (data[1]) {
           case 'hb': // heartbeat
             if (Date.now() > timeLimit) {
