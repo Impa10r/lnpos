@@ -40,6 +40,12 @@
       padding-right: 10px;
     }
 
+    div.b {
+      width: 400px; 
+      max-width: 90%;
+      word-wrap: break-word;
+    }
+
   </style>
 </head>
 
@@ -61,6 +67,13 @@
       <a href="/{{record.invoiceId}}?lang={{currentLocale}}"><img src="{{paymentPicure}}" style="max-width: 40%; height: auto"></a>
       <br>
       {{{copyHtml}}}
+      <br>
+      <div class="b">
+        <small >{{record.depositAddress}}</small>
+        <br>
+        <br>
+        <small>{{record.txid}}</small>
+      </div>
       <br>
       <small>{{#i18n}}powered{{/i18n}} <a href="/">LNPOS.me</a></small>
     </center>

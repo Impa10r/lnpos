@@ -21,6 +21,9 @@ const keySchema = new mongoose.Schema(
     feeAmount: { type: Number, required: false },
     feeCurrency: { type: String, required: false },
     payee: { type: String, required: false },
+    txid: { type: String, required: false },
+    depositAddress: { type: String, required: false },
+    invoice: { type: String, required: false },
   },
 );
 

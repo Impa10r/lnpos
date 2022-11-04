@@ -142,7 +142,7 @@ export default class Gateway {
     return parseFloat(btcReceived.toFixed(8));
   }
 
-  async convertProceeds(amountBtc, currencyTo, res) {
+  async convertProceeds(invoice, amountBtc, currencyTo, res) {
     const promise = new Promise((resolve, reject) => {
       const timeLimit = Date.now() + 10 * 60 * 1000; // 10 minutes
       const authNonce = this.getNonce().toString();
@@ -182,6 +182,7 @@ export default class Gateway {
           case 'n': // notification
             switch (data[2][1]) {
               case 'deposit_complete':
+                // console.log(data[2][4].invoice.invoice);
                 if (data[2][4].currency === 'LNX' && parseFloat(data[2][4].amount) === amountBtc) {
                   depositComplete = true;
                   if (currencyTo === 'LNX') wss.close(); // all done
