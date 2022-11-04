@@ -175,7 +175,7 @@ export default class Gateway {
           case 'hb': // heartbeat
             if (Date.now() > timeLimit) {
               wss.close();
-              return resolve(false);
+              return resolve(0);
             }
             res.write('.');
             break;
@@ -185,7 +185,7 @@ export default class Gateway {
                 if (data[2][4].currency === 'LNX' && parseFloat(data[2][4].amount) === amountBtc) {
                   depositComplete = true;
                   if (currencyTo === 'LNX') wss.close(); // all done
-                  resolve(true);
+                  resolve(data[2][0]); // Bitfinex timestamp
                 }
                 break;
               case 'wallet_transfer':

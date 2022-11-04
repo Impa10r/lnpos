@@ -219,16 +219,21 @@ export default class Server {
                   if (json[i][12] * 100000000 === record.amountSat) received = json[i][5];
                 }
 
-                if (received) {
-                  this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: received } });
-                  return resolve('paid');
-                }
+                //check for duplicate paid invoice for the same amount and payment time
+                this.db.findOne('invoices', { $and: [{amountSat: record.amountSat}, { timePaid: received }] }).then((alreadyPaid) => {
+                    
+                  if (received && !alreadyPaid) {
+                    this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: received } });
+                    return resolve('paid');
+                  }
 
-                if (timePresented > 0 && timePresented < Date.now() - 600000) {
-                  this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
-                  return resolve('failed');
-                } 
-                return resolve('pending');
+                  if (timePresented > 0 && timePresented < Date.now() - 600000) {
+                    this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
+                    return resolve('failed');
+                  } 
+
+                  return resolve('pending');
+                });
               });
           });
         } else { reject('invoice_not_found') }
@@ -712,16 +717,19 @@ export default class Server {
                             res.write(html);
 
                             this.gw.convertProceeds(amountBTC, currencyTo, res)
-                              .then((success) => {
-                                if (success) {
-                                  this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: Date.now() } });
-                                  const html2 = '<h4 style="color:green"><b>' + req.__('PAID') + '</b></h4></center></div></body></html>';
-                                  res.end(html2);
-                                } else {
-                                  this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
-                                  const html2 = '<h4 style="color:red"><b>' + req.__('FAILED') + '</b></h4></center></div></body></html>';
-                                  res.end(html2);
-                                }
+                              .then((received) => {
+                                //check for duplicate paid invoice for the same amount and payment time
+                                this.db.findOne('invoices', { $and: [{amountSat}, { timePaid: received }] }).then((alreadyPaid) => {
+                                  if (received && !alreadyPaid) {
+                                    this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: received } });
+                                    const html2 = '<h4 style="color:green"><b>' + req.__('PAID') + '</b></h4></center></div></body></html>';
+                                    res.end(html2);
+                                  } else {
+                                    this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
+                                    const html2 = '<h4 style="color:red"><b>' + req.__('FAILED') + '</b></h4></center></div></body></html>';
+                                    res.end(html2);
+                                  }
+                                });
                               });
                           });
                       });
@@ -741,7 +749,7 @@ export default class Server {
   // check and update payment status of all pending invoices
   resolvePendingInvoices(self) {
     console.log('Resolving hang invoices...');
-    self.db.find('invoices', { $and: [{ timePresented: { $gt: 0 } }, { timePaid: 0 }] }).then((resp) => {
+    self.db.find('invoices', { $and: [{ timePresented: { $gt: 0 } }, { timePaid: 0 }] }, { timeCreated: -1 }).then((resp) => {
       resp.toArray((err, records) => {
         if (err) return console.error('resolvePendingInvoices', err);
         let j = records.length;
@@ -763,16 +771,20 @@ export default class Server {
                     i -= 1;
                     if (json[i][12] * 100000000 === inv.amountSat) received = json[i][5];
                   }
-                  if (received) { // invoice received
-                    console.log('Invoice', invoiceId, 'of', userName, toZulu(inv.timePresented), "was paid")
-                    self.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: received } });
-                  } else if (inv.timePresented < Date.now() - 600000) { // invoice failed
-                    console.log('Invoice', invoiceId, 'of', userName, toZulu(inv.timePresented), "has failed")
-                    self.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
-                  } else {
-                    console.log('Invoice', invoiceId, 'of', userName, toZulu(inv.timePresented), "is still pending");
-                    setTimeout(self.resolvePendingInvoices, inv.timePresented + 600001 - Date.now(), self); // repeat after due date
-                  }
+
+                  //check for duplicate paid invoice for the same amount and payment time
+                  self.db.findOne('invoices', { $and: [{amountSat: inv.amountSat}, { timePaid: received }] }).then((alreadyPaid) => {
+                    if (received && !alreadyPaid) {
+                      console.log('Invoice', invoiceId, 'of', userName, toZulu(inv.timePresented), "was paid")
+                      self.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: received } });  
+                    } else if (inv.timePresented < Date.now() - 600000) { // invoice failed
+                      console.log('Invoice', invoiceId, 'of', userName, toZulu(inv.timePresented), "has failed")
+                      self.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
+                    } else {
+                      console.log('Invoice', invoiceId, 'of', userName, toZulu(inv.timePresented), "is still pending");
+                      setTimeout(self.resolvePendingInvoices, inv.timePresented + 600001 - Date.now(), self); // repeat after due date
+                    }
+                  });
                 });
             });
         }
