@@ -120,26 +120,26 @@ export default class Server {
             const invoiceAmount = inv.amountFiat;
             const satoshiAmount = inv.amountSat;
             const status = inv.timePaid < 0 ? 'Failed' : (inv.timePaid > 0 ? 'Paid' : 'Pending');
-            const receivedCurency = (status === 'Paid' ? (typeof inv.amountTo === 'undefined' || inv.currencyTo === 'BTC' ? 'BTC': inv.currencyTo) : '');
-            const receivedAmount = (status === 'Paid' ? (typeof inv.amountTo === 'undefined' || inv.currencyTo === 'BTC' ? inv.amountSat / 100000000: inv.amountTo + inv.feeAmount) : '');
+            const receivedCurency = (status === 'Paid' ? (typeof inv.amountTo === 'undefined' || inv.currencyTo === 'BTC' || inv.currencyTo === 'LNX' ? 'BTC': inv.currencyTo) : '');
+            const receivedAmount = (status === 'Paid' ? (typeof inv.amountTo === 'undefined' || inv.currencyTo === 'BTC' || inv.currencyTo === 'LNX' ? inv.amountSat / 100000000: inv.amountTo + inv.feeAmount) : '');
             const paymentDate = status === 'Paid' ? toZulu(inv.timePaid).substring(0, 19) : '';
             const conversionDate = status === 'Paid' && typeof inv.timeHedged !== 'undefined' ? toZulu(inv.timeHedged).substring(0, 19) : '';
             const profitLoss = (status === 'Paid' && receivedCurency === invoiceCurency ) ?  receivedAmount - invoiceAmount : ''; 
             const details = inv.memo;
 
             csvStream.write({ 
-              issueDate, 
-              invoiceId,
-              invoiceCurency,
-              invoiceAmount,
-              satoshiAmount,
-              details,
-              paymentDate,
-              conversionDate,
-              receivedCurency,
-              receivedAmount,
-              profitLoss,
-              status
+              "Issue Date": issueDate, 
+              "Invoice ID": invoiceId,
+              "Invoice Currency": invoiceCurency,
+              "Invoice Amount": invoiceAmount,
+              "Payment Details": details,
+              "Satoshi Amount": satoshiAmount,
+              "Payment Date": paymentDate,
+              "Conversion Date": conversionDate,
+              "Received Currency": receivedCurency,
+              "Received Amount": receivedAmount,
+              "Profit & Loss": profitLoss,
+              "Status": status
             });
           }
           csvStream.end();
