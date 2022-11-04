@@ -165,8 +165,9 @@ export default class Gateway {
       let depositComplete = false;
 
       wss.on('message', (msg) => {
+        let data = '';
         try {
-          const data = JSON.parse(msg);
+          data = JSON.parse(msg);
         } catch (e) {
           return; // not JSON
         }
