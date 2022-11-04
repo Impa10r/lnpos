@@ -108,6 +108,6 @@
 	"to": "To",
 	"limit": "Limit",
 	"refresh": "Refresh",
-  "paid_only": "Paid",
+  "paid_only": "Paid only",
   "generate_pricetag": "Print price tag"
 }
