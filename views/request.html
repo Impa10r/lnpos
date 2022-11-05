@@ -62,7 +62,7 @@
             <input type="hidden" id="userName" name="userName" value="{{record.userName}}">
             <input type="hidden" id="userId" name="userId" value="{{record.id}}">
             <button class="btn btn-primary" name="button" value="invoice" type ="submit"{{{primaryButtonOptions}}}>{{#i18n}}generate_invoice{{/i18n}}</button>
-            <p class="text-center" {{{primaryLabelOptions}}}>{{#i18n}}already_paid{{/i18n}}</p>
+            <p class="text-center" {{{primaryLabelOptions}}}><a href="/{{invoiceId}}?lang={{currentLocale}}&status">{{#i18n}}already_paid{{/i18n}}</a></p>
             <br><br>
             <button class="btn btn-secondary" name="button" value="link" type="submit" {{{secondaryButtonOptions}}}>{{#i18n}}generate_link{{/i18n}}</button>
             <br><br>
