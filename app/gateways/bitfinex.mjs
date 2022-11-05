@@ -5,9 +5,8 @@ import crypto from 'crypto';
 import axios from 'axios';
 import WebSocket from 'ws';
 import { Resolver } from 'dns';
-//import WSv2 from './lib/WSv2.js';
 
-export default class Gateway {
+export default class Bitfinex {
   constructor(apiKey, apiSecret) {
     this.apiKey = apiKey;
     this.apiSecret = apiSecret;

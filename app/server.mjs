@@ -21,8 +21,9 @@ import { nanoid } from 'nanoid';
 import { format } from '@fast-csv/format';
 import Keys from './models/keys.mjs';
 import Invoices from './models/invoices.mjs';
-import Gateway from './bitfinex.mjs';
+import Bitfinex from './gateways/bitfinex.mjs';
 import DataBase from './mongo.mjs';
+import e from 'express';
 
 function toFix(number, decimals) {
   return Number(number).toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -30,6 +31,13 @@ function toFix(number, decimals) {
 
 function toZulu(unixTime) {
   return new Date(unixTime).toISOString().replace(/T/, ' ').replace(/\..+/, 'z')
+}
+
+function getExchange(exchange, apiKey, apiSecret) {
+  switch (exchange) {
+    case 'Bitfinex': return new Bitfinex(apiKey, apiSecret);
+    default: throw "NO EXCHANGE";
+  }
 }
 
 export default class Server {
@@ -157,7 +165,7 @@ export default class Server {
   async completeInvoices(userName) {
     const p = new Promise((allResolve) => {
       this.db.findOne('keys', { userName }).then((rec) => {
-        this.gw = new Gateway(rec.key, rec.secret);
+        this.gw = getExchange(rec.exchange, rec.key, rec.secret);
         this.db.find('invoices', { $and: [{ userName }, { currencyTo: { $ne : "BTC" } }, { timePaid: {$gt: 0} }, { amountTo: {$exists: false} } ] } )
           .then((resp) => {
             resp.toArray((err, invoices) => {
@@ -211,7 +219,7 @@ export default class Server {
           }
 
           this.db.findOne('keys', { userName }).then((rec) => {
-            this.gw = new Gateway(rec.key, rec.secret);
+            this.gw = getExchange(rec.exchange, rec.key, rec.secret);
             this.gw.getMovements('LNX', timePresented, timePresented + 600000)
               .then((r) => r.json())
               .then((json) => {
@@ -486,7 +494,7 @@ export default class Server {
       const currentLocale = req.body.lang;
       const payee = req.body.payee;
       req.setLocale(currentLocale);
-      this.gw = new Gateway(req.body.apiKey, req.body.apiSecret);
+      this.gw = getExchange(req.body.exchange, req.body.apiKey, req.body.apiSecret);
       this.gw.getUserInfo()
         .then((r) => r.json())
         .then((json) => {
@@ -494,7 +502,6 @@ export default class Server {
             this.renderError(req, res, 'error_invalid_keys');
           } else {
             const userName = json[2].toLowerCase();
-            const timeZone = json[7];
             let id = nanoid(11);
             this.db.findOne('keys', { key: req.body.apiKey })
               .then((record) => {
@@ -505,7 +512,6 @@ export default class Server {
                     const data = new Keys({
                       id,
                       userName,
-                      timeZone,
                       key: req.body.apiKey,
                       secret: req.body.apiSecret,
                       exchange: req.body.exchange,
@@ -576,7 +582,7 @@ export default class Server {
 
       this.db.findOne('keys', { userName })
         .then((record) => {
-          this.gw = new Gateway(record.key, record.secret);
+          this.gw = getExchange(record.exchange, record.key, record.secret);
           this.gw.getBook('tBTC' + currencyFrom)
             .then((result) => {
               const amountBTC = this.gw.simulateSell(amountFiat, result.data);
@@ -647,6 +653,7 @@ export default class Server {
                       const exchangeRate = wap.toFixed(2);
                       const amountSat = amountBTC * 100000000;
                       const txid = json[0];
+                      const invoice = json[1];
                       
                       qr.toDataURL(invoice, (err, src) => {
                         if (err) this.renderError(req, res, 'error_qr', err);
@@ -765,7 +772,7 @@ export default class Server {
           self.db.findOne('keys', { userName })
             .then((rec) => {
               if (!rec) return;
-              self.gw = new Gateway(rec.key, rec.secret);
+              self.gw = getExchange(rec.exchange, rec.key, rec.secret);
               self.gw.getMovements('LNX', inv.timePresented, inv.timePresented + 600000)
                 .then((r) => r.json())
                 .then((json) => {
