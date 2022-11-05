@@ -121,10 +121,11 @@ export default class Server {
             const satoshiAmount = inv.amountSat;
             const status = inv.timePaid < 0 ? 'Failed' : (inv.timePaid > 0 ? 'Paid' : 'Pending');
             const receivedCurency = (status === 'Paid' ? (typeof inv.amountTo === 'undefined' || inv.currencyTo === 'BTC' || inv.currencyTo === 'LNX' ? 'BTC': inv.currencyTo) : '');
-            const receivedAmount = (status === 'Paid' ? (typeof inv.amountTo === 'undefined' || inv.currencyTo === 'BTC' || inv.currencyTo === 'LNX' ? inv.amountSat / 100000000: inv.amountTo + inv.feeAmount) : '');
+            const receivedAmount = (status === 'Paid' ? (typeof inv.amountTo === 'undefined' || inv.currencyTo === 'BTC' || inv.currencyTo === 'LNX' ? inv.amountSat / 100000000: inv.amountTo) : '');
+            const feeAmount = (status === 'Paid' ? (typeof inv.amountTo === 'undefined' || inv.currencyTo === 'BTC' || inv.currencyTo === 'LNX' ? '': inv.feeAmount) : '');
             const paymentDate = status === 'Paid' ? toZulu(inv.timePaid).substring(0, 19) : '';
             const conversionDate = status === 'Paid' && typeof inv.timeHedged !== 'undefined' ? toZulu(inv.timeHedged).substring(0, 19) : '';
-            const profitLoss = (status === 'Paid' && receivedCurency === invoiceCurency ) ?  receivedAmount - invoiceAmount : ''; 
+            const profitLoss = (status === 'Paid' && receivedCurency === invoiceCurency ) ?  receivedAmount + feeAmount - invoiceAmount : ''; 
             const details = inv.memo;
 
             csvStream.write({ 
@@ -138,6 +139,7 @@ export default class Server {
               "Conversion Date": conversionDate,
               "Received Currency": receivedCurency,
               "Received Amount": receivedAmount,
+              "Fee Paid": feeAmount,
               "Profit & Loss": profitLoss,
               "Status": status
             });
@@ -160,6 +162,7 @@ export default class Server {
             resp.toArray((err, invoices) => {
               const promises = invoices.map(inv => {
                 return new Promise((resolve) => { 
+                  // find first trade after presenting the invoice
                   this.gw.getTrades('tBTC' + inv.currencyTo, inv.timePresented, Date.now(), 1, 1)
                     .then((r) => r.json())
                     .then((json) => {
@@ -381,7 +384,6 @@ export default class Server {
 
                       res.render('request', {
                         invoiceId: nanoid(12),
-                        timeCreated: Date.now(),
                         currentLocale,
                         primaryLabelOptions: 'hidden',
                         secondaryLabelOptions: 'hidden',
@@ -551,7 +553,7 @@ export default class Server {
       const currentLocale = req.body.lang;
       const userName = req.body.userName;
       let invoiceId = req.body.invoiceId;
-      const timeCreated = req.body.timeCreated;
+      const timeCreated = req.body.timeCreated ? req.body.timeCreated : Date.now();
       const currencyFrom = req.body.currencyFrom;
       const memo = typeof req.body.memo === 'undefined' ? '' : req.body.memo ;
       const amountFiat = parseFloat(req.body.amountFiat);
@@ -644,8 +646,7 @@ export default class Server {
                       const exchangeRate = wap.toFixed(2);
                       const amountSat = amountBTC * 100000000;
                       const txid = json[0];
-                      const invoice = json[1];
-
+                      
                       qr.toDataURL(invoice, (err, src) => {
                         if (err) this.renderError(req, res, 'error_qr', err);
                         if (!this.gw) {
@@ -665,8 +666,7 @@ export default class Server {
                                   memo,
                                   lang: currentLocale,
                                   depositAddress,
-                                  txid,
-                                  invoice,
+                                  txid
                                 } });
                             } else {
                               if (inv) invoiceId = nanoid(12); // request form was reused after completed payment 
@@ -686,8 +686,7 @@ export default class Server {
                                 lang: currentLocale,
                                 payee,
                                 depositAddress,
-                                txid,
-                                invoice,
+                                txid
                               });
                               newInv.save();  
                             }
@@ -720,10 +719,10 @@ export default class Server {
 
                             res.write(html);
 
-                            this.gw.convertProceeds(invoice, amountBTC, currencyTo, res)
+                            this.gw.convertProceeds(amountBTC, currencyTo, res)
                               .then((received) => {
-                                // check for paid duplicate
-                                this.db.findOne('invoices', { $and: [{ amountSat}, { timePaid: received }] }).then((alreadyPaid) => {
+                                // check for paid duplicate with same amount but different id
+                                this.db.findOne('invoices', { $and: [{ invoiceId: { $ne: invoiceId } }, { amountSat}, { timePaid: received }] }).then((alreadyPaid) => {
                                   if (received && !alreadyPaid) {
                                     this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: received } });
                                     const html2 = '<h4 style="color:green"><b>' + req.__('PAID') + '</b></h4></center></div></body></html>';

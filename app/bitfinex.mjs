@@ -142,7 +142,7 @@ export default class Gateway {
     return parseFloat(btcReceived.toFixed(8));
   }
 
-  async convertProceeds(invoice, amountBtc, currencyTo, res) {
+  async convertProceeds(amountBtc, currencyTo, res) {
     const promise = new Promise((resolve, reject) => {
       const timeLimit = Date.now() + 10 * 60 * 1000; // 10 minutes
       const authNonce = this.getNonce().toString();
