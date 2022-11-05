@@ -118,27 +118,37 @@ export default class Bitfinex {
     return this.restPublic(`book/${symbol}/R0`);
   }
 
-  simulateSell(fiatAmount, book) {
-    let i = 0;
-    let btcReceived = 0;
-    let leftToSell = fiatAmount * (1 + this.tradingFeeTaker);
+  // public methods below:
 
-    while (i < book.length) {
-      const currentBidSize = book[i][2];
-      const currentBidPrice = book[i][1];
-      if (currentBidSize > 0 && leftToSell > 0) { // look only at bids
-        const fiatForSale = currentBidSize * currentBidPrice;
-        if (fiatForSale >= leftToSell) { // current bid is enough
-          btcReceived += leftToSell / currentBidPrice;
-          leftToSell = 0;
-        } else {
-          btcReceived += fiatForSale / currentBidPrice;
-          leftToSell -= fiatForSale;
-        }
-      }
-      i += 1;
-    }
-    return parseFloat(btcReceived.toFixed(8));
+  async simulateSell(currency, amount) {
+    const promise = new Promise((resolve, reject) => {
+      this.getBook('tBTC' + currency)
+        .then((result) => {
+          if (result.message) return reject(new Error('simulateSell: ' + result.message));
+          const book = result.data;
+          let i = 0;
+          let btcReceived = 0;
+          let leftToSell = amount * (1 + this.tradingFeeTaker);
+
+          while (i < book.length) {
+            const currentBidSize = book[i][2];
+            const currentBidPrice = book[i][1];
+            if (currentBidSize > 0 && leftToSell > 0) { // look only at bids
+              const fiatForSale = currentBidSize * currentBidPrice;
+              if (fiatForSale >= leftToSell) { // current bid is enough
+                btcReceived += leftToSell / currentBidPrice;
+                leftToSell = 0;
+              } else {
+                btcReceived += fiatForSale / currentBidPrice;
+                leftToSell -= fiatForSale;
+              }
+            }
+            i += 1;
+          }
+          resolve(parseFloat(btcReceived.toFixed(8)));
+        });
+    });
+    return promise;
   }
 
   async convertProceeds(amountBtc, currencyTo, res) {
@@ -218,6 +228,78 @@ export default class Bitfinex {
           default:
         }
       });
+    });
+    return promise;
+  }
+
+  async getFirstTrade(currency, fromTime) {
+    const promise = new Promise((resolve, reject) => {
+      this.getTrades('tBTC' + currency, fromTime, Date.now(), 1, 1)
+        .then((r) => r.json())
+        .then((json) => {
+          if (json[0] === 'error') return reject(new Error('getFirstTrade: ' + json[2] + ', ' + currency));
+          if (json.length === 1) {
+            resolve({
+              amount: json[0][4],
+              time: json[0][2],
+              price: json[0][5],
+              feeAmount: json[0][9],
+              feeCurrency: json[0][10],
+            });
+          } else resolve(null);
+        });
+    });
+    return promise;
+  }
+
+  async getLightningDeposit(txid, fromTime, toTime) {
+    const promise = new Promise((resolve, reject) => {
+      this.getMovements('LNX', fromTime, toTime)
+        .then((r) => r.json())
+        .then((json) => {
+          if (json[0] === 'error') return reject(new Error('getLightningDeposit: ' + json[2]));
+          let received = null;
+          let i = json.length;
+          while (i > 0) {
+            i -= 1;
+            if (json[i][20] === txid) received = json[i][5];
+          }
+          resolve(received);
+        });
+    });
+    return promise;
+  }
+
+  async generateLightningInvoice(amount) {
+    const promise = new Promise((resolve, reject) => {
+      this.getDepositAddr('LNX', 'exchange')
+        .then((r) => r.json())
+        .then((j) => {
+          if (j[0] === 'error') return reject(new Error('generateLightningInvoice: ' + j[2]));
+          const depositAddress = j[4][4];
+          this.getLightningInvoice(amount)
+            .then((r) => r.json())
+            .then((json) => {
+              if (json[0] === 'error') return reject(new Error('generateLightningInvoice: ' + json[2]));
+              resolve({
+                txid: json[0],
+                invoice: json[1],
+                depositAddress,
+              });
+            });
+        });
+    });
+    return promise;
+  }
+
+  async getUserName() {
+    const promise = new Promise((resolve, reject) => {
+      this.getUserInfo()
+        .then((r) => r.json())
+        .then((json) => {
+          if (json[0] === 'error') return reject(new Error('getUserName: ' + json[2]));
+          resolve(json[2].toLowerCase());
+        });
     });
     return promise;
   }

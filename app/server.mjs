@@ -166,36 +166,39 @@ export default class Server {
     const p = new Promise((allResolve) => {
       this.db.findOne('keys', { userName }).then((rec) => {
         this.gw = getExchange(rec.exchange, rec.key, rec.secret);
-        this.db.find('invoices', { $and: [{ userName }, { currencyTo: { $ne : "BTC" } }, { timePaid: {$gt: 0} }, { amountTo: {$exists: false} } ] } )
+        this.db.find('invoices', { $and: [{ userName }, { currencyTo: { $ne : "LNX" } }, { currencyTo: { $ne : "BTC" } }, { timePaid: {$gt: 0} }, { amountTo: {$exists: false} } ] } )
           .then((resp) => {
             resp.toArray((err, invoices) => {
               const promises = invoices.map(inv => {
                 return new Promise((resolve) => { 
                   // find first trade after presenting the invoice
-                  this.gw.getTrades('tBTC' + inv.currencyTo, inv.timePresented, Date.now(), 1, 1)
-                    .then((r) => r.json())
-                    .then((json) => {
-                      if (json.length === 1) {
-                        const tradeAmount = -json[0][4] * 100000000;
+                  this.gw.getFirstTrade(inv.currencyTo, inv.timePresented)
+                    .then((trade) => {
+                      if (trade) {
+                        const tradeAmount = -trade.amount * 100000000;
                         // one trade can convert many small previous deposits
                         const ratio = inv.amountSat / tradeAmount;
-                        const timeHedged = json[0][2];
-                        const executionPrice = json[0][5];
-                        const amountTo = -json[0][4] * executionPrice * ratio;
-                        const feeAmount = json[0][9] * ratio;
-                        const feeCurrency = json[0][10];
+                        const timeHedged = trade.time;
+                        const executionPrice = trade.price;
+                        const amountTo = -trade.amount * executionPrice * ratio;
+                        const feeAmount = trade.feeAmount * ratio;
+                        const feeCurrency = trade.feeCurrency;
                         const invoiceId = inv.invoiceId;
                         
                         this.db.updateOne('invoices', { invoiceId }, { $set: { timeHedged, executionPrice, amountTo, feeAmount, feeCurrency } });
                         resolve(true);
                       }
                       resolve(true);
+                    })
+                    .catch((err) => { 
+                      console.error(err);
+                      resolve(true);
                     });
                 })
                 .catch((err) => { 
                   console.error(err); 
                   resolve(true);
-                } );
+                });
               });
               Promise.all(promises).then(() => {allResolve(true)});
             });
@@ -219,17 +222,9 @@ export default class Server {
           }
 
           this.db.findOne('keys', { userName }).then((rec) => {
-            this.gw = getExchange(rec.exchange, rec.key, rec.secret);
-            this.gw.getMovements('LNX', timePresented, timePresented + 600000)
-              .then((r) => r.json())
-              .then((json) => {
-                let received = null;
-                let i = json.length;
-                
-                while (i > 0) {
-                  i -= 1;
-                  if (json[i][20] === record.txid) received = json[i][5];
-                }
+            this.gw = getExchange(rec.exchange, rec.key, rec.secret);            
+            this.gw.getLightningDeposit(record.txid, timePresented, timePresented + 600000)
+              .then((received) => {
 
                 if (received) {
                   this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: received } });
@@ -242,6 +237,10 @@ export default class Server {
                 } 
 
                 return resolve('pending');
+              })
+              .catch((err) => { 
+                console.error(err); 
+                reject(err);
               });
           });
         } else { reject('invoice_not_found') }
@@ -495,61 +494,55 @@ export default class Server {
       const payee = req.body.payee;
       req.setLocale(currentLocale);
       this.gw = getExchange(req.body.exchange, req.body.apiKey, req.body.apiSecret);
-      this.gw.getUserInfo()
-        .then((r) => r.json())
-        .then((json) => {
-          if (json[0] === 'error') {
-            this.renderError(req, res, 'error_invalid_keys');
-          } else {
-            const userName = json[2].toLowerCase();
-            let id = nanoid(11);
-            this.db.findOne('keys', { key: req.body.apiKey })
-              .then((record) => {
-                if(record) id = record.id; // keep old id
-                // Delete previous keys to avoid duplicates
-                this.db.deleteMany('keys', { userName }) 
-                  .then(r => {
-                    const data = new Keys({
-                      id,
-                      userName,
-                      key: req.body.apiKey,
-                      secret: req.body.apiSecret,
-                      exchange: req.body.exchange,
-                      currencyFrom: req.body.currencyFrom,
-                      currencyTo: req.body.currencyTo,
-                      lang: currentLocale,
-                      payee 
-                    });
-                    data.save()
-                      .then(() => {
-                        // check that it was saved ok
-                        this.db.findOne('keys', { id })
-                          .then((record) => {
-                            if (!record) {
-                              this.renderError(req, res, 'error_database_down');
-                            } else {
-                              const i = record.id;
-                              const desc = req.get('host') + '/' + i;
-                              const url = req.protocol + '://' + desc;
-                              qr.toDataURL(url, (err, src) => {
-                                if (err) this.renderError(req, res, 'error_qr', err);
-                                res.render('add', {
-                                  currentLocale,
-                                  url,
-                                  desc,
-                                  src,
-                                  id: i,
-                                });
-                              });
-                            }
-                          });
-                      });
-                  })
-                  .catch((err) => {
-                    this.renderError(req, res, 'error_database_down', err);
+      this.gw.getUserName()
+        .then((userName) => {
+          let id = nanoid(11);
+          this.db.findOne('keys', { key: req.body.apiKey })
+            .then((record) => {
+              if(record) id = record.id; // keep old id
+              // Delete previous keys to avoid duplicates
+              this.db.deleteMany('keys', { userName }) 
+                .then(r => {
+                  const data = new Keys({
+                    id,
+                    userName,
+                    key: req.body.apiKey,
+                    secret: req.body.apiSecret,
+                    exchange: req.body.exchange,
+                    currencyFrom: req.body.currencyFrom,
+                    currencyTo: req.body.currencyTo,
+                    lang: currentLocale,
+                    payee 
                   });
-              });
-          }
+                  data.save()
+                    .then(() => {
+                      // check that it was saved ok
+                      this.db.findOne('keys', { id })
+                        .then((record) => {
+                          if (!record) {
+                            this.renderError(req, res, 'error_database_down');
+                          } else {
+                            const i = record.id;
+                            const desc = req.get('host') + '/' + i;
+                            const url = req.protocol + '://' + desc;
+                            qr.toDataURL(url, (err, src) => {
+                              if (err) this.renderError(req, res, 'error_qr', err);
+                              res.render('add', {
+                                currentLocale,
+                                url,
+                                desc,
+                                src,
+                                id: i,
+                              });
+                            });
+                          }
+                        });
+                    });
+                })
+                .catch((err) => {
+                  this.renderError(req, res, 'error_database_down', err);
+                });
+            });
         })
         .catch((err) => {
           this.renderError(req, res, 'error_exchange_down', err);
@@ -583,9 +576,9 @@ export default class Server {
       this.db.findOne('keys', { userName })
         .then((record) => {
           this.gw = getExchange(record.exchange, record.key, record.secret);
-          this.gw.getBook('tBTC' + currencyFrom)
+          this.gw.simulateSell(currencyFrom, amountFiat)
             .then((result) => {
-              const amountBTC = this.gw.simulateSell(amountFiat, result.data);
+              const amountBTC = result;
               const wap = amountFiat / amountBTC;
               const currencyTo = record.currencyTo;
               const payee = record.payee;
@@ -636,120 +629,107 @@ export default class Server {
                   });
                 return;            
               }
-              
-              this.gw.getDepositAddr('LNX', 'exchange')
-                .then((r) => r.json())
-                .then((j) => {
-                  if (j[0] === 'error') {
-                    return this.renderError(req, res, j[2], j);
-                  }
-                  const depositAddress = j[4][4];
-                  this.gw.getLightningInvoice(amountBTC)
-                    .then((r) => r.json())
-                    .then((json) => {
-                      if (json[0] === 'error') {
-                        return this.renderError(req, res, json[2], json);
-                      }
-                      const exchangeRate = wap.toFixed(2);
-                      const amountSat = amountBTC * 100000000;
-                      const txid = json[0];
-                      const invoice = json[1];
-                      
-                      qr.toDataURL(invoice, (err, src) => {
-                        if (err) this.renderError(req, res, 'error_qr', err);
-                        if (!this.gw) {
-                          this.renderError(req, res, 'error_qr', err);
-                          return;
+
+              this.gw.generateLightningInvoice(amountBTC)
+                .then((result) => {
+                  const txid = result.txid;
+                  const invoice = result.invoice;
+                  const depositAddress = result.depositAddress;
+                  const exchangeRate = wap.toFixed(2);
+                  const amountSat = amountBTC * 100000000;
+                  
+                  qr.toDataURL(invoice, (err, src) => {
+                    if (err) this.renderError(req, res, 'error_qr', err);
+                    this.db.findOne('invoices', { invoiceId })
+                      .then((inv) => {
+                        if (inv && inv.timePaid < 1) {
+                          this.db.updateOne('invoices', { invoiceId }, { $set: { 
+                              timePresented: Date.now(),
+                              timePaid: 0,
+                              amountFiat,
+                              exchangeRate,
+                              amountSat,
+                              memo,
+                              lang: currentLocale,
+                              depositAddress,
+                              txid
+                            } });
+                        } else {
+                          if (inv) invoiceId = nanoid(12); // request form was reused after completed payment 
+                          const newInv = new Invoices({
+                            invoiceId,
+                            userName,
+                            timeCreated,
+                            timePresented: Date.now(),
+                            timePaid: 0,
+                            currencyFrom,
+                            currencyTo,
+                            amountFiat,
+                            exchangeRate,
+                            exchange: record.exchange,
+                            amountSat,
+                            memo,
+                            lang: currentLocale,
+                            payee,
+                            depositAddress,
+                            txid
+                          });
+                          newInv.save();  
                         }
 
-                        this.db.findOne('invoices', { invoiceId })
-                          .then((inv) => {
-                            if (inv && inv.timePaid < 1) {
-                              this.db.updateOne('invoices', { invoiceId }, { $set: { 
-                                  timePresented: Date.now(),
-                                  timePaid: 0,
-                                  amountFiat,
-                                  exchangeRate,
-                                  amountSat,
-                                  memo,
-                                  lang: currentLocale,
-                                  depositAddress,
-                                  txid
-                                } });
-                            } else {
-                              if (inv) invoiceId = nanoid(12); // request form was reused after completed payment 
-                              const newInv = new Invoices({
-                                invoiceId,
-                                userName,
-                                timeCreated,
-                                timePresented: Date.now(),
-                                timePaid: 0,
-                                currencyFrom,
-                                currencyTo,
-                                amountFiat,
-                                exchangeRate,
-                                exchange: record.exchange,
-                                amountSat,
-                                memo,
-                                lang: currentLocale,
-                                payee,
-                                depositAddress,
-                                txid
-                              });
-                              newInv.save();  
-                            }
+                        const url = req.protocol + '://' + req.get('host') + '/' + invoiceId + '?status&lang=' + currentLocale;
+                        
+                        let html = '<!DOCTYPE html>';
+                        html += '<html lang="' + currentLocale + '">';
+                        html += '<head><meta charset="utf-8"><title>' + req.__('lightning_invoice') + '</title>';
+                        html += '<meta name="viewport" content="width=device-width, initial-scale=1">';
+                        html += '<link rel="mask-icon" href="safari-pinned-tab.svg" color="#000000"></link>';
+                        html += '<link rel="icon" type="image/svg+xml" href="favicon.svg">';
+                        html += '<link rel="alternate icon" type="image/png" href="favicon.png">';
+                        html += '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
+                        html += '<style>@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap");';
+                        html += '* {font-family: Montserrat;}';
+                        html += 'body { margin: 5px; padding: 5px; }th, td {padding-right: 10px;}</style></head>';
+                        html += '<body><div class="container">';
+                        html += '<h2 class="text-center">' + req.__('lightning_invoice') + '</h2>';
+                        html += '<hr><center><table><tr><td><h4>' + req.__('amount') + ' </td><td><h4>' + currencyFrom + ' ' + toFix(amountFiat, 2) + '</h4></td></tr>';
+                        html += '<tr><td><h4>BTC/' + currencyFrom + ': </h4></td><td><h4>' + toFix(exchangeRate, 2) + '</h4></td>';
+                        html += '<tr><td><h4>' + req.__('satoshi') + ': </h4></td><td><h4>' + toFix(amountSat, 0) + '</h4></td></tr></table>';
+                        html += '<p class="text-md-center">' + req.__('ln_qr') + '<br>';
+                        html += '<a href="lightning:' + invoice + '" target="_blank"><img src=' + src + '></a><br>';
+                        html += '<a href="' + url + '" target="_blank">' + req.__('show_receipt') + '</a><br>';
 
-                            const url = req.protocol + '://' + req.get('host') + '/' + invoiceId + '?status&lang=' + currentLocale;
-                            
-                            let html = '<!DOCTYPE html>';
-                            html += '<html lang="' + currentLocale + '">';
-                            html += '<head><meta charset="utf-8"><title>' + req.__('lightning_invoice') + '</title>';
-                            html += '<meta name="viewport" content="width=device-width, initial-scale=1">';
-                            html += '<link rel="mask-icon" href="safari-pinned-tab.svg" color="#000000"></link>';
-                            html += '<link rel="icon" type="image/svg+xml" href="favicon.svg">';
-                            html += '<link rel="alternate icon" type="image/png" href="favicon.png">';
-                            html += '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">';
-                            html += '<style>@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap");';
-                            html += '* {font-family: Montserrat;}';
-                            html += 'body { margin: 5px; padding: 5px; }th, td {padding-right: 10px;}</style></head>';
-                            html += '<body><div class="container">';
-                            html += '<h2 class="text-center">' + req.__('lightning_invoice') + '</h2>';
-                            html += '<hr><center><table><tr><td><h4>' + req.__('amount') + ' </td><td><h4>' + currencyFrom + ' ' + toFix(amountFiat, 2) + '</h4></td></tr>';
-                            html += '<tr><td><h4>BTC/' + currencyFrom + ': </h4></td><td><h4>' + toFix(exchangeRate, 2) + '</h4></td>';
-                            html += '<tr><td><h4>' + req.__('satoshi') + ': </h4></td><td><h4>' + toFix(amountSat, 0) + '</h4></td></tr></table>';
-                            html += '<p class="text-md-center">' + req.__('ln_qr') + '<br>';
-                            html += '<a href="lightning:' + invoice + '" target="_blank"><img src=' + src + '></a><br>';
-                            html += '<a href="' + url + '" target="_blank">' + req.__('show_receipt') + '</a><br>';
+                        try {
+                          res.set('Content-type', 'text/html');
+                        } catch (e) { return console.error("Cannot set headers error") };
 
-                            try {
-                              res.set('Content-type', 'text/html');
-                            } catch (e) { return console.error("Cannot set headers error") };
+                        res.write(html);
 
-                            res.write(html);
-
-                            this.gw.convertProceeds(amountBTC, currencyTo, res)
-                              .then((received) => {
-                                // check for paid duplicate with same amount but different id
-                                this.db.findOne('invoices', { $and: [{ invoiceId: { $ne: invoiceId } }, { amountSat}, { timePaid: received }] }).then((alreadyPaid) => {
-                                  if (received && !alreadyPaid) {
-                                    this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: received } });
-                                    const html2 = '<h4 style="color:green"><b>' + req.__('PAID') + '</b></h4></center></div></body></html>';
-                                    res.end(html2);
-                                  } else {
-                                    this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
-                                    const html2 = '<h4 style="color:red"><b>' + req.__('FAILED') + '</b></h4></center></div></body></html>';
-                                    res.end(html2);
-                                  }
-                                });
-                              });
+                        this.gw.convertProceeds(amountBTC, currencyTo, res)
+                          .then((received) => {
+                            // check for paid duplicate with same amount but different id
+                            this.db.findOne('invoices', { $and: [{ invoiceId: { $ne: invoiceId } }, { amountSat}, { timePaid: received }] }).then((alreadyPaid) => {
+                              if (received && !alreadyPaid) {
+                                this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: received } });
+                                const html2 = '<h4 style="color:green"><b>' + req.__('PAID') + '</b></h4></center></div></body></html>';
+                                res.end(html2);
+                              } else {
+                                this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
+                                const html2 = '<h4 style="color:red"><b>' + req.__('FAILED') + '</b></h4></center></div></body></html>';
+                                res.end(html2);
+                              }
+                            });
                           });
                       });
-                    });
+                  });
+                })
+                .catch((err) => {
+                  this.renderError(req, res, 'error_exchange_down', err);
                 });
             })
             .catch((err) => {
               this.renderError(req, res, 'error_exchange_down', err);
-            });
+            })
         })
         .catch((err) => {
           this.renderError(req, res, 'error_database_down', err);
@@ -773,16 +753,8 @@ export default class Server {
             .then((rec) => {
               if (!rec) return;
               self.gw = getExchange(rec.exchange, rec.key, rec.secret);
-              self.gw.getMovements('LNX', inv.timePresented, inv.timePresented + 600000)
-                .then((r) => r.json())
-                .then((json) => {
-                  let received = null;
-                  let i = json.length;
-                  while (i > 0) {
-                    i -= 1;
-                    if (json[i][20] === inv.txid) received = json[i][5];
-                  }
-
+              self.gw.getLightningDeposit(inv.txid, inv.timePresented, inv.timePresented + 600000)
+                .then((received) => {
                   if (received) {
                     console.log('Invoice', invoiceId, 'of', userName, toZulu(inv.timePresented), "was paid")
                     self.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: received } });  

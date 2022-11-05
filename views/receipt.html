@@ -64,15 +64,12 @@
         <tr><td>{{#i18n}}invoice_paid{{/i18n}}:</td><td>{{dateTimePaid}}</td></tr>
       </table>
       <br>
-      <a href="/{{record.invoiceId}}?lang={{currentLocale}}"><img src="{{paymentPicure}}" style="max-width: 40%; height: auto"></a>
+      <img src="{{paymentPicure}}" style="max-width: 40%; height: auto">
       <br>
       {{{copyHtml}}}
       <br>
       <div class="b">
         <small >{{record.depositAddress}}</small>
-        <br>
-        <br>
-        <small>{{record.txid}}</small>
         <br>
         <br>
         <small>{{#i18n}}powered{{/i18n}} <a href="/">LNPOS.me</a></small>
