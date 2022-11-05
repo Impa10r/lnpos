@@ -141,6 +141,7 @@ export default class Server {
               "Received Amount": receivedAmount,
               "Fee Paid": feeAmount,
               "Profit & Loss": profitLoss,
+              "Exchange": inv.exchange,
               "Status": status
             });
           }
