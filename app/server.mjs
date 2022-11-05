@@ -130,7 +130,7 @@ export default class Server {
 
             csvStream.write({ 
               "Issue Date": issueDate, 
-              "Invoice ID": invoiceId,
+              "Invoice Number": invoiceId,
               "Invoice Currency": invoiceCurency,
               "Invoice Amount": invoiceAmount,
               "Payment Details": details,
