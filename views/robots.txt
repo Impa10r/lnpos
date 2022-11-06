@@ -8,5 +8,6 @@ Allow: /de$
 Allow: /it$
 Allow: /pt$
 Allow: /sitemap.xml$
+Allow: /affiliate$
 Disallow: /
 Sitemap: https://lnpos.me/sitemap.xml

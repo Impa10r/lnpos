@@ -75,7 +75,7 @@
     <br>
     <div class="topnav">
       <a href="#"><img src="favicon.png" style="width: auto; height:20px" alt="LN"></a>
-      <a href="#affiliate">{{#i18n}}_Affiliates{{/i18n}}</a>
+      <a href="/affiliate">{{#i18n}}_Affiliates{{/i18n}}</a>
       <a href="#help">{{#i18n}}_Help{{/i18n}}</a>
       <a href="/login?lang={{currentLocale}}">{{#i18n}}_login{{/i18n}}</a>
     </div>
@@ -144,31 +144,6 @@
     </form>
     <br>
     <p>{{#i18n}}intro3{{/i18n}}</p>
-    <center><a href="#"><img src="bitcoin.png" style="width: 50px; height: auto" alt="Bitcoin symbol"></a></center>
-    <hr>
-    <a id="affiliate"></a>
-    <br>
-    <h2 class="text-center">{{#i18n}}affiliate{{/i18n}}</h2>
-    <br>
-    <p>{{#i18n}}influencer{{/i18n}}</p>
-    <ol>
-      <li>{{#i18n}}step_1{{/i18n}} <a href="https://www.bitfinex.com/sign-up?refcode={{refCode}}" target="_blank">{{#i18n}}this{{/i18n}} {{#i18n}}link{{/i18n}}</a> {{#i18n}}step_1a{{/i18n}}</li>
-      <br>
-      <li>{{#i18n}}step_2af{{/i18n}}</li>
-      <br>
-      <li>{{#i18n}}step_3af{{/i18n}}</li>
-    </ol>
-    <form class="form" action="/referral" method="POST">
-      <fieldset>
-        <center>
-        <input class="form-control" type ="text" id = 'refCode' name="refCode"  placeholder="Referral Code" required>
-        <input type="hidden" id="lang" name="lang" value="{{currentLocale}}">
-        <br><br>
-        <button class="btn btn-primary" type ="submit">{{#i18n}}generate_ref{{/i18n}}</button>
-        </center>
-      </fieldset>
-    </form>
-    <br>
     <center><a href="#"><img src="bitcoin.png" style="width: 50px; height: auto" alt="Bitcoin symbol"></a></center>
     <hr>
     <a id="help"></a>

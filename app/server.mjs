@@ -24,6 +24,7 @@ import Invoices from './models/invoices.mjs';
 import Bitfinex from './gateways/bitfinex.mjs';
 import DataBase from './mongo.mjs';
 import contactForm from './routes/contactForm.mjs';
+import referral from './routes/referral.mjs';
 
 function toFix(number, decimals) {
   return Number(number).toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -335,7 +336,9 @@ export default class Server {
     this.express.use(bodyParser.urlencoded({ extended: false }));
     this.express.use(helmet());
     this.express.use(limiter);
+
     this.express.use(contactForm);
+    this.express.use(referral);
 
     this.express.get('/:id?', (req, res) => {
       const id = req.params.id;
@@ -469,25 +472,6 @@ export default class Server {
           
           this.completeInvoices(userName).then(() => this.renderReport(req, res));
         });
-    });
-
-    this.express.post('/referral', (req, res) => {
-      const currentLocale = res.getLocale();
-      const code = req.body.refCode;
-      req.setLocale(currentLocale);
-      if (code.length !== 10)
-        return this.renderError(req, res, 'error_invalid_ref');
-      const desc = req.get('host') + '/' + code;
-      const url = req.protocol + '://' + desc;
-      qr.toDataURL(url, (err, src) => {
-        if (err) this.renderError(req, res, 'error_qr', err);
-        res.render('referral', {
-          currentLocale,
-          url,
-          desc,
-          src,
-        });
-      });
     });
 
     this.express.post('/add', (req, res) => {

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="{{currentLocale}}">
+
+<head>
+  <meta charset="utf-8">
+  <title>{{#i18n}}affiliate{{/i18n}}</title>
+  <meta name="description" content="{{#i18n}}description{{/i18n}}">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Icons for various devices -->
+  <link rel="mask-icon" href="safari-pinned-tab.svg" color="#ffffff">
+  <link rel="alternate icon" type="image/png" href="favicon.png">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon-180x180.png">
+  <link rel="fluid-icon" href="favicon-512x512.png" title="LNPOS">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <!-- Custom CSS -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+    * {
+        font-family: Montserrat;
+    }
+    body {
+        margin: 10px;
+        padding: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2 class="text-center">{{#i18n}}lnpos{{/i18n}}</h1>
+    <h2 class="text-center">{{#i18n}}affiliate{{/i18n}}</h2>
+    <br>
+    <p>{{#i18n}}influencer{{/i18n}}</p>
+    <ol>
+      <li>{{#i18n}}step_1{{/i18n}} <a href="https://www.bitfinex.com/sign-up?refcode={{refCode}}" target="_blank">{{#i18n}}this{{/i18n}} {{#i18n}}link{{/i18n}}</a> {{#i18n}}step_1a{{/i18n}}</li>
+      <br>
+      <li>{{#i18n}}step_2af{{/i18n}}</li>
+      <br>
+      <li>{{#i18n}}step_3af{{/i18n}}</li>
+    </ol>
+    <form class="form" action="/referral" method="POST">
+      <fieldset>
+        <center>
+        <input class="form-control" type ="text" id = 'refCode' name="refCode"  placeholder="Referral Code" required>
+        <input type="hidden" id="lang" name="lang" value="{{currentLocale}}">
+        <br><br>
+        <button class="btn btn-primary" type ="submit">{{#i18n}}generate_ref{{/i18n}}</button>
+        </center>
+      </fieldset>
+    </form>
+    <br>
+    <center><a href="#"><img src="bitcoin.png" style="width: 50px; height: auto" alt="Bitcoin symbol"></a></center>
+</body>
+</html>
