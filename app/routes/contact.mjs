@@ -16,13 +16,13 @@ const transport = {
 // call the transport function
 const transporter = nodemailer.createTransport(transport);
 
-router.get('/contactform', (req, res) => {
-  res.render('contactform', {
+router.get('/contact', (req, res) => {
+  res.render('contact', {
     currentLocale: res.getLocale(),
   });
 });
 
-router.post('/contactform', (req, res) => {
+router.post('/contact', (req, res) => {
   const text = 'userName: ' + req.body.userName + '\n' +
     'email: ' + req.body.email + '\n' +
     'message: ' + req.body.message;

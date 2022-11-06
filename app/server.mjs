@@ -23,7 +23,7 @@ import Keys from './models/keys.mjs';
 import Invoices from './models/invoices.mjs';
 import Bitfinex from './gateways/bitfinex.mjs';
 import DataBase from './mongo.mjs';
-import contactForm from './routes/contactForm.mjs';
+import contact from './routes/contact.mjs';
 import referral from './routes/referral.mjs';
 
 function toFix(number, decimals) {
@@ -337,7 +337,7 @@ export default class Server {
     this.express.use(helmet());
     this.express.use(limiter);
 
-    this.express.use(contactForm);
+    this.express.use(contact);
     this.express.use(referral);
 
     this.express.get('/:id?', (req, res) => {
