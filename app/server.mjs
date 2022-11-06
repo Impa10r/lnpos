@@ -472,7 +472,7 @@ export default class Server {
     });
 
     this.express.post('/referral', (req, res) => {
-      const currentLocale = req.body.lang;
+      const currentLocale = res.getLocale();
       const code = req.body.refCode;
       req.setLocale(currentLocale);
       if (code.length !== 10)
