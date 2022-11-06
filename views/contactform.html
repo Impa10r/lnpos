@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="{{currentLocale}}">
+
+<head>
+  <meta charset="utf-8">
+  <title>{{#i18n}}contact_form{{/i18n}}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Icons for various devices -->
+  <link rel="mask-icon" href="safari-pinned-tab.svg" color="#ffffff">
+  <link rel="alternate icon" type="image/png" href="favicon.png">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon-180x180.png">
+  <link rel="fluid-icon" href="favicon-512x512.png" title="LNPOS">
+  
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <!-- Custom CSS -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+    * {
+        font-family: Montserrat;
+    }
+    body {
+        margin: 10px;
+        padding: 10px;
+    }
+
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h3 class="text-center">{{#i18n}}contact_form{{/i18n}}</h3>
+    <hr>
+    <form class="form" autocomplete="off" action="/contactform" method="POST">
+      <fieldset>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email" autofocus required placeholder="Email">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="userName">{{#i18n}}user_name{{/i18n}}</label>
+            <input type="text" class="form-control" id="userName" name="userName" placeholder="{{#i18n}}user_name_explain{{/i18n}}">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="message">{{#i18n}}message{{/i18n}}</label>
+          <textarea class="form-control" id="message" rows="3" name="message" placeholder="{{#i18n}}message{{/i18n}}"></textarea>
+        </div>
+        <center>
+          <button type="submit" class="btn btn-primary mb-2">{{#i18n}}send{{/i18n}}</button>
+        </center>
+      </fieldset>
+    </form>
+  </div>
+</body>
+</html>

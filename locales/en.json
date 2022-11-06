@@ -25,7 +25,7 @@
 	"new_referral_link": "Below is your unique referral link. You can share it in social media and send to your direct contacts.",
 	"new_payment_link": "Below is your unique payment link. Click or scan, then save it to your PC desktop, phone Home Screen and/or in the bookmarks. You can forward it to your employees and clients to generate payment requests.",
 	"new_payment_link2": "<b>Bonus steps:</b><br><ol start = '5'><li>Install <a href='https://www.bitfinex.com/mobile-trading' target='_blank'>Bitfinex app</a> on your phone to receive trade notifications.</li><li>Don't forget to print <b><em>your personal 'Bitcoin accepted' stickers</em></b> by following this",
-  "new_payment_link3": "</li><li>API format for automation and intergation with your website",
+	"new_payment_link3": "</li><li>API format for automation and intergation with your website",
 	"remote_payment_link": "Copy the link below to request a remote payment via email or chat:",
 	"remote_payment_link2": "You can monitor the status of this payment in <a href='/login' target='_blank'>your personal account</a> or at",
 	"remote_request": "Please pay via Lightning",
@@ -57,7 +57,7 @@
 	"about": "<center><h2>About the project</h2></center><br>LNPOS is an open source project with the end goal to see 'Bitcoin accepted here' stickers in every small business venue in your neighbourhood. Everyone is welcome to participate in the project development and its promotion as an <a href='#affiliate'>affiliate</a>.<br><br>Like the project and have a Lightning wallet? You may test functionality by <a href='/VSWxK7V1sw4?lang=",
 	"about2": "&memo=Donation'>donating</a> some sats towards running costs.",
 	"powered": "Powered by",
-	"help": "If you still have questions or concerns, please join our <a href='https://t.me/lnpos'>Telegram</a> or <a href='https://www.reddit.com/r/lnpos'>Reddit</a> support group or send us an <a href='mailto:support@lnpos.me?subject=Question'>email</a>.",
+	"help": "If you still have questions or concerns, please join our <a href='https://t.me/lnpos'>Telegram</a> or <a href='https://www.reddit.com/r/lnpos'>Reddit</a> support group or send us an <a href='/contactform'>email</a>.",
 	"faq": "Frequently Asked Questions",
 	"q1": "<b>Are my funds secure?</b><br>Bitfinex is one of the oldest and largest crypto exchanges. It doesn't insure user funds, but it had taken responsibility to compensate users when assets were lost due to security breaches. You can limit your risk by regular withdrawals. As for the keys you store on LNPOS.me, they do not allow any withdrawals. So funds are safe even if our database gets compromised one day. If you still don't trust the website LNPOS.me you are more than welcome to install a copy of our software on your local server.",
 	"q2": "<b>How long does a payment take?</b><br>Once the Lightning Invoice is shown, the client has a maximum of 10 minutes to pay. However, it should take him only a few seconds to scan the invoice and authorize the payment. During this time the market can move, resulting in slightly larger or smaller amount than the invoice. But in the long run these profits and losses will cancel out.",
@@ -108,6 +108,11 @@
 	"to": "To",
 	"limit": "Limit",
 	"refresh": "Refresh",
-  "paid_only": "Paid only",
-  "generate_pricetag": "Print price tag"
+	"paid_only": "Paid only",
+	"generate_pricetag": "Print price tag",
+	"contact_form": "Contact Form",
+	"send": "Send",
+	"message_sent": "Your message was sent. Thank you!",
+	"message_error": "Error sending your message.",
+	"message": "Your message"
 }

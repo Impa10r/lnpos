@@ -23,7 +23,7 @@ import Keys from './models/keys.mjs';
 import Invoices from './models/invoices.mjs';
 import Bitfinex from './gateways/bitfinex.mjs';
 import DataBase from './mongo.mjs';
-import e from 'express';
+import contactForm from './routes/contactForm.mjs';
 
 function toFix(number, decimals) {
   return Number(number).toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -43,9 +43,10 @@ function getExchange(exchange, apiKey, apiSecret) {
 export default class Server {
   renderError(req, res, errCode, err) {
     if (err) console.error(err);
-    res.render('error', {
+    res.render('message', {
       currentLocale: req.locale,
-      error: req.__(errCode),
+      message: req.__(errCode),
+      color: 'red',
     });
   }
 
@@ -165,14 +166,14 @@ export default class Server {
   async completeInvoices(userName) {
     const p = new Promise((allResolve) => {
       this.db.findOne('keys', { userName }).then((rec) => {
-        this.gw = getExchange(rec.exchange, rec.key, rec.secret);
+        const gw = getExchange(rec.exchange, rec.key, rec.secret);
         this.db.find('invoices', { $and: [{ userName }, { currencyTo: { $ne : "LNX" } }, { currencyTo: { $ne : "BTC" } }, { timePaid: {$gt: 0} }, { amountTo: {$exists: false} } ] } )
           .then((resp) => {
             resp.toArray((err, invoices) => {
               const promises = invoices.map(inv => {
                 return new Promise((resolve) => { 
                   // find first trade after presenting the invoice
-                  this.gw.getFirstTrade(inv.currencyTo, inv.timePresented)
+                  gw.getFirstTrade(inv.currencyTo, inv.timePresented)
                     .then((trade) => {
                       if (trade) {
                         const tradeAmount = -trade.amount * 100000000;
@@ -222,8 +223,8 @@ export default class Server {
           }
 
           this.db.findOne('keys', { userName }).then((rec) => {
-            this.gw = getExchange(rec.exchange, rec.key, rec.secret);            
-            this.gw.getLightningDeposit(record.txid, timePresented, timePresented + 600000)
+            const gw = getExchange(rec.exchange, rec.key, rec.secret);            
+            gw.getLightningDeposit(record.txid, timePresented, timePresented + 600000)
               .then((received) => {
 
                 if (received) {
@@ -304,7 +305,6 @@ export default class Server {
   }
 
   constructor({ i18nProvider }) {
-    this.gw = null;
     this.db = new DataBase();
     
     const limiter = rateLimit({
@@ -335,6 +335,7 @@ export default class Server {
     this.express.use(bodyParser.urlencoded({ extended: false }));
     this.express.use(helmet());
     this.express.use(limiter);
+    this.express.use(contactForm);
 
     this.express.get('/:id?', (req, res) => {
       const id = req.params.id;
@@ -493,8 +494,8 @@ export default class Server {
       const currentLocale = req.body.lang;
       const payee = req.body.payee;
       req.setLocale(currentLocale);
-      this.gw = getExchange(req.body.exchange, req.body.apiKey, req.body.apiSecret);
-      this.gw.getUserName()
+      const gw = getExchange(req.body.exchange, req.body.apiKey, req.body.apiSecret);
+      gw.getUserName()
         .then((userName) => {
           let id = nanoid(11);
           this.db.findOne('keys', { key: req.body.apiKey })
@@ -575,16 +576,16 @@ export default class Server {
 
       this.db.findOne('keys', { userName })
         .then((record) => {
-          this.gw = getExchange(record.exchange, record.key, record.secret);
-          this.gw.simulateSell(currencyFrom, amountFiat)
+          const gw = getExchange(record.exchange, record.key, record.secret);
+          gw.simulateSell(currencyFrom, amountFiat)
             .then((result) => {
               const amountBTC = result;
               const wap = amountFiat / amountBTC;
               const currencyTo = record.currencyTo;
               const payee = record.payee;
 
-              if (amountBTC > this.gw.maxInvoiceAmount) { return this.renderError(req, res, 'amount_too_large'); }
-              if (amountBTC < this.gw.minInvoiceAmount) { return this.renderError(req, res, 'amount_too_small'); }
+              if (amountBTC > gw.maxInvoiceAmount) { return this.renderError(req, res, 'amount_too_large'); }
+              if (amountBTC < gw.minInvoiceAmount) { return this.renderError(req, res, 'amount_too_small'); }
 
               if (req.body.button === 'link') {
                 this.db.findOne('invoices', { invoiceId })
@@ -630,7 +631,7 @@ export default class Server {
                 return;            
               }
 
-              this.gw.generateLightningInvoice(amountBTC)
+              gw.generateLightningInvoice(amountBTC)
                 .then((result) => {
                   const txid = result.txid;
                   const invoice = result.invoice;
@@ -705,7 +706,7 @@ export default class Server {
 
                         res.write(html);
 
-                        this.gw.convertProceeds(amountBTC, currencyTo, res)
+                        gw.convertProceeds(amountBTC, currencyTo, res)
                           .then((received) => {
                             // check for paid duplicate with same amount but different id
                             this.db.findOne('invoices', { $and: [{ invoiceId: { $ne: invoiceId } }, { amountSat}, { timePaid: received }] }).then((alreadyPaid) => {
