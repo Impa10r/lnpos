@@ -107,13 +107,13 @@ export default class Server {
       .catch((err) => console.error(err)); 
   }
 
-  renderCSV(req, res, userId) { 
+  renderCSV(req, res, userName) { 
     const fromDate = req.query.fromDate ? Date.parse(req.query.fromDate + 'T00:00:00.000Z') : 1;
     const toDate = req.query.toDate ? Date.parse(req.query.toDate + 'T23:59:59.999Z') : Date.now();
     const paidDate = req.query.paidOnly === 'checked' ? 1 : -2;
     const limit = parseInt(req.query.limit); 
 
-    this.db.find('invoices', { $and: [{ userId }, { timePaid: { $gte: paidDate } }, { timeCreated: { $gte: fromDate } }, { timeCreated: { $lte: toDate } } ] }, { timeCreated: -1 }, limit )
+    this.db.find('invoices', { $and: [{ userName }, { timePaid: { $gte: paidDate } }, { timeCreated: { $gte: fromDate } }, { timeCreated: { $lte: toDate } } ] }, { timeCreated: -1 }, limit )
       .then((resp) => {
         resp.toArray((err, invoices) => {
           if (err) console.error(err);
@@ -451,7 +451,7 @@ export default class Server {
                 case 13: // authToken to download csv
                   return this.db.findOne('keys', { authToken: id })
                     .then((record) => {
-                      if (record && record.authExpire > Date.now()) this.renderCSV(req, res, record.id);
+                      if (record && record.authExpire > Date.now()) this.renderCSV(req, res, record.userName);
                       else res.render('index', { currentLocale, refCode: 'TuVr9K55M'});
                     });
               default:
