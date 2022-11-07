@@ -165,11 +165,11 @@ export default class Server {
   }
 
   // append details of conversion to fiat or stablecoin for all paid invoices
-  async completeInvoices(id) {
+  async completeInvoices(userName) {
     const p = new Promise((allResolve) => {
-      this.db.findOne('keys', { id }).then((rec) => {
+      this.db.findOne('keys', { userName }).then((rec) => {
         const gw = getExchange(rec.exchange, rec.key, rec.secret);
-        this.db.find('invoices', { $and: [{ userId: id }, { currencyTo: { $ne : "LNX" } }, { currencyTo: { $ne : "BTC" } }, { timePaid: {$gt: 0} }, { amountTo: {$exists: false} } ] } )
+        this.db.find('invoices', { $and: [{ userName }, { currencyTo: { $ne : "LNX" } }, { currencyTo: { $ne : "BTC" } }, { timePaid: {$gt: 0} }, { amountTo: {$exists: false} } ] } )
           .then((resp) => {
             resp.toArray((err, invoices) => {
               const promises = invoices.map(inv => {
@@ -476,7 +476,7 @@ export default class Server {
             return res.render('login', { currentLocale: res.getLocale() });
           }
           
-          this.completeInvoices(record.id).then(() => this.renderReport(req, res));
+          this.completeInvoices(userName).then(() => this.renderReport(req, res));
         });
     });
 
