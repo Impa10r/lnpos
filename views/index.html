@@ -52,7 +52,45 @@
       color: white;
     }
 
-    input { font-size: 18px; }
+    .containerPix {
+      position: relative;
+      width: 50%;
+    }
+
+    .imagePix {
+      opacity: 1;
+      display: block;
+      width: 100%;
+      height: auto;
+      transition: .5s ease;
+      backface-visibility: hidden;
+    }
+
+    .middlePix {
+      transition: .5s ease;
+      opacity: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .containerPix:hover .imagePix {
+      opacity: 0.3;
+    }
+
+    .containerPix:hover .middlePix {
+      opacity: 1;
+    }
+
+    .textPix {
+      background-color: #f7931a;
+      color: white;
+      font-size: 16px;
+      padding: 16px 32px;
+    }
   </style>
 </head>
 
@@ -86,64 +124,23 @@
     <br>
     <p>{{#i18n}}intro2{{/i18n}}</p>
     <br>
-    <h2 class="text-center">{{#i18n}}signup{{/i18n}}</h2>
-    <ol>
-      <li>{{#i18n}}step_1{{/i18n}} <a href="https://www.bitfinex.com/sign-up?refcode={{refCode}}" target="_blank">{{#i18n}}this{{/i18n}} {{#i18n}}link{{/i18n}}</a> {{#i18n}}step_1a{{/i18n}}</li>
-      <br>
-      <li>{{#i18n}}step_2{{/i18n}}</li>
-    </ol>
-    <center><img src="bitfinex_key_permissions_{{currentLocale}}.png" style="max-width:100%; height: auto" alt="API key settings"></center>
-    <br>
-    <ol start = '3'>
-      <li>{{#i18n}}step_3{{/i18n}}</li>
-      <br>
-      <li>{{#i18n}}step_4{{/i18n}}</li>
-    </ol>
-    <br>
-    <center><img src="certificate.png" style="max-width:100%; width: 150%; height: auto" alt="Check certificate"></center>
-    <br>
-    <form class="form" autocomplete="off" action="/add" method="POST">
-      <fieldset>
-        <input class="form-control" type ="text" id = 'apiKey' name="apiKey" size="50" placeholder="{{#i18n}}api_key{{/i18n}}" required>
-        <br>
-        <input class="form-control" type="text" id = "apiSecret" name="apiSecret" size="50"  placeholder="{{#i18n}}api_secret{{/i18n}}" required>
-        <br>
-        <input class="form-control" type="text" id = "payee" name="payee" size="50"  placeholder="{{#i18n}}branding{{/i18n}}">
-        <br> 
-        <div class="form-row">
-          <label for="currencyFrom" class="col- col-form-label"> {{#i18n}}quote_cur_list{{/i18n}} </label>
-          <div class="col-">
-            <select class="form-control" id="currencyFrom" name="currencyFrom" required>
-              <option value="EUR"> EUR </option>  
-              <option value="GBP"> GBP </option>  
-              <option value="USD"> USD </option>  
-              <option value="JPY"> JPY </option>
-            </select>
-          </div>
-          <label for="currencyTo" class="col- col-form-label"> {{#i18n}}receive_cur_list{{/i18n}} </label>
-          <div class="col-">
-            <select class="form-control" id="currencyTo" name="currencyTo" required>
-              <option value="EUR"> EUR </option>  
-              <option value="GBP"> GBP </option>  
-              <option value="USD"> USD </option>  
-              <option value="RUB"> JPY </option>
-              <option value="LNX"> LN-BTC </option>
-              <option value="BTC"> BTC </option>
-              <option value="UST"> USDt </option>
-              <option value="EUT"> EURt </option>
-            </select>
-          </div>
+    <center>
+      <div class="containerPix">
+        <img src="bitfinex_logo.png" alt="Bitfinex" class="imagePix" style="width:100%">
+        <div class="middlePix">
+          <div class="textPix"><a href="/bitfinex?refcode={{refCode}}" style="color:white">Bitfinex {{#i18n}}signup{{/i18n}}</a></div>
         </div>
-        <input type="hidden" id="lang" name="lang" value="{{currentLocale}}">
-        <input type="hidden" id="exchange" name="exchange" value="Bitfinex">
-        <br>
-        <center>
-          <button class="btn btn-primary" type ="submit">{{#i18n}}register_key{{/i18n}}</button>
-        </center>      
-      </fieldset>
-    </form>
+      </div>
+      <br>
+      <div class="containerPix">
+        <img src="kraken_logo.png" alt="Kraken" class="imagePix" style="width:100%">
+        <div class="middlePix">
+          <div class="textPix">Coming soon...</div>
+        </div>
+      </div>
+    </center>
     <br>
-    <p>{{#i18n}}intro3{{/i18n}}</p>
+    <br>
     <center><a href="#"><img src="bitcoin.png" style="width: 50px; height: auto" alt="Bitcoin symbol"></a></center>
     <hr>
     <a id="help"></a>

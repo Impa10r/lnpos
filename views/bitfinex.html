@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="{{currentLocale}}">
+
+<head>
+  <meta charset="utf-8">
+  <title>{{#i18n}}lnpos{{/i18n}}</title>
+  <meta name="description" content="{{#i18n}}description{{/i18n}}">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Icons for various devices -->
+  <link rel="mask-icon" href="safari-pinned-tab.svg" color="#ffffff">
+  <link rel="alternate icon" type="image/png" href="favicon.png">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon-180x180.png">
+  <link rel="fluid-icon" href="favicon-512x512.png" title="LNPOS">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <!-- Custom CSS -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+    * {
+        font-family: Montserrat;
+    }
+    body {
+        margin: 10px;
+        padding: 10px;
+    }
+
+    input { font-size: 18px; }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1 class="text-center">Bitfinex {{#i18n}}signup{{/i18n}}</h1>
+    <hr>
+    <ol>
+      <li>{{#i18n}}step_1{{/i18n}} <a href="https://www.bitfinex.com/sign-up?refcode={{refCode}}" target="_blank">{{#i18n}}this{{/i18n}} {{#i18n}}link{{/i18n}}</a> {{#i18n}}step_1a{{/i18n}}</li>
+      <br>
+      <li>{{#i18n}}step_2{{/i18n}}</li>
+    </ol>
+    <center><img src="bitfinex_key_permissions_{{currentLocale}}.png" style="max-width:100%; height: auto" alt="API key settings"></center>
+    <br>
+    <ol start = '3'>
+      <li>{{#i18n}}step_3{{/i18n}}</li>
+      <br>
+      <li>{{#i18n}}step_4{{/i18n}}</li>
+    </ol>
+    <br>
+    <center><img src="certificate.png" style="max-width:100%" alt="Check certificate"></center>
+    <br>
+    <form class="form" autocomplete="off" action="/add" method="POST">
+      <fieldset>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" class="form-control" id="email" name="email" required placeholder="Email">
+        </div>
+        <div class="form-group">
+          <label for="payee">{{#i18n}}branding{{/i18n}}</label>
+          <input class="form-control" type="text" id = "payee" name="payee" size="50"  placeholder="{{#i18n}}branding{{/i18n}}">
+        </div>
+        <div class="form-group">
+          <label for="apiKey">{{#i18n}}api_key{{/i18n}}</label>
+          <input class="form-control" type ="text" id = 'apiKey' name="apiKey" size="50" placeholder="{{#i18n}}api_key{{/i18n}}" required>
+        </div>
+        <div class="form-group">
+          <label for="apiSecret">{{#i18n}}api_secret{{/i18n}}</label>
+          <input class="form-control" type="text" id = "apiSecret" name="apiSecret" size="50"  placeholder="{{#i18n}}api_secret{{/i18n}}" required>
+        </div>
+        <div class="form-row">
+          <label for="currencyFrom" class="col- col-form-label"> {{#i18n}}quote_cur_list{{/i18n}} </label>
+          <div class="col-">
+            <select class="form-control" id="currencyFrom" name="currencyFrom" required>
+              <option value="EUR"> EUR </option>  
+              <option value="GBP"> GBP </option>  
+              <option value="USD"> USD </option>  
+              <option value="JPY"> JPY </option>
+            </select>
+          </div>
+          <label for="currencyTo" class="col- col-form-label"> {{#i18n}}receive_cur_list{{/i18n}} </label>
+          <div class="col-">
+            <select class="form-control" id="currencyTo" name="currencyTo" required>
+              <option value="EUR"> EUR </option>  
+              <option value="GBP"> GBP </option>  
+              <option value="USD"> USD </option>  
+              <option value="RUB"> JPY </option>
+              <option value="LNX"> LN-BTC </option>
+              <option value="BTC"> BTC </option>
+              <option value="UST"> USDT </option>
+              <option value="EUT"> EURT </option>
+            </select>
+          </div>
+        </div>
+        <input type="hidden" id="lang" name="lang" value="{{currentLocale}}">
+        <input type="hidden" id="exchange" name="exchange" value="Bitfinex">
+        <br>
+        <center>
+          <button class="btn btn-primary" type ="submit">{{#i18n}}register_key{{/i18n}}</button>    
+        </center>  
+      </fieldset>
+    </form>
+    <br>
+    <p>{{#i18n}}intro3{{/i18n}}</p>
+    <center><a href="#"><img src="bitcoin.png" style="width: 50px; height: auto" alt="Bitcoin symbol"></a></center>
+  </div>
+</body>
+</html>

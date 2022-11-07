@@ -4,7 +4,6 @@ import fetch from 'node-fetch';
 import crypto from 'crypto';
 import axios from 'axios';
 import WebSocket from 'ws';
-import { Resolver } from 'dns';
 
 export default class Bitfinex {
   constructor(apiKey, apiSecret) {
@@ -84,12 +83,12 @@ export default class Bitfinex {
     return this.restAuth('v2/auth/w/order/submit', body);
   }
 
-  async transferBetweenWallets(from, to, currency, currency_to, amount) {
+  async transferBetweenWallets(from, to, currency, currencyTo, amount) {
     const body = {
       from,
       to,
       currency,
-      currency_to,
+      currencyTo,
       amount: amount.toString(),
     };
     return this.restAuth('v2/auth/w/transfer', body);
@@ -118,13 +117,11 @@ export default class Bitfinex {
     return this.restPublic(`book/${symbol}/R0`);
   }
 
-  // public methods below:
-
   async simulateSell(currency, amount) {
     const promise = new Promise((resolve, reject) => {
       this.getBook('tBTC' + currency)
         .then((result) => {
-          if (result.message) return reject(new Error('simulateSell: ' + result.message));
+          if (result.message) return reject(new Error('Bitfinex simulateSell: ' + result.message));
           const book = result.data;
           let i = 0;
           let btcReceived = 0;
@@ -237,7 +234,7 @@ export default class Bitfinex {
       this.getTrades('tBTC' + currency, fromTime, Date.now(), 1, 1)
         .then((r) => r.json())
         .then((json) => {
-          if (json[0] === 'error') return reject(new Error('getFirstTrade: ' + json[2] + ', ' + currency));
+          if (json[0] === 'error') return reject(new Error('Bitfinex getFirstTrade: ' + json[2] + ', ' + currency));
           if (json.length === 1) {
             resolve({
               amount: json[0][4],
@@ -257,7 +254,7 @@ export default class Bitfinex {
       this.getMovements('LNX', fromTime, toTime)
         .then((r) => r.json())
         .then((json) => {
-          if (json[0] === 'error') return reject(new Error('getLightningDeposit: ' + json[2]));
+          if (json[0] === 'error') return reject(new Error('Bitfinex getLightningDeposit: ' + json[2]));
           let received = null;
           let i = json.length;
           while (i > 0) {
@@ -275,12 +272,12 @@ export default class Bitfinex {
       this.getDepositAddr('LNX', 'exchange')
         .then((r) => r.json())
         .then((j) => {
-          if (j[0] === 'error') return reject(new Error('generateLightningInvoice: ' + j[2]));
+          if (j[0] === 'error') return reject(new Error('Bitfinex generateLightningInvoice: ' + j[2]));
           const depositAddress = j[4][4];
           this.getLightningInvoice(amount)
             .then((r) => r.json())
             .then((json) => {
-              if (json[0] === 'error') return reject(new Error('generateLightningInvoice: ' + json[2]));
+              if (json[0] === 'error') return reject(new Error('Bitfinex generateLightningInvoice: ' + json[2]));
               resolve({
                 txid: json[0],
                 invoice: json[1],
@@ -297,7 +294,7 @@ export default class Bitfinex {
       this.getUserInfo()
         .then((r) => r.json())
         .then((json) => {
-          if (json[0] === 'error') return reject(new Error('getUserName: ' + json[2]));
+          if (json[0] === 'error') return reject(new Error('Bitfinex getUserName: ' + json[2]));
           resolve(json[2].toLowerCase());
         });
     });

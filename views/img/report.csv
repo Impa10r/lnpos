@@ -1,0 +1,75 @@
+Issue Date,Invoice Number,Invoice Currency,Invoice Amount,Payment Details,Satoshi Amount,Payment Date,Conversion Date,Received Currency,Received Amount,Fee Paid,Profit & Loss,Exchange,Status
+2022-11-05 21:42:42,hhpuFO53uWBM,EUR,0.03,,140,2022-11-05 21:42:52,,BTC,0.0000014,,,Bitfinex,Paid
+2022-11-05 21:39:56,liUujqGAqvsd,EUR,0.03,,140,2022-11-05 21:40:18,,BTC,0.0000014,,,Bitfinex,Paid
+2022-11-05 20:44:41,hPBfH0s2B-Ir,EUR,1,Donation,4678,,,,,,,Bitfinex,Failed
+2022-11-05 10:53:05,d2NDUSBGHYN8,EUR,0.03,test 3,140,2022-11-05 11:05:44,,BTC,0.0000014,,,Bitfinex,Paid
+2022-11-05 10:50:28,7f5YNM4ksQco,EUR,0.03,test 2,141,2022-11-05 10:50:49,,BTC,0.00000141,,,Bitfinex,Paid
+2022-11-04 23:21:26,Fb8EPuwdPrEm,EUR,0.03,second,142,2022-11-04 23:22:09,,BTC,0.00000142,,,Bitfinex,Paid
+2022-11-04 23:21:26,UghHzcd5HG3V,EUR,0.03,fourth,141,2022-11-04 23:29:54,,BTC,0.00000141,,,Bitfinex,Paid
+2022-11-04 23:21:26,E5a5lBIgBm00,EUR,0.03,third,141,,,,,,,Bitfinex,Failed
+2022-11-04 22:59:03,Yffnzik6S6eo,EUR,0.03,second,141,2022-11-04 22:59:45,,BTC,0.00000141,,,Bitfinex,Paid
+2022-11-04 22:59:03,SyTTcQe0kfIz,EUR,0.03,third,141,,,,,,,Bitfinex,Failed
+2022-11-04 22:59:03,ha9caQhO_m7X,EUR,0.03,first,141,,,,,,,Bitfinex,Failed
+2022-11-04 22:58:49,nYXrhNE0e8gj,EUR,0.03,first,141,,,,,,,Bitfinex,Failed
+2022-11-04 22:17:49,Hxo1Xm1snxwL,EUR,0.03,text txid,142,2022-11-04 22:32:56,,BTC,0.00000142,,,Bitfinex,Paid
+2022-11-04 22:17:46,iY1KPz7Zh9Xn,EUR,0.03,first,141,2022-11-04 22:18:40,,BTC,0.00000141,,,Bitfinex,Paid
+2022-11-04 22:06:15,cC9XtcZHnkE-,EUR,0.03,second,142,2022-11-04 22:07:06,,BTC,0.00000142,,,Bitfinex,Paid
+2022-11-04 22:06:08,Y5xTW3IUjnis,EUR,0.03,first,142,2022-11-04 22:07:06,,BTC,0.00000142,,,Bitfinex,Paid
+2022-11-04 21:54:37,U2aR1Ho6vRF2,EUR,0.03,third,141,2022-11-04 21:55:11,,BTC,0.00000141,,,Bitfinex,Paid
+2022-11-04 21:53:58,kbZ2qSU9mi0B,EUR,0.03,second,141,2022-11-04 21:55:11,,BTC,0.00000141,,,Bitfinex,Paid
+2022-11-04 21:12:56,grQUDQylV0iE,EUR,0.03,second,142,2022-11-04 21:14:34,,BTC,0.00000142,,,Bitfinex,Paid
+2022-11-04 21:12:56,JCmDiuVupfoP,EUR,0.03,second,0,,,,,,,Bitfinex,Pending
+2022-11-04 21:12:56,WD0ZygzfUaGj,EUR,0.03,first,142,,,,,,,Bitfinex,Failed
+2022-11-04 21:11:39,XOFXceigWqoI,EUR,0.03,Donation,142,2022-11-04 21:12:14,,BTC,0.00000142,,,Bitfinex,Paid
+2022-11-04 21:11:39,AqGhJAdvQ5Fl,EUR,0.03,Donation,142,2022-11-04 21:14:34,,BTC,0.00000142,,,Bitfinex,Paid
+2022-11-03 19:08:51,UxoFyodJYY3W,EUR,0.03,,145,2022-11-03 19:09:27,,BTC,0.00000145,,,Bitfinex,Paid
+2022-11-03 18:42:17,xHkKmKMsTrmp,EUR,0.03,,145,2022-11-03 18:43:02,,BTC,0.00000145,,,Bitfinex,Paid
+2022-11-03 18:34:08,5zGHaDF3asbZ,EUR,1.25,gold,6033,2022-11-03 18:34:43,,BTC,0.00006033,,,Bitfinex,Paid
+2022-11-01 22:41:13,dhb773_kUAwy,EUR,234,sdfasg,0,,,,,,,Bitfinex,Pending
+2022-11-01 16:52:03,-niHvtRVl5CM,EUR,1,adfsd,0,,,,,,,Bitfinex,Pending
+2022-11-01 15:03:02,VS-OyEa_2ItZ,EUR,123,rtdsgh dfg hdfg hdfgh ,0,,,,,,,Bitfinex,Pending
+2022-11-01 12:58:51,YYBKMbTh3BHp,EUR,2,Пожертвование,0,,,,,,,Bitfinex,Pending
+2022-11-01 12:37:38,-a18qMMptDow,EUR,1,Donation,0,,,,,,,Bitfinex,Pending
+2022-10-31 16:38:14,PyiX1PCeDoDS,EUR,1,sdfsdf s sd fasdf ,4864,,,,,,,Bitfinex,Failed
+2022-10-31 16:35:45,EEgYHMxyduRM,EUR,222,Donation,1078307,,,,,,,Bitfinex,Failed
+2022-10-31 16:28:51,tHmy1OZKXtSo,EUR,1121,Пожертвование,5432615,,,,,,,Bitfinex,Failed
+2022-10-28 14:27:05,d0fx3jlqlA7a,EUR,1,2,0,,,,,,,Bitfinex,Pending
+2022-10-28 14:12:07,3smRVcVDoVM_,EUR,1,2,4894,,,,,,,Bitfinex,Failed
+2022-10-28 14:07:15,,EUR,1,2,0,,,,,,,Bitfinex,Pending
+2022-10-28 13:22:19,OeJtr_dC6gxD,EUR,1,jhfgjh f jhfg jhf jh,4861,,,,,,,Bitfinex,Failed
+2022-10-28 13:21:48,GzYaJQCh602E,EUR,3,test,0,,,,,,,Bitfinex,Pending
+2022-10-28 11:52:17,W_c3Ww4yavQA,EUR,1,Donation,4933,,,,,,,Bitfinex,Failed
+2022-10-28 11:48:38,6zXDyk05QPB6,EUR,1,Donation,4941,,,,,,,Bitfinex,Failed
+2022-10-27 23:12:11,5FFCNJK-kRs-,EUR,1,,4931,,,,,,,Bitfinex,Failed
+2022-10-27 13:53:44,-RL_SRtm4ge_,EUR,2,Donation,9753,,,,,,,Bitfinex,Failed
+2022-10-27 13:52:35,_SVmq_jrb3Pl,EUR,4,Donation,19535,,,,,,,Bitfinex,Failed
+2022-10-27 13:46:15,50hg08WCQhcq,EUR,1,Donation,4862,,,,,,,Bitfinex,Failed
+2022-10-27 13:42:37,MGL1Vf75yfVl,EUR,3,Donation,14590.999999999998,,,,,,,Bitfinex,Failed
+2022-10-27 13:40:11,4BZ7Vx3WnMB1,EUR,2,Donation,9723,,,,,,,Bitfinex,Failed
+2022-10-27 13:37:31,fF2jO0EwfiL-,EUR,20,Donation,97023,,,,,,,Bitfinex,Failed
+2022-10-27 13:28:28,s_NL8yb-FD_z,EUR,2,Donation,9676,,,,,,,Bitfinex,Failed
+2022-10-25 23:48:24,8pDj3zJg1VRg,EUR,0.03,Donation,149,2022-10-25 23:49:34,2022-10-31 14:36:20,EUR,0.030545,1.4899999999999998e-9,0.0005450014899999987,Bitfinex,Paid
+2022-10-25 23:47:47,Lci65n8LFXhm,EUR,0.03,Donation,149,2022-10-25 23:49:34,2022-10-31 14:36:20,EUR,0.030545,1.4899999999999998e-9,0.0005450014899999987,Bitfinex,Paid
+2022-10-25 18:06:14,TkQGgOJ5eWLb,EUR,0.03,Donation,149,,,,,,,Bitfinex,Failed
+2022-10-25 17:45:02,lKniQxOa15Qp,EUR,0.05,Donation,249,2022-10-25 17:47:53,2022-10-31 14:36:20,EUR,0.051045,2.49e-9,0.0010450024899999952,Bitfinex,Paid
+2022-10-25 17:44:24,Oyvs1U2uEHnQ,EUR,10,Donation,49841,,,,,,,Bitfinex,Failed
+2022-10-25 17:43:41,Dqw2EGoLXszy,EUR,10,Donation,49861,,,,,,,Bitfinex,Failed
+2022-10-25 16:29:16,Heg3UQp-lEpg,EUR,2,Donation,10072,,,,,,,Bitfinex,Failed
+2022-10-24 21:35:56,vEaEmKZPT828,EUR,0.02,Donation,102,2022-10-24 21:38:05,2022-10-31 14:36:20,EUR,0.02091,1.02e-9,0.0009100010200000022,Bitfinex,Paid
+2022-10-24 18:05:38,zFnxr1VmFxDW,EUR,1.2,Donation,6149,2022-10-24 18:05:53,2022-10-24 18:05:56,EUR,1.20243695,-0.0024048739,0.000032076100000111296,Bitfinex,Paid
+2022-10-24 18:03:18,wRyPtFrAcwiJ,EUR,0.02,,103.00000000000001,2022-10-24 18:03:45,2022-10-24 18:05:56,EUR,0.020141650000000004,-0.0000402833,0.00010136670000000444,Bitfinex,Paid
+2022-10-24 16:34:32,tPBMauoh3snD,EUR,0.02,Donation,103.00000000000001,2022-10-24 16:35:12,2022-10-24 18:05:56,EUR,0.020141650000000004,-0.0000402833,0.00010136670000000444,Bitfinex,Paid
+2022-10-24 13:40:54,z-YEeBc4Ng_o,EUR,1,Пожертвование,5095,,,,,,,Bitfinex,Failed
+2022-10-24 13:34:50,Gpy85R9XaQcX,EUR,1,Donation,5096,,,,,,,Bitfinex,Failed
+2022-10-20 19:19:47,dzKnYyG4E6wV,EUR,0.05,Donation,257,,,,,,,Bitfinex,Failed
+2022-10-17 22:13:53,nmzOuZ-SaRtP,EUR,1,Donation,5035,,,,,,,Bitfinex,Failed
+2022-10-17 12:55:24,XIX7nqNJaILF,EUR,1,Donation,0,,,,,,,Bitfinex,Pending
+2022-10-15 20:45:37,z1MPQU5DflWP,EUR,1.2,,6116,2022-10-15 20:45:51,2022-10-15 20:45:51,EUR,1.2024056,-0.0024048112,7.888000002065354e-7,Bitfinex,Paid
+2022-10-15 20:44:11,sN5uNgB7cbF3,EUR,1,,5099,,,,,,,Bitfinex,Failed
+2022-10-15 20:37:45,6ve6ejoQusuJ,EUR,100,,509820,,,,,,,Bitfinex,Failed
+2022-10-15 20:36:44,FKT9Nhhpyq_J,EUR,20,,101980,,,,,,,Bitfinex,Failed
+2022-10-15 07:53:37,SLlHYl2ZC9da,EUR,1,Donación,5078,,,,,,,Bitfinex,Failed
+2022-10-15 07:48:14,wEO5ABs2j1sN,EUR,20,,101576.00000000001,,,,,,,Bitfinex,Failed
+2022-10-14 21:30:16,9Tukm0XhVEkh,EUR,2.22,Fghgv,0,,,,,,,Bitfinex,Pending
+2022-10-14 18:26:47,MtehWanFhqbo,EUR,100,Пожертвование,513820,,,,,,,Bitfinex,Failed
+2022-10-14 17:38:31,5DHNjCJik7pk,EUR,0.02,Donation,101,2022-10-14 17:40:00,2022-10-15 20:45:51,EUR,0.0198566,-0.00003971319999999999,-0.0001831132000000013,Bitfinex,Paid

@@ -22,6 +22,7 @@ import { format } from '@fast-csv/format';
 import Keys from './models/keys.mjs';
 import Invoices from './models/invoices.mjs';
 import Bitfinex from './gateways/bitfinex.mjs';
+import Kraken from './gateways/kraken.mjs';
 import DataBase from './mongo.mjs';
 import contact from './routes/contact.mjs';
 import referral from './routes/referral.mjs';
@@ -106,13 +107,13 @@ export default class Server {
       .catch((err) => console.error(err)); 
   }
 
-  renderCSV(req, res, userName) { 
+  renderCSV(req, res, userId) { 
     const fromDate = req.query.fromDate ? Date.parse(req.query.fromDate + 'T00:00:00.000Z') : 1;
     const toDate = req.query.toDate ? Date.parse(req.query.toDate + 'T23:59:59.999Z') : Date.now();
     const paidDate = req.query.paidOnly === 'checked' ? 1 : -2;
     const limit = parseInt(req.query.limit); 
 
-    this.db.find('invoices', { $and: [{ userName }, { timePaid: { $gte: paidDate } }, { timeCreated: { $gte: fromDate } }, { timeCreated: { $lte: toDate } } ] }, { timeCreated: -1 }, limit )
+    this.db.find('invoices', { $and: [{ userId }, { timePaid: { $gte: paidDate } }, { timeCreated: { $gte: fromDate } }, { timeCreated: { $lte: toDate } } ] }, { timeCreated: -1 }, limit )
       .then((resp) => {
         resp.toArray((err, invoices) => {
           if (err) console.error(err);
@@ -164,11 +165,11 @@ export default class Server {
   }
 
   // append details of conversion to fiat or stablecoin for all paid invoices
-  async completeInvoices(userName) {
+  async completeInvoices(id) {
     const p = new Promise((allResolve) => {
-      this.db.findOne('keys', { userName }).then((rec) => {
+      this.db.findOne('keys', { id }).then((rec) => {
         const gw = getExchange(rec.exchange, rec.key, rec.secret);
-        this.db.find('invoices', { $and: [{ userName }, { currencyTo: { $ne : "LNX" } }, { currencyTo: { $ne : "BTC" } }, { timePaid: {$gt: 0} }, { amountTo: {$exists: false} } ] } )
+        this.db.find('invoices', { $and: [{ userId: id }, { currencyTo: { $ne : "LNX" } }, { currencyTo: { $ne : "BTC" } }, { timePaid: {$gt: 0} }, { amountTo: {$exists: false} } ] } )
           .then((resp) => {
             resp.toArray((err, invoices) => {
               const promises = invoices.map(inv => {
@@ -215,7 +216,7 @@ export default class Server {
     const promise = new Promise((resolve, reject) => {
       this.db.findOne('invoices', { invoiceId }).then((record) => {
         if (record) {
-          const userName = record.userName;
+          const id = record.userId;
           const timePresented = record.timePresented;
           
           if (record.timePaid) {
@@ -223,7 +224,7 @@ export default class Server {
             return resolve('paid');
           }
 
-          this.db.findOne('keys', { userName }).then((rec) => {
+          this.db.findOne('keys', { id }).then((rec) => {
             const gw = getExchange(rec.exchange, rec.key, rec.secret);            
             gw.getLightningDeposit(record.txid, timePresented, timePresented + 600000)
               .then((received) => {
@@ -366,9 +367,14 @@ export default class Server {
               refCode: 'TuVr9K55M',
             });
           case 'login':
-              return res.render('login', {
-                currentLocale: res.getLocale()
-              });
+            return res.render('login', {
+              currentLocale: res.getLocale()
+            });
+          case 'bitfinex':
+            return res.render('bitfinex', {
+              currentLocale: res.getLocale(),
+              refCode: req.query.refCode ? req.query.refCode : 'TuVr9K55M',
+            });
           case 'stickers':
             const url = req.protocol + '://' + req.get('host') + '/' + req.query.id;
             return qr.toDataURL(url, (err, src) => {
@@ -445,7 +451,7 @@ export default class Server {
                 case 13: // authToken to download csv
                   return this.db.findOne('keys', { authToken: id })
                     .then((record) => {
-                      if (record && record.authExpire > Date.now()) this.renderCSV(req, res, record.userName);
+                      if (record && record.authExpire > Date.now()) this.renderCSV(req, res, record.id);
                       else res.render('index', { currentLocale, refCode: 'TuVr9K55M'});
                     });
               default:
@@ -470,23 +476,24 @@ export default class Server {
             return res.render('login', { currentLocale: res.getLocale() });
           }
           
-          this.completeInvoices(userName).then(() => this.renderReport(req, res));
+          this.completeInvoices(record.id).then(() => this.renderReport(req, res));
         });
     });
 
     this.express.post('/add', (req, res) => {
       const currentLocale = req.body.lang;
       const payee = req.body.payee;
+      const userName = req.body.email;
       req.setLocale(currentLocale);
       const gw = getExchange(req.body.exchange, req.body.apiKey, req.body.apiSecret);
-      gw.getUserName()
-        .then((userName) => {
+      gw.getFirstTrade('USD', Date.now()) // test API
+        .then(() => {
           let id = nanoid(11);
           this.db.findOne('keys', { key: req.body.apiKey })
             .then((record) => {
               if(record) id = record.id; // keep old id
               // Delete previous keys to avoid duplicates
-              this.db.deleteMany('keys', { userName }) 
+              this.db.deleteMany('keys', { id }) 
                 .then(r => {
                   const data = new Keys({
                     id,
@@ -530,7 +537,7 @@ export default class Server {
             });
         })
         .catch((err) => {
-          this.renderError(req, res, 'error_exchange_down', err);
+          this.renderError(req, res, 'error_invalid_keys', err);
         });
     });
 
@@ -567,6 +574,7 @@ export default class Server {
               const wap = amountFiat / amountBTC;
               const currencyTo = record.currencyTo;
               const payee = record.payee;
+              const userId = record.id;
 
               if (amountBTC > gw.maxInvoiceAmount) { return this.renderError(req, res, 'amount_too_large'); }
               if (amountBTC < gw.minInvoiceAmount) { return this.renderError(req, res, 'amount_too_small'); }
@@ -644,6 +652,7 @@ export default class Server {
                           const newInv = new Invoices({
                             invoiceId,
                             userName,
+                            userId,
                             timeCreated,
                             timePresented: Date.now(),
                             timePaid: 0,
