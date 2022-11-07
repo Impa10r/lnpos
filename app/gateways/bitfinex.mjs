@@ -83,12 +83,12 @@ export default class Bitfinex {
     return this.restAuth('v2/auth/w/order/submit', body);
   }
 
-  async transferBetweenWallets(from, to, currency, currencyTo, amount) {
+  async transferBetweenWallets(from, to, currency, currency_to, amount) {
     const body = {
       from,
       to,
       currency,
-      currencyTo,
+      currency_to,
       amount: amount.toString(),
     };
     return this.restAuth('v2/auth/w/transfer', body);
@@ -177,7 +177,7 @@ export default class Bitfinex {
         } catch (e) {
           return; // not JSON
         }
-        console.log(data);
+        //console.log(data);
         switch (data[1]) {
           case 'hb': // heartbeat
             if (Date.now() > timeLimit) {
