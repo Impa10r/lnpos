@@ -54,7 +54,8 @@
 
     .containerPix {
       position: relative;
-      width: 50%;
+      width: 400px;
+      max-width: 80%;
     }
 
     .imagePix {
@@ -128,7 +129,7 @@
       <div class="containerPix">
         <img src="bitfinex_logo.png" alt="Bitfinex" class="imagePix" style="width:100%">
         <div class="middlePix">
-          <div class="textPix"><a href="/bitfinex?refcode={{refCode}}" style="color:white">Bitfinex {{#i18n}}signup{{/i18n}}</a></div>
+          <div class="textPix"><a href="/bitfinex?refcode={{refCode}}&lang={{currentLocale}}" style="color:white">Bitfinex {{#i18n}}signup{{/i18n}}</a></div>
         </div>
       </div>
       <br>

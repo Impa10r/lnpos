@@ -177,6 +177,7 @@ export default class Bitfinex {
         } catch (e) {
           return; // not JSON
         }
+        console.log(data);
         switch (data[1]) {
           case 'hb': // heartbeat
             if (Date.now() > timeLimit) {
@@ -210,7 +211,13 @@ export default class Bitfinex {
               const amount = data[2][2]; // balance total amount
               switch (data[2][1]) { // balance currency
                 case 'LNX':
-                  if (amount > 0 && currencyTo !== 'LNX') this.transferBetweenWallets('exchange', 'exchange', 'LNX', 'BTC', amount);
+                  if (amount > 0 && currencyTo !== 'LNX') {
+                    this.transferBetweenWallets('exchange', 'exchange', 'LNX', 'BTC', amount)
+                      .then((r) => r.json())
+                      .then((json) => {
+                        if (json[0] === 'error') console.error(json[2]); 
+                      });
+                  }
                   break;
                 case 'BTC':
                   if (currencyTo !== 'BTC' && amount > 0 && transferComplete && depositComplete) {
