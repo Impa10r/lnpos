@@ -22,7 +22,7 @@ export default class DataBase {
     this.db.on('error', console.error.bind(console, 'MongoDB connection error:'));
   }
 
-  async findOne(collection, query, sort = {}) {
+  async findOne(collection, query = {}, sort = {}) {
     return this.db.collection(collection).findOne(query, { sort });
   }
 

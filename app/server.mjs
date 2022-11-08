@@ -21,6 +21,7 @@ import { nanoid } from 'nanoid';
 import { format } from '@fast-csv/format';
 import Keys from './models/keys.mjs';
 import Invoices from './models/invoices.mjs';
+import Counter from './models/counter.mjs';
 import Bitfinex from './gateways/bitfinex.mjs';
 import Kraken from './gateways/kraken.mjs';
 import DataBase from './mongo.mjs';
@@ -306,6 +307,20 @@ export default class Server {
     });
   }
 
+  countHits(req, res) { // page hit counter from unique IPs
+    let ip = req.headers['x-forwarded-for'];
+    if (!ip) ip = req.ip;
+    this.db.findOne('counters', { ip }).then((rec) => {
+      if (!rec) {
+        new Counter({ ip }).save().then(() => {
+          Counter.countDocuments({}).then((count) => {
+            console.log(toZulu(Date.now()), 'Hit count:', count);
+          });
+        });
+      }
+    });
+  }
+
   constructor({ i18nProvider }) {
     this.db = new DataBase(process.env.NODE_ENV === 'prod');
     
@@ -458,6 +473,7 @@ export default class Server {
             }
         }
       } 
+      this.countHits(req, res);
       res.render('index', { currentLocale, refCode: 'TuVr9K55M' });
     });
 
