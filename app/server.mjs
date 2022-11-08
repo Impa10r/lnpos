@@ -307,7 +307,7 @@ export default class Server {
   }
 
   constructor({ i18nProvider }) {
-    this.db = new DataBase();
+    this.db = new DataBase(process.env.NODE_ENV === 'prod');
     
     const limiter = rateLimit({
       windowMs: 1 * 60 * 1000, // 1 minute
@@ -514,6 +514,7 @@ export default class Server {
                           if (!record) {
                             this.renderError(req, res, 'error_database_down');
                           } else {
+                            console.log(toZulu(Date.now()), record.exchange, 'registration!');
                             const i = record.id;
                             const desc = req.get('host') + '/' + i;
                             const url = req.protocol + '://' + desc;
@@ -733,7 +734,7 @@ export default class Server {
 
   // check and update payment status of all pending invoices
   resolvePendingInvoices(self) {
-    console.log('Resolving hang invoices...');
+    if (process.env.NODE_ENV !== 'prod') console.log('Resolving hang invoices...');
     self.db.find('invoices', { $and: [{ timePresented: { $gt: 0 } }, { timePaid: 0 }] }, { timeCreated: -1 }).then((resp) => {
       resp.toArray((err, records) => {
         if (err) return console.error('resolvePendingInvoices', err);
@@ -771,7 +772,7 @@ export default class Server {
       if (httpsOptions) {
         const httpsServer = https.createServer(httpsOptions, this.express);
         httpsServer.listen(serverPort, () => {
-          console.info(`HTTPS listening at port ${serverPort}`);
+          // console.info(`HTTPS listening at port ${serverPort}`);
           resolve();
         });
       } else {
