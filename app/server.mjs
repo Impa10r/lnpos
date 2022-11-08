@@ -19,6 +19,7 @@ import locale from 'locale';
 import { fileURLToPath } from 'url';
 import { nanoid } from 'nanoid';
 import { format } from '@fast-csv/format';
+import geoip from 'geoip-country';
 import Keys from './models/keys.mjs';
 import Invoices from './models/invoices.mjs';
 import Counter from './models/counter.mjs';
@@ -307,14 +308,17 @@ export default class Server {
     });
   }
 
-  countHits(req, res) { // page hit counter from unique IPs
+  countHits(req) { // page hit counter from unique IPs
     let ip = req.headers['x-forwarded-for'];
     if (!ip) ip = req.ip;
     this.db.findOne('counters', { ip }).then((rec) => {
       if (!rec) {
         new Counter({ ip }).save().then(() => {
           Counter.countDocuments({}).then((count) => {
-            console.log(toZulu(Date.now()), 'Hit count:', count);
+            //'::ffff:44.227.127.2'
+            const ip4 = ip.substring(7);
+            const geo = geoip.lookup(ip4);
+            console.log(toZulu(Date.now()), 'Hit count:', count, ip4, geo.country);
           });
         });
       }
@@ -473,7 +477,7 @@ export default class Server {
             }
         }
       } 
-      this.countHits(req, res);
+      this.countHits(req);
       res.render('index', { currentLocale, refCode: 'TuVr9K55M' });
     });
 

@@ -3,6 +3,7 @@ import { mongoose } from 'mongoose';
 const counterSchema = new mongoose.Schema(
   {
     ip: { type: String, index: { unique: true } },
+    country: { type: String, required: false },
   },
 );
 
