@@ -142,7 +142,7 @@ export default class Bitfinex {
             }
             i += 1;
           }
-          resolve(parseFloat(btcReceived.toFixed(8)));
+          resolve(Math.round(btcReceived * 100000000));
         });
     });
     return promise;

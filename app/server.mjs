@@ -218,7 +218,7 @@ export default class Server {
     const promise = new Promise((resolve, reject) => {
       this.db.findOne('invoices', { invoiceId }).then((record) => {
         if (record) {
-          const id = record.userId;
+          const userName = record.userName;
           const timePresented = record.timePresented;
           
           if (record.timePaid) {
@@ -226,7 +226,7 @@ export default class Server {
             return resolve('paid');
           }
 
-          this.db.findOne('keys', { id }).then((rec) => {
+          this.db.findOne('keys', { userName }).then((rec) => {
             const gw = getExchange(rec.exchange, rec.key, rec.secret);            
             gw.getLightningDeposit(record.txid, timePresented, timePresented + 600000)
               .then((received) => {
@@ -318,7 +318,7 @@ export default class Server {
             //'::ffff:44.227.127.2'
             const ip4 = ip.substring(7);
             const geo = geoip.lookup(ip4);
-            console.log(toZulu(Date.now()), 'Hit count:', count, ip4, geo.country);
+            console.log(toZulu(Date.now()), 'Hit count:', count, geo.country);
           });
         });
       }
@@ -591,7 +591,8 @@ export default class Server {
           const gw = getExchange(record.exchange, record.key, record.secret);
           gw.simulateSell(currencyFrom, amountFiat)
             .then((result) => {
-              const amountBTC = result;
+              const amountSat = result;
+              const amountBTC = amountSat / 100000000;
               const wap = amountFiat / amountBTC;
               const currencyTo = record.currencyTo;
               const payee = record.payee;
@@ -618,6 +619,7 @@ export default class Server {
                       const inv = new Invoices({
                         invoiceId,
                         userName,
+                        userId,
                         timeCreated,
                         timePresented: 0,
                         timePaid: 0,
@@ -650,7 +652,6 @@ export default class Server {
                   const invoice = result.invoice;
                   const depositAddress = result.depositAddress;
                   const exchangeRate = wap.toFixed(2);
-                  const amountSat = amountBTC * 100000000;
                   
                   qr.toDataURL(invoice, (err, src) => {
                     if (err) this.renderError(req, res, 'error_qr', err);

@@ -67,7 +67,7 @@ export default class Kraken {
           const x = data.result['XXBTZ' + currency];
           const bidPrice = x.b[0];
           const btcReceived = whatToSell / bidPrice;
-          resolve(parseFloat(btcReceived.toFixed(8)));
+          resolve(Math.round(btcReceived * 100000000));
         });
     });
     return promise;
