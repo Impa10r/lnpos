@@ -318,7 +318,8 @@ export default class Server {
             //'::ffff:44.227.127.2'
             const ip4 = ip.substring(7);
             const geo = geoip.lookup(ip4);
-            console.log(toZulu(Date.now()), 'Hit count:', count, geo.country);
+            const country = geo ? geo.country : '';
+            console.log(toZulu(Date.now()), 'Hit count:', count, country);
           });
         });
       }
