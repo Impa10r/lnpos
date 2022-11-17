@@ -20,6 +20,7 @@ import { fileURLToPath } from 'url';
 import { nanoid } from 'nanoid';
 import { format } from '@fast-csv/format';
 import geoip from 'geoip-country';
+import useragent from 'useragent';
 import Keys from './models/keys.mjs';
 import Invoices from './models/invoices.mjs';
 import Counter from './models/counter.mjs';
@@ -316,10 +317,11 @@ export default class Server {
         new Counter({ ip }).save().then(() => {
           Counter.countDocuments({}).then((count) => {
             //'::ffff:44.227.127.2'
-            const ip4 = ip.substring(7);
+            const ip4 = ip.length > 6 ? ip.substring(7) : ip;
             const geo = geoip.lookup(ip4);
-            const country = geo ? geo.country : '';
-            console.log(toZulu(Date.now()), 'Hit count:', count, country);
+            const country = geo ? geo.country : '??';
+            const agent = useragent.parse(req.headers['user-agent']);
+            console.log(toZulu(Date.now()), count, country, agent.family);
           });
         });
       }
@@ -391,6 +393,7 @@ export default class Server {
               currentLocale: res.getLocale()
             });
           case 'bitfinex':
+            console.log('Bitfinex chosen...');
             return res.render('bitfinex', {
               currentLocale: res.getLocale(),
               refCode: req.query.refCode ? req.query.refCode : 'TuVr9K55M',
