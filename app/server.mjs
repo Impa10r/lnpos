@@ -47,7 +47,7 @@ function getExchange(exchange, apiKey, apiSecret) {
 
 export default class Server {
   renderError(req, res, errCode, err) {
-    if (err) console.error(err);
+    if (err) console.error(toZulu(Date.now()), err);
     res.render('message', {
       currentLocale: req.locale,
       message: req.__(errCode),
