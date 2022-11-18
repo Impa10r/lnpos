@@ -394,7 +394,7 @@ export default class Server {
               currentLocale: res.getLocale()
             });
           case 'bitfinex':
-            console.log('Bitfinex chosen...');
+            console.log(toZulu(Date.now()), 'Bitfinex chosen...');
             return res.render('bitfinex', {
               currentLocale: res.getLocale(),
               refCode: req.query.refCode ? req.query.refCode : 'TuVr9K55M',
@@ -539,7 +539,7 @@ export default class Server {
                           if (!record) {
                             this.renderError(req, res, 'error_database_down');
                           } else {
-                            console.log(toZulu(Date.now()), record.exchange, 'registration complete!');
+                            console.log(toZulu(Date.now()), record.exchange, 'new user!');
                             const i = record.id;
                             const desc = req.get('host') + '/' + i;
                             const url = req.protocol + '://' + desc;
@@ -582,7 +582,7 @@ export default class Server {
 
                               const mailOptions = {
                                 from: process.env.SMTP_FROM,
-                                to: userName,
+                                to: payee + '<' + userName + '>',
                                 subject: req.__('api_key_saved'),
                                 text,
                                 html

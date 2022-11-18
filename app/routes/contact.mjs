@@ -23,11 +23,10 @@ router.get('/contact', (req, res) => {
 });
 
 router.post('/contact', (req, res) => {
-  const text = 'userName: ' + req.body.userName + '\n' +
-    'email: ' + req.body.email + '\n' +
-    'message: ' + req.body.message;
-  
-    // make mailable object
+  const text = 'email: ' + req.body.email + '\n' +
+               'message: ' + req.body.message;
+
+  // make mailable object
   const mailOptions = {
     from: process.env.SMTP_FROM,
     to: process.env.SMTP_TO,
