@@ -302,7 +302,7 @@ export default class Bitfinex {
         .then((r) => r.json())
         .then((json) => {
           if (json[0] === 'error') return reject(new Error('Bitfinex getUserName: ' + json[2]));
-          resolve(json[2].toLowerCase());
+          resolve(json[1].toLowerCase());
         });
     });
     return promise;

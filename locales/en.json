@@ -23,8 +23,8 @@
 	"step_3af": "Click 'Generate New Code', copy the 10-symbol code and paste it in the field below. Press the button 'Show referral link'.",
 	"generate_ref": "Show referral link",
 	"new_referral_link": "Below is your unique referral link. You can share it in social media and send to your direct contacts.",
-	"new_payment_link": "Below is your unique payment link. Click or scan, then save it to your PC desktop, phone Home Screen and/or in the bookmarks. You can forward it to your employees and clients to generate payment requests.",
-	"new_payment_link2": "<b>Bonus steps:</b><br><ol start = '5'><li>Install <a href='https://www.bitfinex.com/mobile-trading' target='_blank'>Bitfinex app</a> on your phone to receive trade notifications.</li><li>Print <b><em>your personal 'Bitcoin accepted' stickers</em></b> by following this",
+	"new_payment_link": "Below is your unique payment link. Save it to your PC desktop, phone Home Screen and/or in the bookmarks. You can forward it to your employees and clients to generate payment requests.",
+	"new_payment_link2": "<b>Bonus steps:</b><br><ol start = '5'><li>Install <a href='https://www.bitfinex.com/mobile-trading' target='_blank'>Bitfinex app</a> on your phone to receive trade notifications.</li><li>Print your personal 'Bitcoin accepted' stickers by following this",
 	"new_payment_link3": "</li><li>API format for automation and intergation with your website",
 	"new_payment_link4": "</li><li>Add your business to <a href='https://btcmap.org/' target='_blank'>BTC Map</a>.</li>",
 	"remote_payment_link": "Copy the link below to request a remote payment via email or chat:",
@@ -86,7 +86,7 @@
 	"pending": "Pending",
 	"failed": "Expired",
 	"login": "Access to personal account",
-	"user_name": "Email address",
+	"user_name": "User name",
 	"user_name_explain": "Your email address",
 	"password": "Password",
 	"password_explain": "First 7 letters of key secret",
@@ -115,5 +115,6 @@
 	"send": "Send",
 	"message_sent": "Your message was sent. Thank you!",
 	"message_error": "Error sending your message.",
-	"message": "Your message"
+	"message": "Your message",
+  "welcome": "Welcome"
 }

@@ -21,6 +21,7 @@ import { nanoid } from 'nanoid';
 import { format } from '@fast-csv/format';
 import geoip from 'geoip-country';
 import useragent from 'useragent';
+import nodemailer from 'nodemailer';
 import Keys from './models/keys.mjs';
 import Invoices from './models/invoices.mjs';
 import Counter from './models/counter.mjs';
@@ -507,11 +508,11 @@ export default class Server {
     this.express.post('/add', (req, res) => {
       const currentLocale = req.body.lang;
       const payee = req.body.payee;
-      const userName = req.body.email;
+      //const userName = req.body.email;
       req.setLocale(currentLocale);
       const gw = getExchange(req.body.exchange, req.body.apiKey, req.body.apiSecret);
-      gw.getFirstTrade('USD', Date.now()) // test API
-        .then(() => {
+      gw.getUserName() // test API
+        .then((userName) => {
           let id = nanoid(11);
           this.db.findOne('keys', { key: req.body.apiKey })
             .then((record) => {
@@ -538,7 +539,7 @@ export default class Server {
                           if (!record) {
                             this.renderError(req, res, 'error_database_down');
                           } else {
-                            console.log(toZulu(Date.now()), record.exchange, 'registration!');
+                            console.log(toZulu(Date.now()), record.exchange, 'registration complete!');
                             const i = record.id;
                             const desc = req.get('host') + '/' + i;
                             const url = req.protocol + '://' + desc;
@@ -551,6 +552,58 @@ export default class Server {
                                 src,
                                 id: i,
                               });
+
+                              // send email
+                              const pwd = req.body.apiSecret.substring(0 , 7);                              
+                              let text = req.__('welcome') + ' ' + payee + '!\n\n'; 
+
+                              text += req.__('new_payment_link') + '\n';
+                              text += url + '\n';
+                              
+                              text += req.__('login') + ':\n';
+                              text += req.__('_login') + ': https://lnpos.me/login\n';
+                              text += req.__('user_name') + ': ' + userName + '\n';
+                              text += req.__('password') + ': ' + pwd + '\n\n';
+                              
+                              let html = '<h2>' + req.__('welcome') + ' ' + payee + '!</h2>';
+
+                              html += '<p>' + req.__('new_payment_link') + '<\p>';
+                              html += '<a href="' + url + '" target="_blank">' + desc + '</amount></a><br>';
+
+                              html += '<p><b>' + req.__('login') + '</b>:<br>';
+                              html += req.__('_login') + ': ' + '<a href="https://lnpos.me/login" target="_blank">lnpos.me/login</a><br>';
+                              html += req.__('user_name') + ': ' + userName + '<br>';
+                              html += req.__('password') + ': ' + pwd + '<\p>';
+
+                              html += '<p>' + req.__('new_payment_link2') + ' <a href="https://lnpos.me/stickers?id=' + i + '" target="_blank">' + req.__('link') + '</a>.';
+                              html += req.__('new_payment_link3') + ':<br>';
+                              html += '<em>' + desc + '?amount=123.45&memo=Details</em>';
+                              html += req.__('new_payment_link4');
+
+                              const mailOptions = {
+                                from: process.env.SMTP_FROM,
+                                to: userName,
+                                subject: req.__('api_key_saved'),
+                                text,
+                                html
+                              };
+ 
+                              const transport = {
+                                host: process.env.SMTP_HOST,
+                                port: process.env.SMTP_PORT,
+                                auth: {
+                                  user: process.env.SMTP_USER,
+                                  pass: process.env.SMTP_PASS,
+                                },
+                              };
+                              
+                              // call the transport function
+                              const transporter = nodemailer.createTransport(transport);
+
+                              transporter.sendMail(mailOptions, (err) => {
+                                if (err) console.error(err);
+                              });
+
                             });
                           }
                         });
