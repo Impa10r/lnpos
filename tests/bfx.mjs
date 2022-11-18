@@ -1,5 +1,5 @@
 import assert from 'assert';
-import Gateway from '../app/bitfinex.mjs';
+import Gateway from '../app/gateways/bitfinex.mjs';
 
 describe('new Gateway()', () => {
   const gw = new Gateway(null, null);
