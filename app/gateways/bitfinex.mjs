@@ -20,18 +20,14 @@ export default class Bitfinex {
     return axios.get(`https://api-pub.bitfinex.com/v2/${apiPath}`, params);
   }
 
-  getNonce() {
-    const now = Date.now() * 1000;
-    this.lastNonce = (this.lastNonce < now) ? now : this.lastNonce + 1;
-    return this.lastNonce;
-  }
-
   async getStatus() {
     return axios.get('https://api-pub.bitfinex.com/v2/platform/status');
   }
 
   async restAuth(apiPath, body) {
-    const nonce = this.getNonce();
+    const now = Date.now() * 1000;
+    this.lastNonce = (this.lastNonce < now) ? now : this.lastNonce + 1;
+    const nonce = this.lastNonce;
     const payload = `/api/${apiPath}${nonce}${JSON.stringify(body)}`;
     const sig = crypto.createHmac('sha384', this.apiSecret).update(payload).digest('hex');
 
@@ -151,7 +147,9 @@ export default class Bitfinex {
   async convertProceeds(amountBtc, currencyTo, res) {
     const promise = new Promise((resolve, reject) => {
       const timeLimit = Date.now() + 10 * 60 * 1000; // 10 minutes
-      const authNonce = this.getNonce().toString();
+      const now = Date.now() * 1000;
+      this.lastNonce = (this.lastNonce < now) ? now : this.lastNonce + 1;
+      const authNonce = this.lastNonce.toString();
       const authPayload = `AUTH${authNonce}`;
       const authSig = crypto.createHmac('sha384', this.apiSecret).update(authPayload).digest('hex');
 

@@ -198,17 +198,18 @@ export default class Server {
                       resolve(true);
                     })
                     .catch((err) => { 
-                      console.error(err);
+                      console.error(toZulu(Date.now()), err);
                       resolve(true);
                     });
                 })
-                .catch((err) => { 
-                  console.error(err); 
-                  resolve(true);
-                });
+                
               });
               Promise.all(promises).then(() => {allResolve(true)});
             });
+          })
+          .catch((err) => { 
+            console.error(toZulu(Date.now()),err); 
+            resolve(true);
           });
       });
     });
