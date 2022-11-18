@@ -321,7 +321,7 @@ export default class Server {
             const geo = geoip.lookup(ip4);
             const country = geo ? geo.country : '??';
             const agent = useragent.parse(req.headers['user-agent']);
-            console.log(toZulu(Date.now()), count, country, agent.family);
+            console.log(toZulu(Date.now()), count, country, agent.family.substring(0, 12));
           });
         });
       }
