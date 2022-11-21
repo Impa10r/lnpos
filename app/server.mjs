@@ -1,10 +1,8 @@
 /* eslint-disable max-len */
 /* eslint-disable consistent-return */
 /* eslint-disable class-methods-use-this */
-/* eslint-disable prefer-destructuring */
 /* eslint-disable no-console */
 /* eslint-disable import/extensions */
-/* eslint-disable prefer-template */
 /* eslint-disable no-underscore-dangle */
 import express from 'express';
 import helmet from 'helmet';
@@ -26,7 +24,6 @@ import Keys from './models/keys.mjs';
 import Invoices from './models/invoices.mjs';
 import Counter from './models/counter.mjs';
 import Bitfinex from './gateways/bitfinex.mjs';
-import Kraken from './gateways/kraken.mjs';
 import DataBase from './mongo.mjs';
 import contact from './routes/contact.mjs';
 import referral from './routes/referral.mjs';
@@ -577,8 +574,8 @@ export default class Server {
                               html += req.__('password') + ': ' + pwd + '<\p>';
 
                               html += '<p>' + req.__('new_payment_link2') + ' <a href="https://lnpos.me/stickers?id=' + i + '" target="_blank">' + req.__('link') + '</a>.';
-                              html += req.__('new_payment_link3') + ':<br>';
-                              html += '<em>' + desc + '?amount=123.45&memo=Details</em>';
+                              //html += req.__('new_payment_link3') + ':<br>';
+                              //html += '<em>' + desc + '?amount=123.45&memo=Details</em>';
                               html += req.__('new_payment_link4');
 
                               const mailOptions = {
@@ -783,15 +780,16 @@ export default class Server {
                           .then((received) => {
                             // check for paid duplicate with same amount but different id
                             this.db.findOne('invoices', { $and: [{ invoiceId: { $ne: invoiceId } }, { amountSat}, { timePaid: received }] }).then((alreadyPaid) => {
+                              let html2 = '';
                               if (received && !alreadyPaid) {
                                 this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: received } });
-                                const html2 = '<h4 style="color:green"><b>' + req.__('PAID') + '</b></h4></center></div></body></html>';
-                                res.end(html2);
+                                html2 = '<h4 style="color:green"><b>' + req.__('PAID') + '</b></h4>';
                               } else {
                                 this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
-                                const html2 = '<h4 style="color:red"><b>' + req.__('FAILED') + '</b></h4></center></div></body></html>';
-                                res.end(html2);
+                                html2 = '<h4 style="color:red"><b>' + req.__('FAILED') + '</b></h4>';
                               }
+                              html2 += '<br><a href="/' + userId + '"><img src="bitcoin.png" alt="Return"></a></center></div></body></html>';
+                              res.end(html2);
                             });
                           });
                       });

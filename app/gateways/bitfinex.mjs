@@ -2,7 +2,6 @@
 /* eslint-disable class-methods-use-this */
 import fetch from 'node-fetch';
 import crypto from 'crypto';
-import axios from 'axios';
 import WebSocket from 'ws';
 
 export default class Bitfinex {
@@ -16,19 +15,21 @@ export default class Bitfinex {
     this.lastNonce = Date.now() * 1000;
   }
 
-  async restPublic(apiPath, params) {
-    return axios.get(`https://api-pub.bitfinex.com/v2/${apiPath}`, params);
+  async restPublic(apiPath) {
+    //return axios.get(`https://api-pub.bitfinex.com/v2/${apiPath}`, params);
+    return fetch(`https://api-pub.bitfinex.com/v2/${apiPath}`);
+
   }
 
   async getStatus() {
-    return axios.get('https://api-pub.bitfinex.com/v2/platform/status');
+    return this.restPublic('platform/status');
+    //return axios.get('https://api-pub.bitfinex.com/v2/platform/status');
   }
 
   async restAuth(apiPath, body) {
     const now = Date.now() * 1000;
     this.lastNonce = (this.lastNonce < now) ? now : this.lastNonce + 1;
-    const nonce = this.lastNonce;
-    const payload = `/api/${apiPath}${nonce}${JSON.stringify(body)}`;
+    const payload = `/api/${apiPath}${this.lastNonce}${JSON.stringify(body)}`;
     const sig = crypto.createHmac('sha384', this.apiSecret).update(payload).digest('hex');
 
     return fetch(`https://api.bitfinex.com/${apiPath}`, {
@@ -37,7 +38,7 @@ export default class Bitfinex {
       meta: { aff_code: 'TuVr9K55M' },
       headers: {
         'Content-Type': 'application/json',
-        'bfx-nonce': nonce.toString(),
+        'bfx-nonce': this.lastNonce.toString(),
         'bfx-apikey': this.apiKey,
         'bfx-signature': sig,
       },
@@ -115,10 +116,11 @@ export default class Bitfinex {
 
   async simulateSell(currency, amount) {
     const promise = new Promise((resolve, reject) => {
-      this.getBook('tBTC' + currency)
-        .then((result) => {
-          if (result.message) return reject(new Error('Bitfinex simulateSell: ' + result.message));
-          const book = result.data;
+      this.getBook(`tBTC${currency}`)
+        .then((r) => r.json())
+        .then((book) => {
+          //if (result.message) return reject(new Error(`Bitfinex simulateSell: ${result.message}`));
+          //const book = result.data;
           let i = 0;
           let btcReceived = 0;
           let leftToSell = amount * (1 + this.tradingFeeTaker);
@@ -139,6 +141,9 @@ export default class Bitfinex {
             i += 1;
           }
           resolve(Math.round(btcReceived * 100000000));
+        })
+        .catch((error) => {
+          return reject(new Error(`Bitfinex simulateSell: ${error}`));
         });
     });
     return promise;
@@ -175,7 +180,7 @@ export default class Bitfinex {
         } catch (e) {
           return; // not JSON
         }
-        //console.log(data);
+        // console.log(data);
         switch (data[1]) {
           case 'hb': // heartbeat
             if (Date.now() > timeLimit) {
@@ -213,7 +218,7 @@ export default class Bitfinex {
                     this.transferBetweenWallets('exchange', 'exchange', 'LNX', 'BTC', amount)
                       .then((r) => r.json())
                       .then((json) => {
-                        if (json[0] === 'error') console.error(json[2]); 
+                        if (json[0] === 'error') console.error(json[2]);
                       });
                   }
                   break;
@@ -236,10 +241,10 @@ export default class Bitfinex {
 
   async getFirstTrade(currency, fromTime) {
     const promise = new Promise((resolve, reject) => {
-      this.getTrades('tBTC' + currency, fromTime, Date.now(), 1, 1)
+      this.getTrades(`tBTC${currency}`, fromTime, Date.now(), 1, 1)
         .then((r) => r.json())
         .then((json) => {
-          if (json[0] === 'error') return reject(new Error('Bitfinex getFirstTrade: ' + json[2] + ', ' + currency));
+          if (json[0] === 'error') return reject(new Error(`Bitfinex getFirstTrade: ${json[2]}, ${currency}`));
           if (json.length === 1) {
             resolve({
               amount: json[0][4],
@@ -259,7 +264,7 @@ export default class Bitfinex {
       this.getMovements('LNX', fromTime, toTime)
         .then((r) => r.json())
         .then((json) => {
-          if (json[0] === 'error') return reject(new Error('Bitfinex getLightningDeposit: ' + json[2]));
+          if (json[0] === 'error') return reject(new Error(`Bitfinex getLightningDeposit: ${json[2]}`));
           let received = null;
           let i = json.length;
           while (i > 0) {
@@ -277,12 +282,12 @@ export default class Bitfinex {
       this.getDepositAddr('LNX', 'exchange')
         .then((r) => r.json())
         .then((j) => {
-          if (j[0] === 'error') return reject(new Error('Bitfinex generateLightningInvoice: ' + j[2]));
+          if (j[0] === 'error') return reject(new Error(`Bitfinex generateLightningInvoice: ${j[2]}`));
           const depositAddress = j[4][4];
           this.getLightningInvoice(amount)
             .then((r) => r.json())
             .then((json) => {
-              if (json[0] === 'error') return reject(new Error('Bitfinex generateLightningInvoice: ' + json[2]));
+              if (json[0] === 'error') return reject(new Error(`Bitfinex generateLightningInvoice: ${json[2]}`));
               resolve({
                 txid: json[0],
                 invoice: json[1],
@@ -299,7 +304,7 @@ export default class Bitfinex {
       this.getUserInfo()
         .then((r) => r.json())
         .then((json) => {
-          if (json[0] === 'error') return reject(new Error('Bitfinex getUserName: ' + json[2]));
+          if (json[0] === 'error') return reject(new Error(`Bitfinex getUserName: ${json[2]}`));
           resolve(json[1].toLowerCase());
         });
     });

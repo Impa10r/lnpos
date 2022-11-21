@@ -19,7 +19,7 @@ export default class Kraken {
     let jsonData;
     const baseDomain = 'https://api.kraken.com';
     const publicPath = '/0/public/';
-    const apiEndpointFullURL = baseDomain + publicPath + endPointName + "?" + inputParameters;
+    const apiEndpointFullURL = `${baseDomain + publicPath + endPointName}?${inputParameters}`;
 
     jsonData = await axios.get(apiEndpointFullURL);
     return jsonData.data;
@@ -48,7 +48,7 @@ export default class Kraken {
 
     const apiEndpointFullURL = baseDomain + privatePath + endPointName;
     const nonce = this.getNonce();
-    const apiPostBodyData = "nonce=" + nonce + "&" + inputParameters;
+    const apiPostBodyData = `nonce=${nonce}&${inputParameters}`;
 
     const signature = this.getSignature(privatePath, endPointName, nonce, apiPostBodyData);
 
@@ -60,11 +60,11 @@ export default class Kraken {
 
   async simulateSell(currency, amount) {
     const promise = new Promise((resolve, reject) => {
-      this.QueryPublicEndpoint('Ticker', 'pair=xbt' + currency.toLowerCase())
+      this.QueryPublicEndpoint('Ticker', `pair=xbt${currency.toLowerCase()}`)
         .then((data) => {
-          if (data.error[0]) return reject(new Error('Kraken simulateSell: ' + data.error[0]));
+          if (data.error[0]) return reject(new Error(`Kraken simulateSell: ${data.error[0]}`));
           const whatToSell = amount * (1 + this.tradingFeeTaker);
-          const x = data.result['XXBTZ' + currency];
+          const x = data.result[`XXBTZ${currency}`];
           const bidPrice = x.b[0];
           const btcReceived = whatToSell / bidPrice;
           resolve(Math.round(btcReceived * 100000000));
@@ -78,7 +78,7 @@ export default class Kraken {
       const timeLimit = Date.now() + 10 * 60 * 1000; // 10 minutes
       this.QueryPrivateEndpoint('GetWebSocketsToken', '')
         .then((data) => {
-          if (data.error[0]) return reject(new Error('Kraken convertProceeds: ' + data.error[0]));
+          if (data.error[0]) return reject(new Error(`Kraken convertProceeds: ${data.error[0]}`));
           const webSocketToken = data.result.token;
           const wss = new WebSocket('wss://ws-auth.kraken.com/');
 
@@ -86,7 +86,7 @@ export default class Kraken {
             wss.send(`{ "event": "subscribe", "subscription": { "name": "balances", "token": "${webSocketToken}"}}`);
             wss.send(`{ "event": "subscribe", "subscription": { "name": "ownTrades", "token": "${webSocketToken}"}}`);
           });
-          wss.on('error', (err) => { reject(new Error('Kraken convertProceeds: ' + err)); });
+          wss.on('error', (err) => { reject(new Error(`Kraken convertProceeds: ${err}`)); });
 
           let transferComplete = false;
           let depositComplete = false;
@@ -162,11 +162,11 @@ export default class Kraken {
 
   async getFirstTrade(currency, fromTime) {
     const promise = new Promise((resolve, reject) => {
-      this.QueryPrivateEndpoint('TradesHistory', 'start=' + fromTime)
+      this.QueryPrivateEndpoint('TradesHistory', `start=${fromTime}`)
         .then((data) => {
-          if (data.error[0] === 'error') return reject(new Error('Kraken getFirstTrade: ' + data.error[0]));
+          if (data.error[0] === 'error') return reject(new Error(`Kraken getFirstTrade: ${data.error[0]}`));
           let i = 0;
-          const pair = 'xbt' + currency.toLowerCase();
+          const pair = `xbt${currency.toLowerCase()}`;
           const names = Object.getOwnPropertyNames(data.result.trades);
           while (i < data.result.count) {
             const trade = trades[names[i]];
@@ -192,7 +192,7 @@ export default class Kraken {
       this.getMovements('LNX', fromTime, toTime)
         .then((r) => r.json())
         .then((json) => {
-          if (json[0] === 'error') return reject(new Error('Kraken getLightningDeposit: ' + json[2]));
+          if (json[0] === 'error') return reject(new Error(`Kraken getLightningDeposit: ${json[2]}`));
           let received = null;
           let i = json.length;
           while (i > 0) {
@@ -210,12 +210,12 @@ export default class Kraken {
       this.getDepositAddr('LNX', 'exchange')
         .then((r) => r.json())
         .then((j) => {
-          if (j[0] === 'error') return reject(new Error('Kraken generateLightningInvoice: ' + j[2]));
+          if (j[0] === 'error') return reject(new Error(`Kraken generateLightningInvoice: ${j[2]}`));
           const depositAddress = j[4][4];
           this.getLightningInvoice(amount)
             .then((r) => r.json())
             .then((json) => {
-              if (json[0] === 'error') return reject(new Error('Kraken generateLightningInvoice: ' + json[2]));
+              if (json[0] === 'error') return reject(new Error(`Kraken generateLightningInvoice: ${json[2]}`));
               resolve({
                 txid: json[0],
                 invoice: json[1],
