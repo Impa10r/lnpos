@@ -218,7 +218,7 @@ export default class Bitfinex {
                     this.transferBetweenWallets('exchange', 'exchange', 'LNX', 'BTC', amount)
                       .then((r) => r.json())
                       .then((json) => {
-                        if (json[0] === 'error') console.error(json[2]);
+//                        if (json[0] === 'error') console.error(json[2]);
                       });
                   }
                   break;
