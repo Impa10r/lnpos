@@ -173,33 +173,13 @@ export default class Server {
         this.db.find('invoices', { $and: [{ userName }, { currencyTo: { $ne : "LNX" } }, { currencyTo: { $ne : "BTC" } }, { timePaid: {$gt: 0} }, { amountTo: {$exists: false} } ] } )
           .then((resp) => {
             resp.toArray((err, invoices) => {
+              let i = 0;
               const promises = invoices.map(inv => {
                 return new Promise((resolve) => { 
-                  // find first trade after presenting the invoice
-                  gw.getFirstTrade(inv.currencyTo, inv.timePresented)
-                    .then((trade) => {
-                      if (trade) {
-                        const tradeAmount = -trade.amount * 100000000;
-                        // one trade can convert many small previous deposits
-                        const ratio = inv.amountSat / tradeAmount;
-                        const timeHedged = trade.time;
-                        const executionPrice = trade.price;
-                        const amountTo = -trade.amount * executionPrice * ratio;
-                        const feeAmount = trade.feeAmount * ratio;
-                        const feeCurrency = trade.feeCurrency;
-                        const invoiceId = inv.invoiceId;
-                        
-                        this.db.updateOne('invoices', { invoiceId }, { $set: { timeHedged, executionPrice, amountTo, feeAmount, feeCurrency } });
-                        resolve(true);
-                      }
-                      resolve(true);
-                    })
-                    .catch((err) => { 
-                      console.error(toZulu(Date.now()), err);
-                      resolve(true);
-                    });
-                })
-                
+                  // stagger requestes to avoid nonce too small errors
+                  setTimeout(this.appendTrade, i * 200, this, gw, inv, resolve);
+                  i += 1;
+                })               
               });
               Promise.all(promises).then(() => {allResolve(true)});
             });
@@ -211,6 +191,32 @@ export default class Server {
       });
     });
     return p;
+  }
+
+  appendTrade(self, gw, inv, resolve) {
+    // find first trade after presenting the invoice       
+    gw.getFirstTrade(inv.currencyTo, inv.timePresented)
+      .then((trade) => {
+        if (trade) {
+          const tradeAmount = -trade.amount * 100000000;
+          // one trade can convert many small previous deposits
+          const ratio = inv.amountSat / tradeAmount;
+          const timeHedged = trade.time;
+          const executionPrice = trade.price;
+          const amountTo = -trade.amount * executionPrice * ratio;
+          const feeAmount = trade.feeAmount * ratio;
+          const feeCurrency = trade.feeCurrency;
+          const invoiceId = inv.invoiceId;
+          
+          self.db.updateOne('invoices', { invoiceId }, { $set: { timeHedged, executionPrice, amountTo, feeAmount, feeCurrency } });
+          resolve(true);
+        }
+        resolve(true);
+      })
+      .catch((err) => { 
+        console.error(toZulu(Date.now()), err);
+        resolve(true);
+      });
   }
 
   // check and update the payment status of one invoice
