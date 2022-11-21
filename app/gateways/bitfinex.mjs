@@ -32,9 +32,6 @@ export default class Bitfinex {
     const payload = `/api/${apiPath}${this.lastNonce}${JSON.stringify(body)}`;
     const sig = crypto.createHmac('sha384', this.apiSecret).update(payload).digest('hex');
 
-
-console.log(Date.now(), this.lastNonce);
-
     return fetch(`https://api.bitfinex.com/${apiPath}`, {
       method: 'POST',
       body: JSON.stringify(body),
