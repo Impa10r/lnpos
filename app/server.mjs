@@ -791,7 +791,10 @@ export default class Server {
                                 this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: received } });
                                 html2 = '<h4 style="color:green"><b>' + req.__('PAID') + '</b></h4>';
                               } else {
-                                this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
+                                this.db.findOne('invoices', { invoiceId }).then((inv) => {
+                                  // do not update if it was paid by a parallel process
+                                  if (!inv.timePaid) this.db.updateOne('invoices', { invoiceId }, { $set: { timePaid: -1 } });
+                                })
                                 html2 = '<h4 style="color:red"><b>' + req.__('FAILED') + '</b></h4>';
                               }
                               html2 += '<br><a href="/' + userId + '"><img src="bitcoin.png" alt="Return"></a></center></div></body></html>';
