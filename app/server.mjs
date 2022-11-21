@@ -177,7 +177,7 @@ export default class Server {
               const promises = invoices.map(inv => {
                 return new Promise((resolve) => { 
                   // stagger requestes to avoid nonce too small errors
-                  setTimeout(this.appendTrade, i * 200, this, gw, inv, resolve);
+                  setTimeout(this.appendTrade, i * 250, this, gw, inv, resolve);
                   i += 1;
                 })               
               });
