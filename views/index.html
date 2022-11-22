@@ -120,26 +120,41 @@
     </div>
     
     <br>
-    <p>{{#i18n}}intro{{/i18n}}</p>
-    <center><img src="LNPOS.png" style="height: auto; max-width: 100%; max-height: 100vh" alt="Payment diagram"></center>
-    <br>
-    <p>{{#i18n}}intro2{{/i18n}}</p>
-    <br>
-    <center>
-      <div class="containerPix">
-        <img src="bitfinex_logo.png" alt="Bitfinex" class="imagePix" style="width:100%">
-        <div class="middlePix">
-          <div class="textPix"><a href="/bitfinex?refcode={{refCode}}&lang={{currentLocale}}" style="color:white">Bitfinex {{#i18n}}signup{{/i18n}}</a></div>
-        </div>
+    <div class="row">
+      <div class="col-sm">
+        <br>
+        <h5>{{#i18n}}intro{{/i18n}}</h5>
       </div>
-      <br>
-      <div class="containerPix">
-        <img src="kraken_logo.png" alt="Kraken" class="imagePix" style="width:100%">
-        <div class="middlePix">
-          <div class="textPix">Coming soon...</div>
-        </div>
+      <div class="col-sm">
+        <center><img src="LNPOS.png" style="height: auto; max-width: 100%; max-height: 100vh" alt="Payment diagram"></center>
       </div>
-    </center>
+    </div>
+    <br>
+    <br>
+    <div class="row">
+      <div class="col-sm">
+        <center>
+          <img src='payment_animation.gif' style='max-width: 100%; width: auto; max-height: 100vh'>
+        </center>
+        <br>
+      </div>
+      <div class="col-sm">  
+        <h5>{{#i18n}}intro2{{/i18n}}</h5>
+        <br>
+        <h5>{{#i18n}}intro3{{/i18n}}</h5>
+        <br><br>
+        <center>
+          <div class="containerPix">
+            <img src="bitfinex_logo.png" alt="Bitfinex" class="imagePix" style="width:100%">
+            <div class="middlePix">
+              <div class="textPix"><a href="/bitfinex?refcode={{refCode}}&lang={{currentLocale}}" style="color:white">Bitfinex {{#i18n}}signup{{/i18n}}</a></div>
+            </div>
+          </div>
+          <br>
+        </center>
+        </div>
+    </div>
+    
     <br>
     <br>
     <center><a href="#"><img src="bitcoin.png" alt="Bitcoin symbol"></a></center>
