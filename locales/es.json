@@ -16,7 +16,7 @@
 	"step_1": "Regístrese en la bolsa de criptomonedas Bitfinex usando",
 	"step_1a": "y siguiendo sus instrucciones. Para mayor seguridad, en lugar de Google Authenticator recomendamos <a href='https://authy.com/' target='_blank'>Authy</a>.",
 	"step_2": "Sigue <a href='https://setting.bitfinex.com/api#new-key' target='_blank'>este enlace</a> para Crear nueva clave.",
-	"step_3": "Elija solo estos seis permisos como en el ejemplo anterior, asigne cualquier nombre y haga clic en 'Generar una clave API'.",
+	"step_3": "Elija solo estos seis permisos como en el ejemplo, asigne cualquier nombre y haga clic en 'Generar una clave API'.",
 	"step_4": "Copie la clave de API y el secreto de la clave de API de Bitfinex en el siguiente formulario, seleccione monedas: en qué emitir facturas y en qué convertir los ingresos, presione 'Registrar clave API'. ¡Asegúrese de estar en el sitio web lnpos.me y de que la conexión sea segura!",
 	"here": "aqui",
 	"influencer": "¿Eres un influencer y un entusiasta de las criptomonedas? ¡Usted puede ayudar a que este emocionante proyecto tenga éxito mientras gana dinero en el proceso! Como ya sabrá, Bitfinex ejecuta un programa de afiliados en el que puede ganar el 18% de las tarifas comerciales pagadas por aquellos que presentó. Estamos hablando del 18% del 0,2% del volumen de negociación. Puede que no parezca mucho, pero no hay límite de tiempo, ni límite para el número de referencias. Un día, los pagos con bitcoin se volverán populares, y querrás haber estado involucrado temprano.<br><br>Este es un buen proyecto para recomendar a su amigos que tienen una pequeña empresa. Ahorrará costes y ampliará su base de clientes. Todas las tarifas comerciales que financian esta campaña de afiliados las pagan entusiastas de las criptomonedas como nosotros. También ayuda a popularizar Bitcoin, lo que resulta en un mejor valor. ¡Todos ganan!<br><br>Su objetivo final es ver las etiquetas adhesivas 'Bitcoin aceptado aquí' en todas las tiendas y restaurantes de su barrio. Esta es una campaña de marketing puerta a puerta y cara a cara. Comience con los negocios que frecuenta como cliente, pregúnteles si aceptan bitcoin. Luego explique lo fácil que es comenzar y envíe su enlace de referencia con información. Para generar su enlace de referencia personal, siga los pasos a continuación:",
@@ -117,5 +117,6 @@
   "message_sent": "Tu mensaje fue enviado. ¡Gracias!",
   "message_error": "Error al enviar tu mensaje.",
 	"message": "Su mensaje",
-  "welcome": "Bienvenidos"
+  "welcome": "Bienvenidos",
+  "coming_soon": "Próximamente"
 }
