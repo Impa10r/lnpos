@@ -44,12 +44,13 @@ function getExchange(exchange, apiKey, apiSecret) {
 }
 
 export default class Server {
-  renderError(req, res, errCode, err) {
+  renderError(req, res, errCode, err, link) {
     if (err) console.error(toZulu(Date.now()), err);
     res.render('message', {
       currentLocale: req.locale,
       message: req.__(errCode),
       color: 'red',
+      link
     });
   }
 
@@ -161,7 +162,7 @@ export default class Server {
         });
       })
       .catch((err) => {
-        this.renderError(req, res, 'error_database_down', err);
+        this.renderError(req, res, 'error_database_down', err, '/');
       });
   }
 
@@ -281,7 +282,7 @@ export default class Server {
         let copyHtml = '';
         
         qr.toDataURL(url, (err, src) => {
-          if (err) this.renderError(req, res, 'error_qr', err);
+          if (err) this.renderError(req, res, 'error_qr', err, '/');
           
           switch(status) {
             case  'paid':
@@ -306,11 +307,11 @@ export default class Server {
           });
         });
       } else {
-        this.renderError(req, res, 'invoice_not_found');
+        this.renderError(req, res, 'invoice_not_found', '/');
       }
     })
     .catch((err) => {
-      this.renderError(req, res, 'error_database_down', err);
+      this.renderError(req, res, 'error_database_down', err), '/';
     });
   }
 
@@ -399,18 +400,20 @@ export default class Server {
             });
           case 'login':
             return res.render('login', {
-              currentLocale: res.getLocale()
+              currentLocale: res.getLocale(),
+              url: req.url,
             });
           case 'bitfinex':
             console.log(toZulu(Date.now()), 'Bitfinex chosen...');
             return res.render('bitfinex', {
               currentLocale: res.getLocale(),
               refCode: req.query.refCode ? req.query.refCode : 'TuVr9K55M',
+              url: req.url,
             });
           case 'stickers':
             const url = req.protocol + '://' + req.get('host') + '/' + req.query.id;
             return qr.toDataURL(url, (err, src) => {
-              if (err) this.renderError(req, res, 'error_qr', err);
+              if (err) this.renderError(req, res, 'error_qr', err, '/');
               res.render('stickers', {
                 currentLocale,
                 src,
@@ -441,11 +444,12 @@ export default class Server {
                         amountOptions,
                         secondaryButtonOptions,
                         secondaryLabelOptions,
-                        record
+                        record,
+                        url: req.url
                       });
-                    } else this.renderError(req, res, 'error_id_not_found');   
+                    } else this.renderError(req, res, 'error_id_not_found', '/');   
                   })
-                  .catch((err) => this.renderError(req, res, 'error_database_down', err));
+                  .catch((err) => this.renderError(req, res, 'error_database_down', err, '/'));
               case 12: // invoice id
                 return this.db.findOne('invoices', { invoiceId: id })
                   .then((record) => {
@@ -456,7 +460,7 @@ export default class Server {
                             this.renderReceipt(req, res, status);
                           })
                           .catch((error) => {
-                            this.renderError(error);
+                            this.renderError(req, res, 'invoice_not_found', error, '/');
                           })
                         return;
                       }
@@ -475,10 +479,11 @@ export default class Server {
                         primaryButtonOptions,
                         secondaryButtonOptions,
                         primaryLabelOptions,
-                        record
+                        record,
+                        url: req.url
                       });
-                    } else this.renderError(req, res, 'invoice_not_found');
-                  }).catch((err) => this.renderError(req, res, 'error_database_down', err));
+                    } else this.renderError(req, res, 'invoice_not_found', '/');
+                  }).catch((err) => this.renderError(req, res, 'error_database_down', err, '/'));
                 
                 case 13: // authToken to download csv
                   return this.db.findOne('keys', { authToken: id })
@@ -499,10 +504,10 @@ export default class Server {
       const userName = req.body.userName.toLowerCase();
       this.db.findOne('keys', { userName })
         .then((record) => {
-          if (!record) return this.renderError(req, res, 'error_password');
+          if (!record) return this.renderError(req, res, 'error_password', req.body.url);
 
           if (req.body.password && record.secret.substring(0, 7) !== req.body.password) {
-            return this.renderError(req, res, 'error_password');
+            return this.renderError(req, res, 'error_password', req.body.url);
           } 
 
           if (req.body.authToken && !(record.authToken === req.body.authToken && record.authExpire > Date.now())) { 
@@ -548,14 +553,14 @@ export default class Server {
                       this.db.findOne('keys', { id })
                         .then((record) => {
                           if (!record) {
-                            this.renderError(req, res, 'error_database_down');
+                            this.renderError(req, res, 'error_database_down', req.body.url);
                           } else {
                             console.log(toZulu(Date.now()), record.exchange, 'new user!');
                             const i = record.id;
                             const desc = req.get('host') + '/' + i;
                             const url = req.protocol + '://' + desc;
                             qr.toDataURL(url, (err, src) => {
-                              if (err) this.renderError(req, res, 'error_qr', err);
+                              if (err) this.renderError(req, res, 'error_qr', err, req.body.url);
                               res.render('add', {
                                 currentLocale,
                                 url,
@@ -621,12 +626,12 @@ export default class Server {
                     });
                 })
                 .catch((err) => {
-                  this.renderError(req, res, 'error_database_down', err);
+                  this.renderError(req, res, 'error_database_down', err, req.body.url);
                 });
             });
         })
         .catch((err) => {
-          this.renderError(req, res, 'error_invalid_keys', err);
+          this.renderError(req, res, 'error_invalid_keys', err, req.body.url);
         });
     });
 
@@ -644,7 +649,7 @@ export default class Server {
       if (req.body.button === 'pricetag') {
         const url = req.protocol + '://' + req.get('host') + '/' + req.body.userId + '?amount=' + amountFiat + '&memo=' + memo;
         return qr.toDataURL(url, (err, src) => {
-          if (err) this.renderError(req, res, 'error_qr', err);
+          if (err) this.renderError(req, res, 'error_qr', err, req.body.url);
           res.render('pricetag', {
             currentLocale,
             src,
@@ -666,8 +671,8 @@ export default class Server {
               const payee = record.payee;
               const userId = record.id;
 
-              if (amountBTC > gw.maxInvoiceAmount) { return this.renderError(req, res, 'amount_too_large'); }
-              if (amountBTC < gw.minInvoiceAmount) { return this.renderError(req, res, 'amount_too_small'); }
+              if (amountBTC > gw.maxInvoiceAmount) { return this.renderError(req, res, 'amount_too_large', '', req.body.url); }
+              if (amountBTC < gw.minInvoiceAmount) { return this.renderError(req, res, 'amount_too_small', '',  req.body.url); }
 
               if (req.body.button === 'link') {
                 this.db.findOne('invoices', { invoiceId })
@@ -722,7 +727,7 @@ export default class Server {
                   const exchangeRate = wap.toFixed(2);
                   
                   qr.toDataURL(invoice, (err, src) => {
-                    if (err) this.renderError(req, res, 'error_qr', err);
+                    if (err) this.renderError(req, res, 'error_qr', err, '/');
                     this.db.findOne('invoices', { invoiceId })
                       .then((inv) => {
                         if (inv && inv.timePaid < 1) {
@@ -812,15 +817,15 @@ export default class Server {
                   });
                 })
                 .catch((err) => {
-                  this.renderError(req, res, 'error_exchange_down', err);
+                  this.renderError(req, res, 'error_exchange_down', err, '/');
                 });
             })
             .catch((err) => {
-              this.renderError(req, res, 'error_exchange_down', err);
+              this.renderError(req, res, 'error_exchange_down', err, '/');
             })
         })
         .catch((err) => {
-          this.renderError(req, res, 'error_database_down', err);
+          this.renderError(req, res, 'error_database_down', err, '/');
         });
     });
   }

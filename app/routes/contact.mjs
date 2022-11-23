@@ -23,8 +23,8 @@ router.get('/contact', (req, res) => {
 });
 
 router.post('/contact', (req, res) => {
-  const text = 'email: ' + req.body.email + '\n' +
-               'message: ' + req.body.message;
+  const text = `email: ${req.body.email}\n`
+               + `message: ${req.body.message}`;
 
   // make mailable object
   const mailOptions = {
@@ -42,12 +42,14 @@ router.post('/contact', (req, res) => {
         currentLocale: req.locale,
         message: req.__('message_error'),
         color: 'red',
+        link: `/contact&lang=${req.locale}`,
       });
     } else {
       res.render('message', {
         currentLocale: req.locale,
         message: req.__('message_sent'),
         color: 'black',
+        link: '/',
       });
     }
   });
