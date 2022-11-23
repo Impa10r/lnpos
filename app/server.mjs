@@ -393,6 +393,10 @@ export default class Server {
               currentLocale: id,
               refCode: 'TuVr9K55M',
             });
+          case 'help':
+            return res.render('help', {
+              currentLocale: res.getLocale()
+            });
           case 'login':
             return res.render('login', {
               currentLocale: res.getLocale()
