@@ -105,7 +105,7 @@
 	"payee": "Payee",
 	"need_copy": "Need a copy? Please scan this QR code:",
 	"try_again": "Try again",
-	"license": "Content published under ISC license.<br>This website does not use cookies nor collect personal data beyound API keys.",
+	"license": "Content published under ISC license. This website does not use cookies.",
 	"from": "From",
 	"to": "To",
 	"limit": "Limit",
