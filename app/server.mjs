@@ -504,10 +504,10 @@ export default class Server {
       const userName = req.body.userName.toLowerCase();
       this.db.findOne('keys', { userName })
         .then((record) => {
-          if (!record) return this.renderError(req, res, 'error_password', req.body.url);
+          if (!record) return this.renderError(req, res, 'error_password', '', req.body.url);
 
           if (req.body.password && record.secret.substring(0, 7) !== req.body.password) {
-            return this.renderError(req, res, 'error_password', req.body.url);
+            return this.renderError(req, res, 'error_password', '', req.body.url);
           } 
 
           if (req.body.authToken && !(record.authToken === req.body.authToken && record.authExpire > Date.now())) { 
