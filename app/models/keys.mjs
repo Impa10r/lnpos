@@ -8,6 +8,7 @@ const keySchema = new mongoose.Schema(
     key: { type: String, index: { unique: true } },
     secret: { type: String, required: true },
     exchange: { type: String, required: true },
+    refCode: { type: String, required: true },
     currencyFrom: { type: String, required: true },
     currencyTo: { type: String, required: true },
     lang: { type: String, required: true },

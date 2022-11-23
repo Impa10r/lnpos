@@ -512,8 +512,10 @@ export default class Server {
     this.express.post('/add', (req, res) => {
       const currentLocale = req.body.lang;
       const payee = req.body.payee;
-      //const userName = req.body.email;
+      const refCode = req.body.refCode;
+      
       req.setLocale(currentLocale);
+      
       const gw = getExchange(req.body.exchange, req.body.apiKey, req.body.apiSecret);
       gw.getUserName() // test API
         .then((userName) => {
@@ -533,7 +535,8 @@ export default class Server {
                     currencyFrom: req.body.currencyFrom,
                     currencyTo: req.body.currencyTo,
                     lang: currentLocale,
-                    payee 
+                    payee,
+                    refCode,
                   });
                   data.save()
                     .then(() => {
