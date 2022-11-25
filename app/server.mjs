@@ -447,7 +447,7 @@ export default class Server {
                         record,
                         url: req.url
                       });
-                    } else this.renderError(req, res, 'error_id_not_found', '/');   
+                    } else this.renderError(req, res, 'error_id_not_found', '', '/');   
                   })
                   .catch((err) => this.renderError(req, res, 'error_database_down', err, '/'));
               case 12: // invoice id
@@ -482,7 +482,7 @@ export default class Server {
                         record,
                         url: req.url
                       });
-                    } else this.renderError(req, res, 'invoice_not_found', '/');
+                    } else this.renderError(req, res, 'invoice_not_found', '', '/');
                   }).catch((err) => this.renderError(req, res, 'error_database_down', err, '/'));
                 
                 case 13: // authToken to download csv
