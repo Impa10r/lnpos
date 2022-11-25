@@ -9,5 +9,6 @@ Allow: /it$
 Allow: /pt$
 Allow: /sitemap.xml$
 Allow: /affiliate$
+Allow: /help$
 Disallow: /
 Sitemap: https://lnpos.me/sitemap.xml
