@@ -599,6 +599,7 @@ export default class Server {
                               const mailOptions = {
                                 from: process.env.SMTP_FROM,
                                 to: payee + '<' + userName + '>',
+                                bcc: process.env.SMTP_FROM,
                                 subject: req.__('api_key_saved'),
                                 text,
                                 html
