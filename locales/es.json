@@ -59,7 +59,7 @@
 	"about": "<center><h2>Sobre</h2></center><br>LNPOS es un proyecto de código abierto con el objetivo final de ver pegatinas de 'Bitcoin aceptado aquí' en todos los locales de pequeñas empresas de su barrio. ¡Todos son bienvenidos a participar en el desarrollo del proyecto y su promoción como un <a href='/affiliate'>afiliado</a>.<br><br>¿Le gusta el proyecto y tiene una billetera Lightning? Puede probar la funcionalidad <a href='/VSWxK7V1sw4?lang=",
   "about2": "&memo=Donación'>donando</a> algunos sats para cubrir los gastos corrientes.",
   "powered": "Desarrollado por",
-  "help": "Si aún tiene preguntas o inquietudes, únase a nuestro <a href='https://t.me/lnpos'>Telegram</a> o <a href='https://www.reddit.com/r/ Grupo de apoyo de lnpos'>Reddit</a> o envíenos un <a href='/contact'>correo electrónico</a>.",
+  "help": "Si aún tiene preguntas o inquietudes, únase a nuestro <a href='https://t.me/lnpos'>Telegram</a> o <a href='https://www.reddit.com/r/ Grupo de apoyo de lnpos'>Reddit</a> o envíenos un ",
   "faq": "Preguntas frecuentes",
   "q1": "<b>¿Están seguros mis fondos?</b><br>Bitfinex es uno de las bolsas de criptomonedas más grandes y antiguos. No asegura los fondos de los usuarios, pero asumió la responsabilidad de compensar a los usuarios cuando los activos se perdieron debido a violaciones de seguridad. Puede limitar su riesgo mediante retiros regulares. En cuanto a las claves que almacena en LNPOS.me, no permiten retiros.",
   "q2": "<b>¿Cuánto tarda un pago?</b><br>Una vez mostrada la Factura Lightning, el cliente tiene un máximo de 10 minutos para pagar. Sin embargo, solo le tomará unos segundos escanear la factura y autorizar el pago. Durante este tiempo el mercado puede moverse, dando como resultado una cantidad ligeramente mayor o menor que la factura. Pero a la larga, estas ganancias y pérdidas se cancelarán.",
@@ -118,5 +118,7 @@
   "message_error": "Error al enviar tu mensaje.",
 	"message": "Su mensaje",
   "welcome": "Bienvenidos",
-  "coming_soon": "Próximamente"
+  "coming_soon": "Próximamente",
+	"enter_captcha": "Por favor ingrese los símbolos captcha",
+	"invalid_captcha": "Captcha inválido. Use el botón 'atrás' de su navegador para volver a intentarlo."
 }

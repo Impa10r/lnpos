@@ -1,7 +1,18 @@
 import nodemailer from 'nodemailer';
 import express from 'express';
+import svgCaptcha from 'svg-captcha';
 
 const router = express.Router();
+
+function renderError(req, res, errCode, err, link) {
+  if (err) console.error(err);
+  res.render('message', {
+    currentLocale: res.getLocale(),
+    message: req.__(errCode),
+    color: 'red',
+    link,
+  });
+}
 
 // this is the authentication for sending email.
 const transport = {
@@ -17,12 +28,21 @@ const transport = {
 const transporter = nodemailer.createTransport(transport);
 
 router.get('/contact', (req, res) => {
+  const captcha = svgCaptcha.create();
+
   res.render('contact', {
     currentLocale: res.getLocale(),
+    captcha,
   });
 });
 
 router.post('/contact', (req, res) => {
+  const currentLocale = req.body.lang;
+  req.setLocale(currentLocale);
+  if (req.body.captchaInput !== req.body.captchaText) {
+    return renderError(req, res, 'invalid_captcha', '', '/contact?lang=' + currentLocale);
+  }
+
   const text = `email: ${req.body.email}\n`
                + `message: ${req.body.message}`;
 

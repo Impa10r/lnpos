@@ -117,6 +117,8 @@
 	"message_sent": "Your message was sent. Thank you!",
 	"message_error": "Error sending your message.",
 	"message": "Your message",
-  "welcome": "Welcome",
-  "coming_soon": "Coming soon"
+	"welcome": "Welcome",
+	"coming_soon": "Coming soon",
+	"enter_captcha": "Please enter the captcha symbols",
+	"invalid_captcha": "Invalid captcha. Use your browser 'back' button to try again."
 }
