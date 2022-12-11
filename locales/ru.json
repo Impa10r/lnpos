@@ -29,7 +29,7 @@
 	"new_payment_link3": "</li><li>Формат API для автоматизации и интеграции с вашим сайтом",
   "new_payment_link4": "</li><li>Добавьте свою компанию на <a href='https://btcmap.org/' target='_blank'>карту BTC</a>.</li></ul>",
   "remote_payment_link": "Скопируйте ссылку ниже, чтобы запросить удаленный платеж по электронной почте или в чате:",
-	"remote_payment_link2": "Вы можете следить за статусом этого платежа <a href='/login' target='_blank'>в личном кабинете</a> или нажав",
+	"remote_payment_link2": "Вы можете следить за статусом этого платежа <a href='/login' target='_blank'>в личном кабинете</a> или используя",
 	"remote_request": "Пожалуйста, оплатите через Lightning",
 	"ref_link": "Ваша реферальная ссылка",
 	"api_key: permission invalid": "В ваших ключах API отсутствуют необходимые разрешения",
